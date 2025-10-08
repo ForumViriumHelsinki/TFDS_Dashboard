@@ -1,0 +1,12 @@
+[defaults]
+url=https://sentry.io/
+org=forumviriumhelsinki
+project=tfds_dashboard
+
+[auth]
+# Add your Sentry auth token here for local development
+# token=YOUR_SENTRY_AUTH_TOKEN
+
+# Note: This file is for local development only
+# Never commit .sentryclirc with actual tokens
+# In production, use SENTRY_AUTH_TOKEN environment variable

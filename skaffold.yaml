@@ -1,0 +1,24 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: tfds-dashboard
+build:
+  artifacts:
+    - image: tfds-dashboard
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: false
+manifests:
+  rawYaml:
+    - k8s/namespace.yaml
+    - k8s/deployment.yaml
+    - k8s/service.yaml
+deploy:
+  kubectl:
+    defaultNamespace: tfds-dashboard
+portForward:
+  - resourceType: service
+    resourceName: tfds-dashboard
+    port: 80
+    localPort: 8080

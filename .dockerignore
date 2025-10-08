@@ -1,0 +1,18 @@
+# Ignore everything by default
+*
+
+# Allow specific files and directories needed for the build
+!package.json
+!package-lock.json
+!src/
+!index.html
+!vite.config.js
+!nginx/
+!vitest.config.js
+!eslint.config.js
+
+# Re-ignore unwanted files within allowed directories
+**/.DS_Store
+**/node_modules
+**/.env
+**/.env.*

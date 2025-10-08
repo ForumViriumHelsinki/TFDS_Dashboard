@@ -1,0 +1,22 @@
+/* eslint-env node */
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    react(),
+    // Only upload source maps in production builds when auth token is available
+    process.env.SENTRY_AUTH_TOKEN &&
+      sentryVitePlugin({
+        org: "forumviriumhelsinki",
+        project: "tfds_dashboard",
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        telemetry: false,
+      }),
+  ].filter(Boolean),
+  build: {
+    sourcemap: true, // Generate source maps for Sentry
+  },
+});

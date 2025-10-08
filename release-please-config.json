@@ -1,0 +1,9 @@
+{
+  "plugins": ["node-workspace"],
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "tfds-dashboard"
+    }
+  }
+}
