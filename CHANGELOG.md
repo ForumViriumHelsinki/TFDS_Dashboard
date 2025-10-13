@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.1.0...tfds-dashboard-v0.2.0) (2025-10-09)
+
+
+### Features
+
+* initial TFDS Dashboard React application setup ([#1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/1)) ([5034528](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/5034528b2c195dcfd67ae6646195efbcb54db1d8))
+
 ## [0.1.0] - 2025-01-08
 
 ### Added
