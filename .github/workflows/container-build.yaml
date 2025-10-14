@@ -17,6 +17,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,13 +62,13 @@ jobs:
           build-args: |
             VITE_APP_VERSION=${{ steps.meta.outputs.version }}
             VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
 
       - name: Create Sentry release
-        if: success() && secrets.SENTRY_AUTH_TOKEN
+        if: success() && env.SENTRY_AUTH_TOKEN != ''
         uses: getsentry/action-release@v1
         env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: forumviriumhelsinki
           SENTRY_PROJECT: tfds_dashboard
         with:
