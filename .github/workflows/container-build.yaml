@@ -13,7 +13,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: fvh-arc-runners
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -64,19 +64,13 @@ jobs:
             VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
 
-      - name: Install Sentry CLI
-        if: success() && env.SENTRY_AUTH_TOKEN != ''
-        run: |
-          curl -sL https://sentry.io/get-cli/ | bash
-
       - name: Create Sentry release
         if: success() && env.SENTRY_AUTH_TOKEN != ''
+        uses: getsentry/action-release@v3
         env:
           SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: forum-virium-helsinki
           SENTRY_PROJECT: tfds_dashboard
-        run: |
-          sentry-cli releases new "${{ steps.meta.outputs.version }}"
-          sentry-cli releases set-commits "${{ steps.meta.outputs.version }}" --auto
-          sentry-cli releases finalize "${{ steps.meta.outputs.version }}"
-          sentry-cli releases deploys "${{ steps.meta.outputs.version }}" new -e production
+        with:
+          environment: production
+          version: ${{ steps.meta.outputs.version }}
