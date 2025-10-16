@@ -83,7 +83,7 @@ curl http://localhost:8080/health
 
 **Sentry (Error Tracking & Performance Monitoring)**
 
-- Organization: `forumviriumhelsinki`
+- Organization: `forum-virium-helsinki`
 - Project: `tfds_dashboard`
 - DSN: Provided via `VITE_SENTRY_DSN` environment variable
 - Initialization: Configured in `src/main.jsx` with ErrorBoundary, performance tracing, and session replay

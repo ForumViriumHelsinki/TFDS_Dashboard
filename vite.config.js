@@ -10,7 +10,7 @@ export default defineConfig({
     // Only upload source maps in production builds when auth token is available
     process.env.SENTRY_AUTH_TOKEN &&
       sentryVitePlugin({
-        org: "forumviriumhelsinki",
+        org: "forum-virium-helsinki",
         project: "tfds_dashboard",
         authToken: process.env.SENTRY_AUTH_TOKEN,
         telemetry: false,
