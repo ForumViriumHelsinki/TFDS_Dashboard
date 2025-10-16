@@ -214,6 +214,5 @@ npm test -- tests/App.test.jsx
 
 ## References
 
-- [Developer Guide](.claude/TFDS_DASHBOARD_DEVELOPER_GUIDE.md): Comprehensive development documentation
-- [Scaffolding Issue](.claude/TFDS_DASHBOARD_SCAFFOLDING_ISSUE.md): Initial repository setup specification
+- [Developer Guide](docs/TFDS_DASHBOARD_DEVELOPER_GUIDE.md): Comprehensive development documentation
 - [Infrastructure Wiki](https://github.com/ForumViriumHelsinki/infrastructure/wiki): Platform documentation
