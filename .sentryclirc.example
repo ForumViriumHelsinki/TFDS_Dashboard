@@ -1,6 +1,6 @@
 [defaults]
 url=https://sentry.io/
-org=forumviriumhelsinki
+org=forum-virium-helsinki
 project=tfds_dashboard
 
 [auth]
