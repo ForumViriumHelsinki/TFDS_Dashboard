@@ -59,7 +59,7 @@ docker run -p 8080:80 tfds-dashboard
 
 ## Development Documentation
 
-See [TFDS_DASHBOARD_DEVELOPER_GUIDE.md](.claude/TFDS_DASHBOARD_DEVELOPER_GUIDE.md) for:
+See [TFDS_DASHBOARD_DEVELOPER_GUIDE.md](docs/TFDS_DASHBOARD_DEVELOPER_GUIDE.md) for:
 
 - Detailed development setup
 - Environment variables reference
@@ -229,5 +229,5 @@ Hooks include:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/ForumViriumHelsinki/tfds-dashboard/issues)
-- **Documentation**: See `.claude/` directory
-- **Developer Guide**: [TFDS_DASHBOARD_DEVELOPER_GUIDE.md](.claude/TFDS_DASHBOARD_DEVELOPER_GUIDE.md)
+- **Documentation**: See `docs/` directory
+- **Developer Guide**: [TFDS_DASHBOARD_DEVELOPER_GUIDE.md](docs/TFDS_DASHBOARD_DEVELOPER_GUIDE.md)
