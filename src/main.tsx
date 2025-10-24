@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import "./index.css";
-import App from "./App.jsx";
+import App from "./App";
 
 // Initialize Sentry if DSN is provided
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -23,7 +23,8 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
-createRoot(document.getElementById("root")).render(
+const rootEl = document.getElementById("root")!;
+createRoot(rootEl).render(
   <StrictMode>
     <Sentry.ErrorBoundary
       fallback={({ error }) => (
@@ -33,8 +34,7 @@ createRoot(document.getElementById("root")).render(
           <details style={{ marginTop: "1rem" }}>
             <summary>Error details</summary>
             <pre style={{ textAlign: "left", marginTop: "1rem" }}>
-              {error.toString()}
-            </pre>
+              {String(error)}</pre>
           </details>
         </div>
       )}
@@ -43,3 +43,5 @@ createRoot(document.getElementById("root")).render(
     </Sentry.ErrorBoundary>
   </StrictMode>,
 );
+
+
