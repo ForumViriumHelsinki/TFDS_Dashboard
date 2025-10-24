@@ -33,9 +33,8 @@ createRoot(rootEl).render(
           <p>Sorry, something went wrong.</p>
           <details style={{ marginTop: "1rem" }}>
             <summary>Error details</summary>
-            <pre style={{ textAlign: "left", marginTop: "1rem" }}>{
-              String(error)
-            }</pre>
+            <pre style={{ textAlign: "left", marginTop: "1rem" }}>
+              {String(error)}</pre>
           </details>
         </div>
       )}
