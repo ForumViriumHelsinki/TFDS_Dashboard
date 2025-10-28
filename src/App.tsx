@@ -30,11 +30,11 @@ function App() {
       </AppShell.Header>
       <AppShell.Navbar p={0}>
       <Tabs defaultValue="Häiriöt">
-      <Tabs.List>
-        <Tabs.Tab value="Häiriöt" flex={1}>
+      <Tabs.List grow>
+        <Tabs.Tab value="Häiriöt">
           Häiriöt
         </Tabs.Tab>
-        <Tabs.Tab value="Ilmanlaatu" flex={1}>
+        <Tabs.Tab value="Ilmanlaatu">
           Ilmanlaatu
         </Tabs.Tab>
       </Tabs.List>

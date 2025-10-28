@@ -26,7 +26,18 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 const theme = createTheme({
+  fontFamily: "Montserrat, sans-serif",
   primaryColor: "orange",
+  components: {
+    Tabs: {
+      styles: {
+        tab: {
+          padding: "1rem",
+          borderWidth: "0px 0px 5px 0px",
+        },
+      },
+    },
+  },
 });
 
 const rootEl = document.getElementById("root")!;
