@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/react";
 import '@mantine/core/styles.css';
 import "./index.css";
 import App from "./App";
-import { MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 
 // Initialize Sentry if DSN is provided
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -25,10 +25,14 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+const theme = createTheme({
+  primaryColor: "orange",
+});
+
 const rootEl = document.getElementById("root")!;
 createRoot(rootEl).render(
   <StrictMode>
-    <MantineProvider defaultColorScheme="light">
+    <MantineProvider defaultColorScheme="light" theme={theme}>
       <Sentry.ErrorBoundary
         fallback={({ error }) => (
           <div style={{ padding: "2rem", textAlign: "center" }}>
