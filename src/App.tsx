@@ -5,13 +5,17 @@ import {
   Button,
   Checkbox,
   Group,
+  NavLink,
+  ScrollArea,
   Stack,
   Tabs,
   Text,
+  TextInput,
 } from "@mantine/core";
 import { Image } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
+import { ChartLine, ChevronDown, X } from "lucide-react";
 
 function App() {
   const [dataDisplayOpened, { toggle: toggleDataDisplay }] =
@@ -72,8 +76,34 @@ function App() {
             <Tabs.Tab value="Ilmanlaatu">Ilmanlaatu</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="Häiriöt" p="md">
-            Häiriöt tab content
+          <Tabs.Panel value="Häiriöt">
+            <AppShell.Section
+              p="md"
+              style={{ borderBottom: "1px solid #e0e0e0" }}
+            >
+              <TextInput
+                label="Haku"
+                placeholder="Syötä hakuehto"
+                description="Hae tiesegmenttiä "
+              />
+            </AppShell.Section>
+            <AppShell.Section grow component={ScrollArea}>
+              {Array(60)
+                .fill(0)
+                .map((_, index) => (
+                  <NavLink
+                    href="#"
+                    key={index}
+                    onClick={(event) => event.preventDefault()}
+                    label={`IDEA Segment ${index + 1}`}
+                    description={`1195756141337706496${index + 1}`}
+                    leftSection={<ChartLine size={16} />}
+                  />
+                ))}
+            </AppShell.Section>
+            <AppShell.Section p="md">
+              Navbar footer – always at the bottom
+            </AppShell.Section>
           </Tabs.Panel>
 
           <Tabs.Panel value="Ilmanlaatu" p="md">
@@ -89,7 +119,7 @@ function App() {
           <Box bg="white" p="md" flex={dataDisplayOpened ? 1 : 0} h="100%">
             <Group justify="space-between">
               <Text>Data display content</Text>
-              <Button size="xs" variant="white" onClick={toggleDataDisplay}>
+              <Button size="xs" variant="white" onClick={toggleDataDisplay} color="black" leftSection={dataDisplayOpened ? <X size={16} /> : <ChevronDown size={16} />}>
                 {dataDisplayOpened ? "Sulje" : "Näytä"}
               </Button>
             </Group>
