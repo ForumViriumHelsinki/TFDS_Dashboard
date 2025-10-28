@@ -21,6 +21,7 @@
     "@mantine/hooks": "^8.3.5",
     "@sentry/react": "^10.18.0",
     "dayjs": "^1.11.18",
+    "lucide-react": "^0.548.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
