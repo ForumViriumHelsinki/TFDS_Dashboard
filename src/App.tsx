@@ -21,6 +21,7 @@ import {
   ChartLine,
   ChevronDown,
   ChevronRight,
+  RefreshCcw,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -262,10 +263,35 @@ function App() {
                     "Mittauspiste #3",
                   ]}
                 />
+                <Group gap="xs">
+                  <Text fw={500} size="sm">Kaupunginosa:</Text>
+                  <Text size="sm">7 ULLANLINNA</Text>
+                </Group>
+                <Group gap="xs">
+                  <Text fw={500} size="sm">Hakemus:</Text>
+                  <Text size="sm">7 Kaivuilmoitus</Text>
+                </Group>
+                <Group gap="xs">
+                  <Text fw={500} size="sm">Ajankohta:</Text>
+                  <Text size="sm">28.07.2025 - 31.08.2026</Text>
+                </Group>
+                <Group gap="xs">
+                  <Text fw={500} size="sm">Tila:</Text>
+                  <Text size="sm">Käynnissä</Text>
+                </Group>
               </Stack>
               <Stack flex={1} p="md" h="100%">
                 <Text>Data display graphs</Text>
               </Stack>
+              <Button
+                size="xs"
+                variant="white"
+                onClick={() => {}}
+                color="black"
+                leftSection={<RefreshCcw size={12} />}
+              >
+                Lataa data
+              </Button>
             </Group>
           </Box>
         </Stack>
