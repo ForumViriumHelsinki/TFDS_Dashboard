@@ -16,7 +16,13 @@ import {
 import { Image } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
-import { ChartLine, ChevronDown, ChevronRight, X } from "lucide-react";
+import {
+  Calendar,
+  ChartLine,
+  ChevronDown,
+  ChevronRight,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 
 function App() {
@@ -25,6 +31,13 @@ function App() {
   );
   const [dataDisplayOpened, { toggle: toggleDataDisplay }] =
     useDisclosure(false);
+
+  const onSegmentClick = (segment: string) => {
+    setSelectedIdeaSegment(segment);
+    if (!dataDisplayOpened) {
+      toggleDataDisplay();
+    }
+  };
 
   return (
     <AppShell
@@ -99,12 +112,20 @@ function App() {
               style={{ borderBottom: "1px solid #F1F3F5" }}
             >
               <TextInput
+                size="xs"
+                variant="filled"
                 label="Haku"
                 placeholder="Syötä hakuehto"
                 description="Hae tiesegmenttiä "
               />
             </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea} mx="-md" px="md">
+            <AppShell.Section
+              grow
+              component={ScrollArea}
+              mx="-md"
+              px="md"
+              type="never"
+            >
               <NavLink
                 href="#required-for-focus"
                 label="Tehtaankatu 1-40"
@@ -120,9 +141,7 @@ function App() {
                       href="#"
                       key={index}
                       onClick={() =>
-                        setSelectedIdeaSegment(
-                          `1195756141337706496${index + 1}`
-                        )
+                        onSegmentClick(`1195756141337706496${index + 1}`)
                       }
                       label={`IDEA Segment ${index + 1}`}
                       description={`1195756141337706496${index + 1}`}
@@ -223,6 +242,7 @@ function App() {
                 <DateTimePicker
                   label="Mittausaikaväli"
                   placeholder="Valitse aikaväli"
+                  leftSection={<Calendar size={12} />}
                   value={new Date()}
                   size="xs"
                   variant="filled"
