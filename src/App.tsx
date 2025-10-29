@@ -70,13 +70,20 @@ function App() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p={0}>
-        <Tabs defaultValue="Häiriöt">
+        <Tabs
+          defaultValue="Häiriöt"
+          h="100%"
+          style={{ display: "flex", flexDirection: "column", minHeight: 0 }}
+        >
           <Tabs.List grow>
             <Tabs.Tab value="Häiriöt">Häiriöt</Tabs.Tab>
             <Tabs.Tab value="Ilmanlaatu">Ilmanlaatu</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="Häiriöt">
+          <Tabs.Panel
+            value="Häiriöt"
+            style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+          >
             <AppShell.Section
               p="md"
               style={{ borderBottom: "1px solid #e0e0e0" }}
@@ -87,7 +94,7 @@ function App() {
                 description="Hae tiesegmenttiä "
               />
             </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea}>
+            <AppShell.Section grow component={ScrollArea} mx="-md" px="md">
               <NavLink
                 href="#required-for-focus"
                 label="Tehtaankatu 1-40"
@@ -95,6 +102,7 @@ function App() {
                 rightSection={<ChevronRight size={16} />}
                 childrenOffset={0}
                 defaultOpened
+
               >
                 {Array(60)
                   .fill(0)
