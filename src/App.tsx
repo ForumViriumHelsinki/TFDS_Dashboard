@@ -7,6 +7,7 @@ import {
   Group,
   NavLink,
   ScrollArea,
+  Select,
   Stack,
   Tabs,
   Text,
@@ -16,8 +17,12 @@ import { Image } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { ChartLine, ChevronDown, ChevronRight, X } from "lucide-react";
+import { useState } from "react";
 
 function App() {
+  const [selectedIdeaSegment, setSelectedIdeaSegment] = useState<string | null>(
+    ""
+  );
   const [dataDisplayOpened, { toggle: toggleDataDisplay }] =
     useDisclosure(false);
 
@@ -82,11 +87,16 @@ function App() {
 
           <Tabs.Panel
             value="Häiriöt"
-            style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+            }}
           >
             <AppShell.Section
               p="md"
-              style={{ borderBottom: "1px solid #e0e0e0" }}
+              style={{ borderBottom: "1px solid #F1F3F5" }}
             >
               <TextInput
                 label="Haku"
@@ -102,7 +112,6 @@ function App() {
                 rightSection={<ChevronRight size={16} />}
                 childrenOffset={0}
                 defaultOpened
-
               >
                 {Array(60)
                   .fill(0)
@@ -110,10 +119,43 @@ function App() {
                     <NavLink
                       href="#"
                       key={index}
-                      onClick={(event) => event.preventDefault()}
+                      onClick={() =>
+                        setSelectedIdeaSegment(
+                          `1195756141337706496${index + 1}`
+                        )
+                      }
                       label={`IDEA Segment ${index + 1}`}
                       description={`1195756141337706496${index + 1}`}
-                      leftSection={<ChartLine size={16} />}
+                      leftSection={
+                        <ChartLine
+                          size={16}
+                          color={
+                            selectedIdeaSegment ===
+                            `1195756141337706496${index + 1}`
+                              ? "#F37438"
+                              : "#000"
+                          }
+                        />
+                      }
+                      active={
+                        selectedIdeaSegment ===
+                        `1195756141337706496${index + 1}`
+                      }
+                      style={{
+                        borderRight:
+                          selectedIdeaSegment ===
+                          `1195756141337706496${index + 1}`
+                            ? "3px solid #F37438"
+                            : "none",
+                      }}
+                      styles={{
+                        label: {
+                          color: "black",
+                        },
+                        description: {
+                          color: "#5C5F66",
+                        },
+                      }}
                     />
                   ))}
               </NavLink>
@@ -125,13 +167,18 @@ function App() {
           </Tabs.Panel>
         </Tabs>
       </AppShell.Navbar>
-      <AppShell.Main h="100%">
+      <AppShell.Main h="100%" style={{ overflow: "hidden" }}>
         <Stack gap={0} h="100%" bg="red">
           <Box bg="gray.1" p="md" flex={1} h="100%">
             <Text>Map content</Text>
           </Box>
-          <Box bg="white" p="md" flex={dataDisplayOpened ? 1 : 0} h="100%">
-            <Group justify="space-between">
+          <Box bg="white" flex={dataDisplayOpened ? 1 : 0}>
+            <Group
+              justify="space-between"
+              px="md"
+              py="xs"
+              style={{ borderBottom: "1px solid #F1F3F5" }}
+            >
               <Text>Data display content</Text>
               <Button
                 size="xs"
@@ -148,6 +195,57 @@ function App() {
               >
                 {dataDisplayOpened ? "Sulje" : "Näytä"}
               </Button>
+            </Group>
+            <Group
+              h="100%"
+              gap={0}
+              align="flex-start"
+              display={dataDisplayOpened ? "flex" : "none"}
+            >
+              <Stack
+                p="md"
+                h="100%"
+                gap="xs"
+                miw={300}
+                style={{ borderRight: "1px solid #F1F3F5" }}
+              >
+                <Select
+                  label="IDEA Segment"
+                  placeholder="Valitse IDEA Segment"
+                  value={selectedIdeaSegment}
+                  size="xs"
+                  variant="filled"
+                  onChange={setSelectedIdeaSegment}
+                  data={Array(60)
+                    .fill(0)
+                    .map((_, index) => `1195756141337706496${index + 1}`)}
+                />
+                <DateTimePicker
+                  label="Mittausaikaväli"
+                  placeholder="Valitse aikaväli"
+                  value={new Date()}
+                  size="xs"
+                  variant="filled"
+                  clearable
+                  onChange={() => {}}
+                />
+                <Select
+                  label="Ilmanlaadun mittauspiste"
+                  placeholder="Valitse mittauspiste"
+                  value="Mittauspiste #1"
+                  size="xs"
+                  variant="filled"
+                  onChange={() => {}}
+                  data={[
+                    "Mittauspiste #1",
+                    "Mittauspiste #2",
+                    "Mittauspiste #3",
+                  ]}
+                />
+              </Stack>
+              <Stack flex={1} p="md" h="100%">
+                <Text>Data display graphs</Text>
+              </Stack>
             </Group>
           </Box>
         </Stack>
