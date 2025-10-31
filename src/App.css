@@ -1,0 +1,32 @@
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.leaflet-control-layers {
+  border-radius: 25px !important;
+  border: none !important;
+  box-shadow:
+    0 7px 7px -5px rgba(0, 0, 0, 0.04),
+    0 10px 15px -5px rgba(0, 0, 0, 0.05),
+    0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.leaflet-control-layers-expanded {
+  border-radius: 2px !important;
+  border: none !important;
+	box-shadow:
+	0 7px 7px -5px rgba(0, 0, 0, 0.04),
+	0 10px 15px -5px rgba(0, 0, 0, 0.05),
+	0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.leaflet-retina .leaflet-control-layers-toggle {
+  background-image: url("/images/icons/layers.svg");
+  background-size: 24px 24px;
+}
+
+.leaflet-control-layers-list {
+	font-family: 'Montserrat', sans-serif !important;
+	font-size: 14px !important;
+}
