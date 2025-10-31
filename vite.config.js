@@ -16,6 +16,16 @@ export default defineConfig({
         telemetry: false,
       }),
   ].filter(Boolean),
+  server: {
+    proxy: {
+      '/hsy-wfs': {
+        target: 'https://kartta.hsy.fi',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/hsy-wfs/, ''),
+      },
+    },
+  },
   build: {
     sourcemap: true, // Generate source maps for Sentry
   },
