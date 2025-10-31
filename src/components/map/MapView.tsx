@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, Geo
 import { useEffect, useState } from "react";
 import L from "leaflet";
 import type { FeatureCollection, Geometry, Feature } from "geojson";
+import { AirQuailityIndicator } from "./AirQuailityIndicator";
 
 type AirProps = {
   Mittausasema?: string;
@@ -111,6 +112,7 @@ export function MapView() {
               </FeatureGroup>
             </LayersControl.Overlay>
           </LayersControl>
+          <AirQuailityIndicator />
         </MapContainer>
       </div>
     </Box>

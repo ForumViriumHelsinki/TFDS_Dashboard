@@ -1,6 +1,10 @@
-import { Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 
 export function AirQualityTab() {
-  return <Text>Ilmanlaatu tab content</Text>;
+  return (
+    <Group gap="md" align="flex-start">
+      <Text>Ilmanlaatu tab content</Text>
+    </Group>
+  );
 }
 
