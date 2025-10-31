@@ -14,6 +14,15 @@ type AirProps = {
 export function MapView() {
   const [aqData, setAqData] = useState<FeatureCollection<Geometry, AirProps> | null>(null);
 
+  const getAqiColor = (index?: number): string => {
+    if (index === undefined || index === null) return "#7e7e7e"; // fallback gray
+    if (index <= 50) return "#2ecc71"; // Green - Good
+    if (index <= 75) return "#ffd400"; // Yellow - Satisfactory
+    if (index <= 100) return "#ff8c00"; // Orange - Passable
+    if (index <= 150) return "#c0392b"; // Deep red - Bad
+    return "#8e44ad"; // Violet - Very bad
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     const url =
@@ -75,15 +84,17 @@ export function MapView() {
                 {aqData && (
                   <GeoJSON
                     data={aqData}
-                    pointToLayer={(_feature: Feature<Geometry, AirProps>, latlng) =>
-                      L.circleMarker(latlng, {
-                        radius: 6,
-                        color: "#ff6b00",
+                    pointToLayer={(feature: Feature<Geometry, AirProps>, latlng) => {
+                      const idx = feature?.properties?.Ilmanlaatuindeksi;
+                      const color = getAqiColor(idx);
+                      return L.circleMarker(latlng, {
+                        radius: 7,
+                        color,
                         weight: 2,
-                        fillColor: "#ffb000",
-                        fillOpacity: 0.8,
-                      })
-                    }
+                        fillColor: color,
+                        fillOpacity: 0.85,
+                      });
+                    }}
                     onEachFeature={(feature: Feature<Geometry, AirProps>, layer) => {
                       const p: AirProps = feature.properties || {};
                       const html = `
