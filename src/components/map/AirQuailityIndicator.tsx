@@ -1,11 +1,34 @@
-import { Box, Center, Paper, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Box,
+  Center,
+  Paper,
+  Popover,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { CircleHelp } from "lucide-react";
 
 export function AirQuailityIndicator() {
   return (
-    <Paper w={40} h={250} radius={50} shadow="md" px={0} py={8} withBorder={false} pos="absolute" top={80} right={16} style={{zIndex: 400}}>
+    <Paper
+      w={40}
+      h={250}
+      radius={50}
+      shadow="md"
+      px={0}
+      py={8}
+      withBorder={false}
+      pos="absolute"
+      top={80}
+      right={16}
+      style={{ zIndex: 400 }}
+    >
       <Stack h="100%" gap={10} align="center" justify="space-between">
-        <Text fz={12} c="#495057">AQI</Text>
+        <Text fz={12} c="#495057">
+          AQI
+        </Text>
         <Center style={{ flex: 1, width: "100%" }}>
           <Box
             w={24}
@@ -17,10 +40,42 @@ export function AirQuailityIndicator() {
             }}
           />
         </Center>
-        <CircleHelp size={18} color="#273C80" />
+        <Popover
+          width={400}
+          position="left"
+          withArrow
+          shadow="md"
+          withinPortal
+          zIndex={2000}
+        >
+          <Popover.Target>
+            <ActionIcon
+              variant="white"
+              radius="xl"
+              size={18}
+              aria-label="AQI info"
+            >
+              <CircleHelp size={18} color="#273C80" />
+            </ActionIcon>
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Title order={5}>Color codes for Air Quality</Title>
+            <Text size="sm" pb="xs">
+              HSY uses color codes to indicate the air quality index, these are:
+            </Text>
+
+            <Text size="sm">Green - Good (Air quality index 0 - 50)</Text>
+            <Text size="sm">
+              Yellow - Satisfactory (Air quality index 51 - 75)
+            </Text>
+            <Text size="sm">
+              Orange - Passable (Air quality index 76 - 100)
+            </Text>
+            <Text size="sm">Deep red - Bad (Air quality index 101 - 150)</Text>
+            <Text size="sm">Violet - Very bad (Air quality index 151 - )</Text>
+          </Popover.Dropdown>
+        </Popover>
       </Stack>
     </Paper>
   );
 }
-
-
