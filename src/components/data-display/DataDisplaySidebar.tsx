@@ -1,14 +1,15 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar, RefreshCcw } from "lucide-react";
-import { useState } from "react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { AirProps, useAirQualityData, getAirStationId } from "../../hooks/useAirQualityData";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
-  const [selectedAirQualityStation, setSelectedAirQualityStation] = useState("Mittauspiste #1");
-
+  const { selectedAirQualityStation } = useSearch({ from: '/' })
+  const { data } = useAirQualityData();
+  
   return (
     <Stack
       p="md"
@@ -40,15 +41,15 @@ export function DataDisplaySidebar() {
       <Select
         label="Ilmanlaadun mittauspiste"
         placeholder="Valitse mittauspiste"
-        value={selectedAirQualityStation}
+        value={selectedAirQualityStation ?? null}
         size="xs"
         variant="filled"
-        onChange={(value) => setSelectedAirQualityStation(value || "Mittauspiste #1")}
-        data={[
-          "Mittauspiste #1",
-          "Mittauspiste #2",
-          "Mittauspiste #3",
-        ]}
+        onChange={(value) => navigate({ search: (p) => ({ ...p, selectedAirQualityStation: value ?? undefined }), replace: true })}
+        data={data?.features?.map((f) => {
+          const p: AirProps = (f.properties ?? {}) as AirProps;
+          const id = getAirStationId(f);
+          return { value: id, label: p.Mittausasema ?? "" };
+        }) ?? []}
       />
       <Group gap="xs">
         <Text fw={500} size="sm">Kaupunginosa:</Text>

@@ -14,6 +14,7 @@ export type Sources = typeof Sources[keyof typeof Sources]
 const searchSchema = z.object({
   dataPanelOpen: z.coerce.boolean().optional().default(false).catch(false),
   selectedSegment: z.string().optional(),
+  selectedAirQualityStation: z.string().optional(),
   sources: z.array(z.enum(Sources)).default(Object.values(Sources)).catch(Object.values(Sources)),
 })
 

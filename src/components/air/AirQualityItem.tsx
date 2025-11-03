@@ -13,8 +13,8 @@ interface AirQualityItemProps {
 export function AirQualityItem({ id, label, description, colorHex, isSelected, onClick }: AirQualityItemProps) {
   return (
     <NavLink
-      href="#"
-      onClick={onClick}
+      href="#required-for-focus"
+      onClick={(e) => { e.preventDefault(); onClick(); }}
       label={label}
       description={description}
       leftSection={

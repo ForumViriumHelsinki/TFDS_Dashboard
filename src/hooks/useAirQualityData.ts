@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { FeatureCollection, Geometry } from "geojson";
+import type { FeatureCollection, Geometry, Feature } from "geojson";
 
 export type AirProps = {
   Mittausasema?: string;
@@ -50,5 +50,15 @@ export const getAqiColor = (index?: number): string => {
   if (index <= 150) return "#c0392b";
   return "#8e44ad";
 };
+
+export function getAirStationId(feature: Feature<Geometry, AirProps>): string {
+  const p = (feature.properties ?? {}) as AirProps;
+  if (p.Mittausaseman_numero !== undefined && p.Mittausaseman_numero !== null) {
+    return String(p.Mittausaseman_numero);
+  }
+  const name = (p.Mittausasema ?? "").trim().toLowerCase();
+  const addr = (p.Mittausaseman_osoite ?? "").trim().toLowerCase();
+  return `${name}|${addr}`;
+}
 
 

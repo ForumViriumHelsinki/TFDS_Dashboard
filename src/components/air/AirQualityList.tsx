@@ -1,13 +1,18 @@
 import { Group, Text, Loader } from "@mantine/core";
-import { useMemo, useState } from "react";
-import { useAirQualityData, getAqiColor } from "../../hooks/useAirQualityData";
+import { useMemo } from "react";
+import {
+  useAirQualityData,
+  getAqiColor,
+  getAirStationId,
+} from "../../hooks/useAirQualityData";
 import type { AirProps } from "../../hooks/useAirQualityData";
 import { AirQualityItem } from "./AirQualityItem";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 export function AirQualityList() {
   const { data, loading, error } = useAirQualityData();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
+  const { selectedAirQualityStation } = useSearch({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
   const items = useMemo(() => data?.features ?? [], [data]);
 
   if (loading) {
@@ -31,7 +36,7 @@ export function AirQualityList() {
     <>
       {items.map((f) => {
         const p: AirProps = (f.properties ?? {}) as AirProps;
-        const id = String(f.id ?? p.Mittausaseman_numero ?? p.Mittausasema ?? "");
+        const id = getAirStationId(f);
         const label = p.Mittausasema ?? "";
         const description = p.Mittausaseman_osoite ?? "";
         const color = getAqiColor(p.Ilmanlaatuindeksi);
@@ -42,8 +47,17 @@ export function AirQualityList() {
             label={label}
             description={description}
             colorHex={color}
-            isSelected={selectedId === id}
-            onClick={() => setSelectedId(id)}
+            isSelected={selectedAirQualityStation === id}
+            onClick={() =>
+              navigate({
+                search: (p) => ({
+                  ...p,
+                  selectedAirQualityStation: id,
+                  dataPanelOpen: true,
+                }),
+                replace: true,
+              })
+            }
           />
         );
       })}
@@ -55,5 +69,3 @@ export function AirQualityList() {
     </>
   );
 }
-
-
