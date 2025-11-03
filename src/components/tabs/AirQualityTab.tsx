@@ -1,5 +1,5 @@
 import { AppShell, ScrollArea } from "@mantine/core";
-import { AirQualityList } from "../air/AirQualityList";
+import { AirQualityList } from "../airQuality/AirQualityList";
 
 export function AirQualityTab() {
   return (

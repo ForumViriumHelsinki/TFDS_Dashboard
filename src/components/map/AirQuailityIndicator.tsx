@@ -59,20 +59,13 @@ export function AirQuailityIndicator() {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown>
-            <Title order={5}>Color codes for Air Quality</Title>
-            <Text size="sm" pb="xs">
-              HSY uses color codes to indicate the air quality index, these are:
-            </Text>
-
-            <Text size="sm">Green - Good (Air quality index 0 - 50)</Text>
-            <Text size="sm">
-              Yellow - Satisfactory (Air quality index 51 - 75)
-            </Text>
-            <Text size="sm">
-              Orange - Passable (Air quality index 76 - 100)
-            </Text>
-            <Text size="sm">Deep red - Bad (Air quality index 101 - 150)</Text>
-            <Text size="sm">Violet - Very bad (Air quality index 151 - )</Text>
+            <Title order={5}>Ilmanlaadun värikoodit</Title>
+            <Text size="sm" pb="xs">HSY käyttää seuraavia värejä ilmanlaadun indikaattorina:</Text>
+            <Text size="sm">Vihreä - Hyvä (Ilmanlaatuindeksi 0 - 50)</Text>
+            <Text size="sm">Keltainen - Tyydyttävä (Ilmanlaatuindeksi 51 - 75)</Text>
+            <Text size="sm">Oranssi - Välttävä (Ilmanlaatuindeksi 76 - 100)</Text>
+            <Text size="sm">Punainen - Huono (Ilmanlaatuindeksi 101 - 150)</Text>
+            <Text size="sm">Violetti - Erittäin huono (Ilmanlaatuindeksi 151 - )</Text>
           </Popover.Dropdown>
         </Popover>
       </Stack>
