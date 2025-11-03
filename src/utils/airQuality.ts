@@ -17,7 +17,7 @@ export const getAqiColor = (index?: number): string => {
   return "#8e44ad";
 };
 
-export function getAirStationId(feature: Feature<Geometry, AirQualityProps>): string {
+export function getAirQualityStationId(feature: Feature<Geometry, AirQualityProps>): string {
   const p = (feature.properties ?? {}) as AirQualityProps;
   if (p.Mittausaseman_numero !== undefined && p.Mittausaseman_numero !== null) {
     return String(p.Mittausaseman_numero);
