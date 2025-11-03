@@ -1,17 +1,14 @@
 import { NavLink } from "@mantine/core";
 import { ChevronRight } from "lucide-react";
-import { useAtom, useSetAtom } from "jotai";
-import { selectedSegmentAtom } from "../../atoms/segments";
-import { dataDisplayOpenedAtom } from "../../atoms/dataDisplay";
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
 
 export function SegmentList() {
-  const [selectedSegment, setSelectedSegment] = useAtom(selectedSegmentAtom);
-  const setDataDisplayOpened = useSetAtom(dataDisplayOpenedAtom);
+  const navigate = useNavigate({ from: '/' })
+  const { selectedSegment } = useSearch({ from: '/' })
 
   const handleSegmentClick = (segmentId: string) => {
-    setSelectedSegment(segmentId);
-    setDataDisplayOpened(true);
+    navigate({ search: (p) => ({ ...p, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
   };
 
   return (

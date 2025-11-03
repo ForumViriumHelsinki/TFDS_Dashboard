@@ -2,11 +2,11 @@ import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar, RefreshCcw } from "lucide-react";
 import { useState } from "react";
-import { useAtom } from "jotai";
-import { selectedSegmentAtom } from "../../atoms/segments";
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export function DataDisplaySidebar() {
-  const [selectedSegment, setSelectedSegment] = useAtom(selectedSegmentAtom);
+  const navigate = useNavigate({ from: '/' })
+  const { selectedSegment } = useSearch({ from: '/' })
   const [selectedAirQualityStation, setSelectedAirQualityStation] = useState("Mittauspiste #1");
 
   return (
@@ -23,7 +23,7 @@ export function DataDisplaySidebar() {
         value={selectedSegment}
         size="xs"
         variant="filled"
-        onChange={(value) => setSelectedSegment(value)}
+        onChange={(value) => navigate({ search: (p) => ({ ...p, selectedSegment: value }), replace: true })}
         data={Array(60)
           .fill(0)
           .map((_, index) => `1195756141337706496${index + 1}`)}

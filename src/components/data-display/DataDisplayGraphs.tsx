@@ -1,9 +1,8 @@
 import { Stack, Text } from "@mantine/core";
-import { useAtomValue } from "jotai";
-import { selectedSegmentAtom } from "../../atoms/segments";
+import { useSearch } from '@tanstack/react-router'
 
 export function DataDisplayGraphs() {
-  const selectedSegment = useAtomValue(selectedSegmentAtom);
+  const { selectedSegment } = useSearch({ from: '/' })
 
   return (
     <Stack flex={1} p="md" h="100%">
