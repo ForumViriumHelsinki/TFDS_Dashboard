@@ -4,7 +4,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export function Header() {
   const navigate = useNavigate({ from: '/' })
-  const { sources = [] } = useSearch({ from: '/' })
+  const { sources } = useSearch({ from: '/' })
   const setSources = (next: string[]) =>
     navigate({ search: (p) => ({ ...p, sources: next }), replace: true })
 
