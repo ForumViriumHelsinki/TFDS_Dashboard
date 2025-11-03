@@ -1,47 +1,14 @@
 import { Box } from "@mantine/core";
 import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
-import { useEffect, useState } from "react";
+import { useAirQualityData, getAqiColor, AirProps } from "../../hooks/useAirQualityData";
 import L from "leaflet";
-import type { FeatureCollection, Geometry, Feature } from "geojson";
+import type { Geometry, Feature } from "geojson";
 import { AirQuailityIndicator } from "./AirQuailityIndicator";
 
-type AirProps = {
-  Mittausasema?: string;
-  Aika?: string;
-  Ilmanlaatuindeksi?: number;
-  Mittausaseman_osoite?: string;
-};
 
 export function MapView() {
-  const [aqData, setAqData] = useState<FeatureCollection<Geometry, AirProps> | null>(null);
-
-  const getAqiColor = (index?: number): string => {
-    if (index === undefined || index === null) return "#7e7e7e"; // fallback gray
-    if (index <= 50) return "#2ecc71"; // Green - Good
-    if (index <= 75) return "#ffd400"; // Yellow - Satisfactory
-    if (index <= 100) return "#ff8c00"; // Orange - Passable
-    if (index <= 150) return "#c0392b"; // Deep red - Bad
-    return "#8e44ad"; // Violet - Very bad
-  };
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const url =
-      "/hsy-wfs/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_nyt&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326";
-
-    fetch(url, { signal: controller.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((json) => setAqData(json as FeatureCollection<Geometry, AirProps>))
-      .catch((e) => {
-        console.warn("HSY WFS fetch failed", e);
-      });
-
-    return () => controller.abort();
-  }, []);
-
+  const { data: aqData } = useAirQualityData();
+  console.log(aqData);
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
