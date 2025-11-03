@@ -4,7 +4,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export function DataDisplayHeader() {
   const navigate = useNavigate({ from: '/' })
-  const { dataPanelOpen = false } = useSearch({ from: '/' })
+  const { dataPanelOpen } = useSearch({ from: '/' })
 
   return (
     <Group

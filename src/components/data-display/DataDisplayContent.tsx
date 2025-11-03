@@ -4,7 +4,7 @@ import { DataDisplaySidebar } from "./DataDisplaySidebar";
 import { DataDisplayGraphs } from "./DataDisplayGraphs";
 
 export function DataDisplayContent() {
-  const { dataPanelOpen = false } = useSearch({ from: '/' })
+  const { dataPanelOpen } = useSearch({ from: '/' })
 
   return (
     <Group
