@@ -34,9 +34,9 @@ export function Header() {
             w={200} 
             value={new Date("2025-07-28")} 
           />
-          <Checkbox value="Aluevuokraukset" label="Aluevuokraukset" />
-          <Checkbox value="Kaivuilmoitukset" label="Kaivuilmoitukset" />
-          <Checkbox value="Ilmanlaatu" label="Ilmanlaatu" />
+          <Checkbox value="area-rentals" label="Aluevuokraukset" />
+          <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />
+          <Checkbox value="air-quality" label="Ilmanlaatu" />
         </Group>
       </Checkbox.Group>
       <Group gap="lg">
