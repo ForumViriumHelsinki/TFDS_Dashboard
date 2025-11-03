@@ -7,6 +7,7 @@ export function AirQualityTab() {
       grow
       component={ScrollArea}
       mx="-md"
+      px="md"
       type="never"
     >
       <AirQualityList />
