@@ -1,14 +1,15 @@
 import { Box } from "@mantine/core";
 import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
-import { useAirQualityData, getAqiColor, AirProps } from "../../hooks/useAirQualityData";
+import { getAqiColor, AirQualityProps } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature } from "geojson";
 import { AirQuailityIndicator } from "./AirQuailityIndicator";
+import { useAtomValue } from "jotai";
+import { airQualityAtom } from "../../atoms/airQuality";
 
 
 export function MapView() {
-  const { data: aqData } = useAirQualityData();
-  console.log(aqData);
+  const { airQualityData } = useAtomValue(airQualityAtom);
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
@@ -49,22 +50,22 @@ export function MapView() {
             
             <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
               <FeatureGroup>
-                {aqData && (
+                {airQualityData && (
                   <GeoJSON
-                    data={aqData}
-                    pointToLayer={(feature: Feature<Geometry, AirProps>, latlng) => {
+                    data={airQualityData}
+                    pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
                       const idx = feature?.properties?.Ilmanlaatuindeksi;
                       const color = getAqiColor(idx);
                       return L.circleMarker(latlng, {
-                        radius: 7,
+                        radius: 8,
                         color,
                         weight: 2,
                         fillColor: color,
                         fillOpacity: 0.85,
                       });
                     }}
-                    onEachFeature={(feature: Feature<Geometry, AirProps>, layer) => {
-                      const p: AirProps = feature.properties || {};
+                    onEachFeature={(feature: Feature<Geometry, AirQualityProps>, layer) => {
+                      const p: AirQualityProps = feature.properties || {};
                       const html = `
                         <div>
                           <strong>${p.Mittausasema ?? "Mittausasema"}</strong><br/>

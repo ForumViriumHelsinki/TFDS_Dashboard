@@ -2,13 +2,15 @@ import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar, RefreshCcw } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { AirProps, useAirQualityData, getAirStationId } from "../../hooks/useAirQualityData";
+import { AirQualityProps, getAirStationId } from "../../utils/airQuality";
+import { useAtomValue } from "jotai";
+import { airQualityAtom } from "../../atoms/airQuality";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
   const { selectedAirQualityStation } = useSearch({ from: '/' })
-  const { data } = useAirQualityData();
+  const { airQualityData } = useAtomValue(airQualityAtom);
   
   return (
     <Stack
@@ -45,8 +47,8 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (p) => ({ ...p, selectedAirQualityStation: value ?? undefined }), replace: true })}
-        data={data?.features?.map((f) => {
-          const p: AirProps = (f.properties ?? {}) as AirProps;
+        data={airQualityData?.features?.map((f) => {
+          const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
           const id = getAirStationId(f);
           return { value: id, label: p.Mittausasema ?? "" };
         }) ?? []}

@@ -1,19 +1,17 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
-import {
-  useAirQualityData,
-  getAqiColor,
-  getAirStationId,
-} from "../../hooks/useAirQualityData";
-import type { AirProps } from "../../hooks/useAirQualityData";
+import { getAqiColor, getAirStationId } from "../../utils/airQuality";
+import type { AirQualityProps } from "../../utils/airQuality";
 import { AirQualityItem } from "./AirQualityItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+import { airQualityAtom } from "../../atoms/airQuality";
 
 export function AirQualityList() {
-  const { data, loading, error } = useAirQualityData();
+  const { airQualityData, loading, error } = useAtomValue(airQualityAtom);
   const { selectedAirQualityStation } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
-  const items = useMemo(() => data?.features ?? [], [data]);
+  const items = useMemo(() => airQualityData?.features ?? [], [airQualityData]);
 
   if (loading) {
     return (
@@ -35,7 +33,7 @@ export function AirQualityList() {
   return (
     <>
       {items.map((f) => {
-        const p: AirProps = (f.properties ?? {}) as AirProps;
+        const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
         const id = getAirStationId(f);
         const label = p.Mittausasema ?? "";
         const description = p.Mittausaseman_osoite ?? "";
