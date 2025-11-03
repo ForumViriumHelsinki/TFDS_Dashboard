@@ -16,9 +16,17 @@
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
+    "@mantine/core": "^8.3.5",
+    "@mantine/dates": "^8.3.5",
+    "@mantine/hooks": "^8.3.5",
     "@sentry/react": "^10.18.0",
+    "@tanstack/react-router": "^1.134.4",
+    "dayjs": "^1.11.18",
+    "jotai": "^2.15.0",
+    "lucide-react": "^0.548.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
@@ -39,6 +47,9 @@
     "eslint-plugin-react-refresh": "^0.4.23",
     "globals": "^16.4.0",
     "jsdom": "^27.0.0",
+    "postcss": "^8.5.6",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
     "vite": "^7.1.9",
