@@ -4,7 +4,8 @@ import * as Sentry from "@sentry/react";
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import "./index.css";
-import App from "./App";
+import { RouterProvider } from '@tanstack/react-router'
+import { router } from './router'
 import { createTheme, MantineProvider } from "@mantine/core";
 
 // Initialize Sentry if DSN is provided
@@ -58,7 +59,7 @@ createRoot(rootEl).render(
           </div>
         )}
       >
-        <App />
+        <RouterProvider router={router} />
       </Sentry.ErrorBoundary>
     </MantineProvider>
   </StrictMode>,

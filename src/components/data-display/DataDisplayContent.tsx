@@ -1,18 +1,17 @@
 import { Group } from "@mantine/core";
-import { useAtomValue } from "jotai";
-import { dataDisplayOpenedAtom } from "../../atoms/dataDisplay";
+import { useSearch } from '@tanstack/react-router'
 import { DataDisplaySidebar } from "./DataDisplaySidebar";
 import { DataDisplayGraphs } from "./DataDisplayGraphs";
 
 export function DataDisplayContent() {
-  const dataDisplayOpened = useAtomValue(dataDisplayOpenedAtom);
+  const { dataPanelOpen = false } = useSearch({ from: '/' })
 
   return (
     <Group
       h="100%"
       gap={0}
       align="flex-start"
-      display={dataDisplayOpened ? "flex" : "none"}
+      display={dataPanelOpen ? "flex" : "none"}
     >
       <DataDisplaySidebar />
       <DataDisplayGraphs />

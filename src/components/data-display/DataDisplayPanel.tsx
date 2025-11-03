@@ -1,14 +1,13 @@
 import { Box } from "@mantine/core";
-import { useAtomValue } from "jotai";
-import { dataDisplayOpenedAtom } from "../../atoms/dataDisplay";
+import { useSearch } from '@tanstack/react-router'
 import { DataDisplayHeader } from "./DataDisplayHeader";
 import { DataDisplayContent } from "./DataDisplayContent";
 
 export function DataDisplayPanel() {
-  const dataDisplayOpened = useAtomValue(dataDisplayOpenedAtom);
+  const { dataPanelOpen = false } = useSearch({ from: '/' })
 
   return (
-    <Box bg="white" flex={dataDisplayOpened ? 1 : 0}>
+    <Box bg="white" flex={dataPanelOpen ? 1 : 0}>
       <DataDisplayHeader />
       <DataDisplayContent />
     </Box>

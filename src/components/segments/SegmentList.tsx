@@ -1,17 +1,14 @@
 import { NavLink } from "@mantine/core";
 import { ChevronRight } from "lucide-react";
-import { useAtom, useSetAtom } from "jotai";
-import { selectedSegmentAtom } from "../../atoms/segments";
-import { dataDisplayOpenedAtom } from "../../atoms/dataDisplay";
+import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
 
 export function SegmentList() {
-  const [selectedSegment, setSelectedSegment] = useAtom(selectedSegmentAtom);
-  const setDataDisplayOpened = useSetAtom(dataDisplayOpenedAtom);
+  const navigate = useNavigate({ from: '/' })
+  const { segment = '' } = useSearch({ from: '/' })
 
   const handleSegmentClick = (segmentId: string) => {
-    setSelectedSegment(segmentId);
-    setDataDisplayOpened(true);
+    navigate({ search: (p) => ({ ...p, segment: segmentId, dataPanelOpen: true }), replace: true })
   };
 
   return (
@@ -30,7 +27,7 @@ export function SegmentList() {
             key={index}
             segmentId={`1195756141337706496${index + 1}`}
             segmentLabel={`IDEA Segment ${index + 1}`}
-            isSelected={selectedSegment === `1195756141337706496${index + 1}`}
+            isSelected={segment === `1195756141337706496${index + 1}`}
             onClick={() => handleSegmentClick(`1195756141337706496${index + 1}`)}
           />
         ))}

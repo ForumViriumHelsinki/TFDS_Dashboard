@@ -1,10 +1,12 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { useAtom } from "jotai";
-import { selectedDataSourcesAtom } from "../../atoms/filters";
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export function Header() {
-  const [selectedDataSources, setSelectedDataSources] = useAtom(selectedDataSourcesAtom);
+  const navigate = useNavigate({ from: '/' })
+  const { sources = [] } = useSearch({ from: '/' })
+  const setSources = (next: string[]) =>
+    navigate({ search: (p) => ({ ...p, sources: next }), replace: true })
 
   return (
     <Group justify="space-between">
@@ -25,7 +27,7 @@ export function Header() {
           w={128}
         />
       </Group>
-      <Checkbox.Group value={selectedDataSources} onChange={setSelectedDataSources}>
+      <Checkbox.Group value={sources} onChange={setSources}>
         <Group>
           <Text size="xs" fw={500}>Ajankohta</Text>
           <DateTimePicker 

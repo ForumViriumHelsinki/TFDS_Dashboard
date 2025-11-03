@@ -1,10 +1,10 @@
 import { Button, Group, Text } from "@mantine/core";
 import { ChevronDown, X } from "lucide-react";
-import { useAtom } from "jotai";
-import { dataDisplayOpenedAtom } from "../../atoms/dataDisplay";
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
 export function DataDisplayHeader() {
-  const [dataDisplayOpened, setDataDisplayOpened] = useAtom(dataDisplayOpenedAtom);
+  const navigate = useNavigate({ from: '/' })
+  const { dataPanelOpen = false } = useSearch({ from: '/' })
 
   return (
     <Group
@@ -17,17 +17,17 @@ export function DataDisplayHeader() {
       <Button
         size="xs"
         variant="white"
-        onClick={() => setDataDisplayOpened(!dataDisplayOpened)}
+        onClick={() => navigate({ search: (p) => ({ ...p, dataPanelOpen: !dataPanelOpen }), replace: true })}
         color="black"
         leftSection={
-          dataDisplayOpened ? (
+          dataPanelOpen ? (
             <X size={16} />
           ) : (
             <ChevronDown size={16} />
           )
         }
       >
-        {dataDisplayOpened ? "Sulje" : "Näytä"}
+        {dataPanelOpen ? "Sulje" : "Näytä"}
       </Button>
     </Group>
   );
