@@ -5,8 +5,6 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { AirQualityProps, getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
-
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
@@ -16,8 +14,6 @@ export function DataDisplaySidebar() {
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
   
-  const airQualityData = useMemo(() => data?.features ?? [], [data]);
-
   return (
     <Stack
       p="md"
@@ -54,7 +50,7 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (p) => ({ ...p, selectedAirQualityStation: value ?? undefined }), replace: true })}
-        data={airQualityData?.map((f) => {
+        data={data?.features?.map((f) => {
           const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
           const id = getAirQualityStationId(f);
           return { value: id, label: p.Mittausasema ?? "" };
