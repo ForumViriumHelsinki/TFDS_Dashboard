@@ -36,7 +36,7 @@ export function AirQualityList() {
   return (
     <>
       {items.map((feature) => {
-        const properties = (feature.properties ?? {});
+        const properties = feature.properties ?? {};
         const id = getAirQualityStationId(feature);
         return (
           <AirQualityItem
