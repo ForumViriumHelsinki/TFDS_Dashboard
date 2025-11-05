@@ -57,8 +57,7 @@ export function MapView() {
                   <GeoJSON
                     data={data}
                     pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
-                      const idx = feature?.properties?.Ilmanlaatuindeksi;
-                      const color = getAirQualityIndicatorColor(idx);
+                      const color = getAirQualityIndicatorColor(feature?.properties?.Ilmanlaatuindeksi);
                       return L.circleMarker(latlng, {
                         radius: 8,
                         color,
