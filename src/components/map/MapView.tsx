@@ -9,7 +9,7 @@ import { useAtomValue } from "jotai";
 import { airQualityAtom } from "../../atoms/airQuality";
 import type { AlluProps } from "../../atoms/disruptions";
 import { disruptionsAtom } from "../../atoms/disruptions";
-import { useSearch } from "@tanstack/react-router";
+import { useSearch, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 function FitMapToSelected() {
@@ -38,6 +38,7 @@ export function MapView() {
   const { airQualityData } = useAtomValue(airQualityAtom);
   const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
   const { selectedSegment } = useSearch({ from: '/' });
+  const navigate = useNavigate({ from: '/' });
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
@@ -122,10 +123,15 @@ export function MapView() {
                       };
                     }}
                     onEachFeature={(feature, layer) => {
-                      const p = feature.properties as AlluProps;
-                      layer.bindPopup(
-                        `<strong>${p.osoite ?? 'Kaivuilmoitus'}</strong><br/>${p.hakemustunnus ?? ''}`
-                      );
+                      layer.on('click', () => {
+                        const id = String(feature.id ?? 0);
+                        if (id) {
+                          navigate({
+                            search: (s) => ({ ...s, selectedSegment: id, dataPanelOpen: true }),
+                            replace: true,
+                          });
+                        }
+                      });
                     }}
                   />
                 )}
