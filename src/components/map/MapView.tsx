@@ -6,10 +6,14 @@ import type { Geometry, Feature } from "geojson";
 import { AirQuailityIndicator } from "./AirQuailityIndicator";
 import { useAtomValue } from "jotai";
 import { airQualityAtom } from "../../atoms/airQuality";
-
+import type { AlluProps } from "../../atoms/disruptions";
+import { disruptionsAtom } from "../../atoms/disruptions";
+import { useSearch } from "@tanstack/react-router";
 
 export function MapView() {
   const { airQualityData } = useAtomValue(airQualityAtom);
+  const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
+  const { selectedSegment } = useSearch({ from: '/' });
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
@@ -78,7 +82,31 @@ export function MapView() {
                   />
                 )}
               </FeatureGroup>
+              <FeatureGroup>
+                {kaivuilmoitukset && (
+                  <GeoJSON
+                    data={kaivuilmoitukset}
+                    style={(feature) => {
+                      const id = (feature?.id ?? 0);
+                      const isSelected = id && id === selectedSegment;
+                      return {
+                        color: isSelected ? '#F37438' : '#666',
+                        weight: isSelected ? 3 : 1,
+                        fillColor: isSelected ? '#F37438' : '#666',
+                        fillOpacity: isSelected ? 0.35 : 0.15,
+                      };
+                    }}
+                    onEachFeature={(feature, layer) => {
+                      const p = feature.properties as AlluProps;
+                      layer.bindPopup(
+                        `<strong>${p.osoite ?? 'Kaivuilmoitus'}</strong><br/>${p.hakemustunnus ?? ''}`
+                      );
+                    }}
+                  />
+                )}
+              </FeatureGroup>
             </LayersControl.Overlay>
+            
           </LayersControl>
           <AirQuailityIndicator />
         </MapContainer>
