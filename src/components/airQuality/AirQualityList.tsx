@@ -1,7 +1,6 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
 import { getAirQualityIndicatorColor, getAirQualityStationId } from "../../utils/airQuality";
-import type { AirQualityProps } from "../../utils/airQuality";
 import { AirQualityItem } from "./AirQualityItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -37,18 +36,15 @@ export function AirQualityList() {
   return (
     <>
       {items.map((f) => {
-        const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
+        const properties = (f.properties ?? {});
         const id = getAirQualityStationId(f);
-        const label = p.Mittausasema ?? "";
-        const description = p.Mittausaseman_osoite ?? "";
-        const color = getAirQualityIndicatorColor(p.Ilmanlaatuindeksi);
         return (
           <AirQualityItem
             key={id}
             id={id}
-            label={label}
-            description={description}
-            colorHex={color}
+            label={properties.Mittausasema ?? ""}
+            description={properties.Mittausaseman_osoite ?? ""}
+            colorHex={getAirQualityIndicatorColor(properties.Ilmanlaatuindeksi)}
             isSelected={selectedAirQualityStation === id}
             onClick={() =>
               navigate({
