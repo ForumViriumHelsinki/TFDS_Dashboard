@@ -3,15 +3,21 @@ import { DateTimePicker } from "@mantine/dates";
 import { Calendar, RefreshCcw } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { AirQualityProps, getAirQualityStationId } from "../../utils/airQuality";
-import { useAtomValue } from "jotai";
-import { airQualityAtom } from "../../atoms/airQuality";
+import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
   const { selectedAirQualityStation } = useSearch({ from: '/' })
-  const { airQualityData } = useAtomValue(airQualityAtom);
+  const { isPending, data} = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
   
+  const airQualityData = useMemo(() => data?.features ?? [], [data]);
+
   return (
     <Stack
       p="md"
@@ -43,11 +49,12 @@ export function DataDisplaySidebar() {
       <Select
         label="Ilmanlaadun mittauspiste"
         placeholder="Valitse mittauspiste"
+        disabled={isPending}
         value={selectedAirQualityStation ?? null}
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (p) => ({ ...p, selectedAirQualityStation: value ?? undefined }), replace: true })}
-        data={airQualityData?.features?.map((f) => {
+        data={airQualityData?.map((f) => {
           const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
           const id = getAirQualityStationId(f);
           return { value: id, label: p.Mittausasema ?? "" };

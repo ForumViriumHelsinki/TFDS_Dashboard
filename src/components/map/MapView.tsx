@@ -4,12 +4,15 @@ import { getAirQualityIndicatorColor, AirQualityProps } from "../../utils/airQua
 import L from "leaflet";
 import type { Geometry, Feature } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
-import { useAtomValue } from "jotai";
-import { airQualityAtom } from "../../atoms/airQuality";
-
+import { useQuery } from "@tanstack/react-query";
+import { getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { AirQualityTypes } from "../../queries/air-quality";
 
 export function MapView() {
-  const { airQualityData } = useAtomValue(airQualityAtom);
+  const { data } = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
+
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
@@ -50,9 +53,9 @@ export function MapView() {
             
             <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
               <FeatureGroup>
-                {airQualityData && (
+                {data && (
                   <GeoJSON
-                    data={airQualityData}
+                    data={data}
                     pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
                       const idx = feature?.properties?.Ilmanlaatuindeksi;
                       const color = getAirQualityIndicatorColor(idx);
