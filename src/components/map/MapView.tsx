@@ -1,14 +1,38 @@
 import { Box } from "@mantine/core";
-import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON, useMap } from "react-leaflet";
 import { getAqiColor, AirQualityProps } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature } from "geojson";
+import type { GeoJsonObject } from "geojson";
 import { AirQuailityIndicator } from "./AirQuailityIndicator";
 import { useAtomValue } from "jotai";
 import { airQualityAtom } from "../../atoms/airQuality";
 import type { AlluProps } from "../../atoms/disruptions";
 import { disruptionsAtom } from "../../atoms/disruptions";
 import { useSearch } from "@tanstack/react-router";
+import { useEffect } from "react";
+
+function FitMapToSelected() {
+  const map = useMap();
+  const { selectedSegment } = useSearch({ from: "/" });
+  const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
+
+  useEffect(() => {
+    if (!map || !kaivuilmoitukset || !selectedSegment) return;
+    const feature = kaivuilmoitukset.features.find((f) => {
+      const p = f.properties as AlluProps;
+      return String(f.id ?? p.hakemustunnus ?? 0) === selectedSegment;
+    });
+    if (!feature) return;
+    const bounds = L.geoJSON(feature as GeoJsonObject).getBounds();
+    if (bounds.isValid()) {
+      const center = bounds.getCenter();
+      map.setView(center, map.getZoom(), { animate: true });
+    }
+  }, [map, kaivuilmoitukset, selectedSegment]);
+
+  return null;
+}
 
 export function MapView() {
   const { airQualityData } = useAtomValue(airQualityAtom);
@@ -23,6 +47,7 @@ export function MapView() {
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
+          <FitMapToSelected />
           <LayersControl position="topright">
 
             <LayersControl.BaseLayer checked name="Taustakartta">
@@ -88,7 +113,7 @@ export function MapView() {
                     data={kaivuilmoitukset}
                     style={(feature) => {
                       const id = (feature?.id ?? 0);
-                      const isSelected = id && id === selectedSegment;
+                      const isSelected = id && String(id) === selectedSegment;
                       return {
                         color: isSelected ? '#F37438' : '#666',
                         weight: isSelected ? 3 : 1,
