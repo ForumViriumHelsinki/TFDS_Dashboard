@@ -1,44 +1,18 @@
 import { Box } from "@mantine/core";
-import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON, useMap } from "react-leaflet";
-import { getAqiColor, AirQualityProps } from "../../utils/airQuality";
+import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
+import { getAirQualityIndicatorColor, AirQualityProps } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature } from "geojson";
-import type { GeoJsonObject } from "geojson";
-import { AirQuailityIndicator } from "./AirQuailityIndicator";
-import { useAtomValue } from "jotai";
-import { airQualityAtom } from "../../atoms/airQuality";
-import type { AlluProps } from "../../atoms/disruptions";
-import { disruptionsAtom } from "../../atoms/disruptions";
-import { useSearch, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-
-function FitMapToSelected() {
-  const map = useMap();
-  const { selectedSegment } = useSearch({ from: "/" });
-  const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
-
-  useEffect(() => {
-    if (!map || !kaivuilmoitukset || !selectedSegment) return;
-    const feature = kaivuilmoitukset.features.find((f) => {
-      const p = f.properties as AlluProps;
-      return String(f.id ?? p.hakemustunnus ?? 0) === selectedSegment;
-    });
-    if (!feature) return;
-    const bounds = L.geoJSON(feature as GeoJsonObject).getBounds();
-    if (bounds.isValid()) {
-      const center = bounds.getCenter();
-      map.setView(center, map.getZoom(), { animate: true });
-    }
-  }, [map, kaivuilmoitukset, selectedSegment]);
-
-  return null;
-}
+import { AirQualityIndicator } from "./AirQualityIndicator";
+import { useQuery } from "@tanstack/react-query";
+import { getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { AirQualityTypes } from "../../queries/air-quality";
 
 export function MapView() {
-  const { airQualityData } = useAtomValue(airQualityAtom);
-  const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
-  const { selectedSegment } = useSearch({ from: '/' });
-  const navigate = useNavigate({ from: '/' });
+  const { data } = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
+
   return (
     <Box bg="gray.1" flex={1} h="100%">
       <div id="map">
@@ -48,7 +22,6 @@ export function MapView() {
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
-          <FitMapToSelected />
           <LayersControl position="topright">
 
             <LayersControl.BaseLayer checked name="Taustakartta">
@@ -80,12 +53,11 @@ export function MapView() {
             
             <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
               <FeatureGroup>
-                {airQualityData && (
+                {data && (
                   <GeoJSON
-                    data={airQualityData}
+                    data={data}
                     pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
-                      const idx = feature?.properties?.Ilmanlaatuindeksi;
-                      const color = getAqiColor(idx);
+                      const color = getAirQualityIndicatorColor(feature?.properties?.Ilmanlaatuindeksi);
                       return L.circleMarker(latlng, {
                         radius: 8,
                         color,
@@ -95,51 +67,22 @@ export function MapView() {
                       });
                     }}
                     onEachFeature={(feature: Feature<Geometry, AirQualityProps>, layer) => {
-                      const p: AirQualityProps = feature.properties || {};
-                      const html = `
+                      const props: AirQualityProps = feature.properties ?? {};
+                      layer.bindPopup(`
                         <div>
-                          <strong>${p.Mittausasema ?? "Mittausasema"}</strong><br/>
-                          ${p.Mittausaseman_osoite ?? ""}<br/>
-                          ${p.Aika ?? ""}<br/>
-                          Indeksi: ${p.Ilmanlaatuindeksi ?? "-"}
-                        </div>`;
-                      layer.bindPopup(html);
-                    }}
-                  />
-                )}
-              </FeatureGroup>
-              <FeatureGroup>
-                {kaivuilmoitukset && (
-                  <GeoJSON
-                    data={kaivuilmoitukset}
-                    style={(feature) => {
-                      const id = (feature?.id ?? 0);
-                      const isSelected = id && String(id) === selectedSegment;
-                      return {
-                        color: isSelected ? '#F37438' : '#666',
-                        weight: isSelected ? 3 : 1,
-                        fillColor: isSelected ? '#F37438' : '#666',
-                        fillOpacity: isSelected ? 0.35 : 0.15,
-                      };
-                    }}
-                    onEachFeature={(feature, layer) => {
-                      layer.on('click', () => {
-                        const id = String(feature.id ?? 0);
-                        if (id) {
-                          navigate({
-                            search: (s) => ({ ...s, selectedSegment: id, dataPanelOpen: true }),
-                            replace: true,
-                          });
-                        }
-                      });
+                          <strong>${props.Mittausasema ?? "Mittausasema"}</strong><br/>
+                          ${props.Mittausaseman_osoite ?? ""}<br/>
+                          ${props.Aika ?? ""}<br/>
+                          Indeksi: ${props.Ilmanlaatuindeksi ?? "-"}
+                        </div>
+                      `);
                     }}
                   />
                 )}
               </FeatureGroup>
             </LayersControl.Overlay>
-            
           </LayersControl>
-          <AirQuailityIndicator />
+          <AirQualityIndicator />
         </MapContainer>
       </div>
     </Box>

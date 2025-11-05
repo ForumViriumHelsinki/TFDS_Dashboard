@@ -1,19 +1,22 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
-import { getAqiColor, getAirQualityStationId } from "../../utils/airQuality";
-import type { AirQualityProps } from "../../utils/airQuality";
+import { getAirQualityIndicatorColor, getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityItem } from "./AirQualityItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useAtomValue } from "jotai";
-import { airQualityAtom } from "../../atoms/airQuality";
+import { useQuery } from "@tanstack/react-query";
+import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 
 export function AirQualityList() {
-  const { airQualityData, loading, error } = useAtomValue(airQualityAtom);
   const { selectedAirQualityStation } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
-  const items = useMemo(() => airQualityData?.features ?? [], [airQualityData]);
+  
+  const { isPending, isError, data, error } = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
 
-  if (loading) {
+  const items = useMemo(() => data?.features ?? [], [data]);
+
+  if (isPending) {
     return (
       <Group p="md">
         <Loader size="sm" />
@@ -22,34 +25,31 @@ export function AirQualityList() {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Group p="md">
-        <Text c="red">Tietojen haku epäonnistui.</Text>
+        <Text c="red">Tietojen haku epäonnistui: {error?.message}.</Text>
       </Group>
     );
   }
 
   return (
     <>
-      {items.map((f) => {
-        const p: AirQualityProps = (f.properties ?? {}) as AirQualityProps;
-        const id = getAirQualityStationId(f);
-        const label = p.Mittausasema ?? "";
-        const description = p.Mittausaseman_osoite ?? "";
-        const color = getAqiColor(p.Ilmanlaatuindeksi);
+      {items.map((feature) => {
+        const properties = feature.properties ?? {};
+        const id = getAirQualityStationId(feature);
         return (
           <AirQualityItem
             key={id}
             id={id}
-            label={label}
-            description={description}
-            colorHex={color}
+            label={properties.Mittausasema ?? ""}
+            description={properties.Mittausaseman_osoite ?? ""}
+            colorHex={getAirQualityIndicatorColor(properties.Ilmanlaatuindeksi)}
             isSelected={selectedAirQualityStation === id}
             onClick={() =>
               navigate({
-                search: (p) => ({
-                  ...p,
+                search: (prev) => ({
+                  ...prev,
                   selectedAirQualityStation: id,
                   dataPanelOpen: true,
                 }),

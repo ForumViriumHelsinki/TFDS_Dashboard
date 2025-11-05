@@ -7,6 +7,9 @@ import "./index.css";
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
 import { createTheme, MantineProvider } from "@mantine/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 // Initialize Sentry if DSN is provided
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -59,7 +62,9 @@ createRoot(rootEl).render(
           </div>
         )}
       >
-        <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       </Sentry.ErrorBoundary>
     </MantineProvider>
   </StrictMode>,

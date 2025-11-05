@@ -10,9 +10,7 @@ export function SegmentList() {
   const { kaivuilmoitukset, loading, error } = useAtomValue(disruptionsAtom);
 
   const handleSegmentClick = (segmentId: string) => {
-    navigate({ search: (p) => ({ ...p, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
-    console.log('segmentId', segmentId);
-    console.log('selectedSegment', selectedSegment);
+    navigate({ search: (prev) => ({ ...prev, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
   };
 
   return (
