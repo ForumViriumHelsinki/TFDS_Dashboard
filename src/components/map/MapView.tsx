@@ -1,9 +1,9 @@
 import { Box } from "@mantine/core";
 import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
-import { getAqiColor, AirQualityProps } from "../../utils/airQuality";
+import { getAirQualityIndicatorColor, AirQualityProps } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature } from "geojson";
-import { AirQuailityIndicator } from "./AirQuailityIndicator";
+import { AirQualityIndicator } from "./AirQualityIndicator";
 import { useAtomValue } from "jotai";
 import { airQualityAtom } from "../../atoms/airQuality";
 
@@ -55,7 +55,7 @@ export function MapView() {
                     data={airQualityData}
                     pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
                       const idx = feature?.properties?.Ilmanlaatuindeksi;
-                      const color = getAqiColor(idx);
+                      const color = getAirQualityIndicatorColor(idx);
                       return L.circleMarker(latlng, {
                         radius: 8,
                         color,
@@ -80,7 +80,7 @@ export function MapView() {
               </FeatureGroup>
             </LayersControl.Overlay>
           </LayersControl>
-          <AirQuailityIndicator />
+          <AirQualityIndicator />
         </MapContainer>
       </div>
     </Box>
