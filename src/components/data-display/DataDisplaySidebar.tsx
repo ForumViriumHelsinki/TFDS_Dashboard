@@ -5,15 +5,23 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
+import { getListLandLeaseQueryOptions, LandLeaseProps, landLeaseTypes } from "../../queries/land-leases";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
   const { selectedAirQualityStation } = useSearch({ from: '/' })
-  const { isPending, data} = useQuery(
+  const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
-  
+  const { isPending: isPendingLandLease, data: landLeaseData } = useQuery(
+    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
+  );
+  const selectedLandLease = landLeaseData?.features.find((feature) => {
+    const properties = feature.properties as LandLeaseProps;
+    return String(feature.id ?? properties.hakemustunnus ?? 0) === selectedSegment;
+  });
+
   return (
     <Stack
       p="md"
@@ -29,9 +37,10 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedSegment: value }), replace: true })}
-        data={Array(60)
-          .fill(0)
-          .map((_, index) => `1195756141337706496${index + 1}`)}
+        data={(landLeaseData?.features ?? []).map((feature) => {
+          const properties = feature.properties as LandLeaseProps;
+          return { value: String(feature.id ?? properties.hakemustunnus ?? 0), label: properties.osoite ?? "Unknown" };
+        })}
       />
       <DateTimePicker
         label="Mittausaikaväli"
@@ -45,12 +54,12 @@ export function DataDisplaySidebar() {
       <Select
         label="Ilmanlaadun mittauspiste"
         placeholder="Valitse mittauspiste"
-        disabled={isPending}
+        disabled={isPendingAirQuality}
         value={selectedAirQualityStation ?? null}
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedAirQualityStation: value ?? undefined }), replace: true })}
-        data={(data?.features ?? []).map((feature) => {
+        data={(airQualityData?.features ?? []).map((feature) => {
           const properties = (feature.properties ?? {});
           const id = getAirQualityStationId(feature);
           return { value: id, label: properties.Mittausasema ?? "" };
@@ -58,19 +67,19 @@ export function DataDisplaySidebar() {
       />
       <Group gap="xs">
         <Text fw={500} size="sm">Kaupunginosa:</Text>
-        <Text size="sm">{selectedAllu?.properties?.kaupunginosa ?? "Unknown"}</Text>
+        <Text size="sm">{selectedLandLease?.properties?.kaupunginosa ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Hakemus:</Text>
-        <Text size="sm">{selectedAllu?.properties?.hakemustunnus ?? "Unknown"}</Text>
+        <Text size="sm">{selectedLandLease?.properties?.hakemustunnus ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Ajankohta:</Text>
-        <Text size="sm">{selectedAllu?.properties?.tyo_alkaa_txt ?? "Unknown"} - {selectedAllu?.properties?.tyo_paattyy_txt ?? "Unknown"}</Text>
+        <Text size="sm">{selectedLandLease?.properties?.tyo_alkaa_txt ?? "Unknown"} - {selectedLandLease?.properties?.tyo_paattyy_txt ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Tila:</Text>
-        <Text size="sm">{selectedAllu?.properties?.status ?? "Unknown"}</Text>
+        <Text size="sm">{selectedLandLease?.properties?.status ?? "Unknown"}</Text>
       </Group>
       <Button
         size="xs"
@@ -78,6 +87,7 @@ export function DataDisplaySidebar() {
         onClick={() => {}}
         color="black"
         leftSection={<RefreshCcw size={12} />}
+        disabled={isPendingLandLease}
       >
         Päivitä
       </Button>

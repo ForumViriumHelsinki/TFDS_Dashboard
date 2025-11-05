@@ -1,17 +1,45 @@
 import { Box } from "@mantine/core";
-import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON, useMap } from "react-leaflet";
 import { getAirQualityIndicatorColor, AirQualityProps } from "../../utils/airQuality";
 import L from "leaflet";
-import type { Geometry, Feature } from "geojson";
+import type { Geometry, Feature, GeoJsonObject } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
 import { useQuery } from "@tanstack/react-query";
 import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
+import { getListLandLeaseQueryOptions, LandLeaseProps, landLeaseTypes } from "../../queries/land-leases";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export function MapView() {
-  const { data } = useQuery(
+  const { selectedSegment } = useSearch({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
+  const { data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
+  const { data: landLeaseData } = useQuery(
+    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
+  );
+
+  function FitMapToSelected() {
+    const map = useMap();
+  
+    useEffect(() => {
+      if (!map || !landLeaseData || !selectedSegment) return;
+      const feature = landLeaseData.features.find((feature) => {
+        const properties = feature.properties as LandLeaseProps;
+        return String(feature.id ?? properties.hakemustunnus ?? 0) === selectedSegment;
+      });
+      if (!feature) return;
+      const bounds = L.geoJSON(feature as GeoJsonObject).getBounds();
+      if (bounds.isValid()) {
+        const center = bounds.getCenter();
+        map.setView(center, map.getZoom(), { animate: true });
+      }
+    }, [map, landLeaseData, selectedSegment]);
+  
+    return null;
+  }
 
   return (
     <Box bg="gray.1" flex={1} h="100%">
@@ -53,9 +81,9 @@ export function MapView() {
             
             <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
               <FeatureGroup>
-                {data && (
+                {airQualityData && (
                   <GeoJSON
-                    data={data}
+                    data={airQualityData}
                     pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
                       const color = getAirQualityIndicatorColor(feature?.properties?.Ilmanlaatuindeksi);
                       return L.circleMarker(latlng, {
@@ -67,15 +95,43 @@ export function MapView() {
                       });
                     }}
                     onEachFeature={(feature: Feature<Geometry, AirQualityProps>, layer) => {
-                      const props: AirQualityProps = feature.properties ?? {};
+                      const properties: AirQualityProps = feature.properties ?? {};
                       layer.bindPopup(`
                         <div>
-                          <strong>${props.Mittausasema ?? "Mittausasema"}</strong><br/>
-                          ${props.Mittausaseman_osoite ?? ""}<br/>
-                          ${props.Aika ?? ""}<br/>
-                          Indeksi: ${props.Ilmanlaatuindeksi ?? "-"}
+                          <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
+                          ${properties.Mittausaseman_osoite ?? ""}<br/>
+                          ${properties.Aika ?? ""}<br/>
+                          Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
                         </div>
                       `);
+                    }}
+                  />
+                )}
+              </FeatureGroup>
+              <FeatureGroup>
+                {landLeaseData && (
+                  <GeoJSON
+                    data={landLeaseData}
+                    style={(feature) => {
+                      const id = (feature?.id ?? 0);
+                      const isSelected = id && String(id) === selectedSegment;
+                      return {
+                        color: isSelected ? '#F37438' : '#666',
+                        weight: isSelected ? 3 : 1,
+                        fillColor: isSelected ? '#F37438' : '#666',
+                        fillOpacity: isSelected ? 0.35 : 0.15,
+                      };
+                    }}
+                    onEachFeature={(feature, layer) => {
+                      layer.on('click', () => {
+                        const id = String(feature.id ?? 0);
+                        if (id) {
+                          navigate({
+                            search: (s) => ({ ...s, selectedSegment: id, dataPanelOpen: true }),
+                            replace: true,
+                          });
+                        }
+                      });
                     }}
                   />
                 )}
@@ -83,6 +139,7 @@ export function MapView() {
             </LayersControl.Overlay>
           </LayersControl>
           <AirQualityIndicator />
+          <FitMapToSelected />
         </MapContainer>
       </div>
     </Box>

@@ -1,13 +1,16 @@
 
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
-import { useAtomValue } from "jotai";
-import { disruptionsAtom } from "../../atoms/disruptions";
+import { useQuery } from '@tanstack/react-query';
+import { getListLandLeaseQueryOptions, landLeaseTypes } from '../../queries/land-leases';
+
 
 export function SegmentList() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
-  const { kaivuilmoitukset, loading, error } = useAtomValue(disruptionsAtom);
+  const { isPending, data, error } = useQuery(
+    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
+  );
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({ search: (prev) => ({ ...prev, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
@@ -15,16 +18,15 @@ export function SegmentList() {
 
   return (
     <>
-      {loading && <div style={{ padding: 8 }}>Ladataan…</div>}
+      {isPending && <div style={{ padding: 8 }}>Ladataan…</div>}
       {error && (
         <div style={{ padding: 8, color: "#C92A2A" }}>
           Virhe: {error.message}
         </div>
       )}
-      {kaivuilmoitukset?.features.map((f) => {   
-        const properties = f.properties as { hakemustunnus?: string; osoite?: string };
-        const id = String(f.id ?? properties.hakemustunnus);
-        const label = (properties.osoite || "Kaivuilmoitus").trim();
+      {data?.features.map((feature) => {   
+        const id = String(feature.id);
+        const label = (feature.properties?.osoite || "Kaivuilmoitus").trim();
         return (
           <SegmentItem
             key={id}
