@@ -67,15 +67,15 @@ export function MapView() {
                       });
                     }}
                     onEachFeature={(feature: Feature<Geometry, AirQualityProps>, layer) => {
-                      const p: AirQualityProps = feature.properties || {};
-                      const html = `
+                      const props: AirQualityProps = feature.properties ?? {};
+                      layer.bindPopup(`
                         <div>
-                          <strong>${p.Mittausasema ?? "Mittausasema"}</strong><br/>
-                          ${p.Mittausaseman_osoite ?? ""}<br/>
-                          ${p.Aika ?? ""}<br/>
-                          Indeksi: ${p.Ilmanlaatuindeksi ?? "-"}
-                        </div>`;
-                      layer.bindPopup(html);
+                          <strong>${props.Mittausasema ?? "Mittausasema"}</strong><br/>
+                          ${props.Mittausaseman_osoite ?? ""}<br/>
+                          ${props.Aika ?? ""}<br/>
+                          Indeksi: ${props.Ilmanlaatuindeksi ?? "-"}
+                        </div>
+                      `);
                     }}
                   />
                 )}
