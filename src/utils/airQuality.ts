@@ -18,7 +18,7 @@ export const getAirQualityIndicatorColor = (index?: number): string => {
 };
 
 export function getAirQualityStationId(feature: Feature<Geometry, AirQualityProps>): string {
-  const p = (feature.properties ?? {}) as AirQualityProps;
+  const p = (feature.properties ?? {});
   if (p.Mittausaseman_numero !== undefined && p.Mittausaseman_numero !== null) {
     return String(p.Mittausaseman_numero);
   }
