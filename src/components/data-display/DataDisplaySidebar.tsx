@@ -50,11 +50,11 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedAirQualityStation: value ?? undefined }), replace: true })}
-        data={data?.features?.map((feature) => {
+        data={(data?.features ?? []).map((feature) => {
           const properties = (feature.properties ?? {});
           const id = getAirQualityStationId(feature);
           return { value: id, label: properties.Mittausasema ?? "" };
-        }) ?? []}
+        })}
       />
       <Group gap="xs">
         <Text fw={500} size="sm">Kaupunginosa:</Text>
