@@ -35,9 +35,9 @@ export function AirQualityList() {
 
   return (
     <>
-      {items.map((f) => {
-        const properties = (f.properties ?? {});
-        const id = getAirQualityStationId(f);
+      {items.map((feature) => {
+        const properties = (feature.properties ?? {});
+        const id = getAirQualityStationId(feature);
         return (
           <AirQualityItem
             key={id}
@@ -48,8 +48,8 @@ export function AirQualityList() {
             isSelected={selectedAirQualityStation === id}
             onClick={() =>
               navigate({
-                search: (p) => ({
-                  ...p,
+                search: (prev) => ({
+                  ...prev,
                   selectedAirQualityStation: id,
                   dataPanelOpen: true,
                 }),
