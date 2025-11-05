@@ -29,7 +29,7 @@ export function AirQualityList() {
   if (isError) {
     return (
       <Group p="md">
-        <Text c="red">Tietojen haku epäonnistu: {error?.message}.</Text>
+        <Text c="red">Tietojen haku epäonnistui: {error?.message}.</Text>
       </Group>
     );
   }
