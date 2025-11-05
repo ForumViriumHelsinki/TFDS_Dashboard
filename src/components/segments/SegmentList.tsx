@@ -1,37 +1,43 @@
-import { NavLink } from "@mantine/core";
-import { ChevronRight } from "lucide-react";
+
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
+import { useAtomValue } from "jotai";
+import { disruptionsAtom } from "../../atoms/disruptions";
 
 export function SegmentList() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
+  const { kaivuilmoitukset, loading, error } = useAtomValue(disruptionsAtom);
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({ search: (p) => ({ ...p, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
+    console.log('segmentId', segmentId);
+    console.log('selectedSegment', selectedSegment);
   };
 
   return (
-    <NavLink
-      href="#required-for-focus"
-      label="Tehtaankatu 1-40"
-      description="Kaivuilmoitus"
-      rightSection={<ChevronRight size={16} />}
-      childrenOffset={0}
-      defaultOpened
-    >
-      {Array(60)
-        .fill(0)
-        .map((_, index) => (
+    <>
+      {loading && <div style={{ padding: 8 }}>Ladataan…</div>}
+      {error && (
+        <div style={{ padding: 8, color: "#C92A2A" }}>
+          Virhe: {error.message}
+        </div>
+      )}
+      {kaivuilmoitukset?.features.map((f) => {   
+        const properties = f.properties as { hakemustunnus?: string; osoite?: string };
+        const id = String(f.id ?? properties.hakemustunnus);
+        const label = (properties.osoite || "Kaivuilmoitus").trim();
+        return (
           <SegmentItem
-            key={index}
-            segmentId={`1195756141337706496${index + 1}`}
-            segmentLabel={`IDEA Segment ${index + 1}`}
-            isSelected={selectedSegment === `1195756141337706496${index + 1}`}
-            onClick={() => handleSegmentClick(`1195756141337706496${index + 1}`)}
+            key={id}
+            segmentId={id}
+            segmentLabel={label}
+            isSelected={selectedSegment === id}
+            onClick={() => handleSegmentClick(id)}
           />
-        ))}
-    </NavLink>
+        );
+      })}
+    </>
   );
 }
 
