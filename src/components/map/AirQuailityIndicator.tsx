@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
 
-export function AirQuailityIndicator() {
+export function AirQualityIndicator() {
   return (
     <Paper
       w={40}
