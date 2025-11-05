@@ -18,13 +18,7 @@ export const getAirQualityIndicatorColor = (index?: number): string => {
 };
 
 export function getAirQualityStationId(feature: Feature<Geometry, AirQualityProps>): string {
-  const p = (feature.properties ?? {});
-  if (p.Mittausaseman_numero !== undefined && p.Mittausaseman_numero !== null) {
-    return String(p.Mittausaseman_numero);
-  }
-  const name = (p.Mittausasema ?? "").trim().toLowerCase();
-  const addr = (p.Mittausaseman_osoite ?? "").trim().toLowerCase();
-  return `${name}|${addr}`;
+  return String(feature.properties?.Mittausaseman_numero ?? "");
 }
 
 
