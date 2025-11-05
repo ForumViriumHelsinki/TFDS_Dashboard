@@ -1,14 +1,19 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar, RefreshCcw } from "lucide-react";
-import { useState } from "react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { getAirQualityStationId } from "../../utils/airQuality";
+import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { useQuery } from "@tanstack/react-query";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
-  const [selectedAirQualityStation, setSelectedAirQualityStation] = useState("Mittauspiste #1");
-
+  const { selectedAirQualityStation } = useSearch({ from: '/' })
+  const { isPending, data} = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
+  
   return (
     <Stack
       p="md"
@@ -23,7 +28,7 @@ export function DataDisplaySidebar() {
         value={selectedSegment}
         size="xs"
         variant="filled"
-        onChange={(value) => navigate({ search: (p) => ({ ...p, selectedSegment: value }), replace: true })}
+        onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedSegment: value }), replace: true })}
         data={Array(60)
           .fill(0)
           .map((_, index) => `1195756141337706496${index + 1}`)}
@@ -40,15 +45,16 @@ export function DataDisplaySidebar() {
       <Select
         label="Ilmanlaadun mittauspiste"
         placeholder="Valitse mittauspiste"
-        value={selectedAirQualityStation}
+        disabled={isPending}
+        value={selectedAirQualityStation ?? null}
         size="xs"
         variant="filled"
-        onChange={(value) => setSelectedAirQualityStation(value || "Mittauspiste #1")}
-        data={[
-          "Mittauspiste #1",
-          "Mittauspiste #2",
-          "Mittauspiste #3",
-        ]}
+        onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedAirQualityStation: value ?? undefined }), replace: true })}
+        data={(data?.features ?? []).map((feature) => {
+          const properties = (feature.properties ?? {});
+          const id = getAirQualityStationId(feature);
+          return { value: id, label: properties.Mittausasema ?? "" };
+        })}
       />
       <Group gap="xs">
         <Text fw={500} size="sm">Kaupunginosa:</Text>

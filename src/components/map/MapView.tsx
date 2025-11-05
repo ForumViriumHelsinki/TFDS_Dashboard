@@ -1,14 +1,90 @@
-import { Box, Text } from "@mantine/core";
-import { useSearch } from '@tanstack/react-router'
+import { Box } from "@mantine/core";
+import { MapContainer, TileLayer, LayersControl, WMSTileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
+import { getAirQualityIndicatorColor, AirQualityProps } from "../../utils/airQuality";
+import L from "leaflet";
+import type { Geometry, Feature } from "geojson";
+import { AirQualityIndicator } from "./AirQualityIndicator";
+import { useQuery } from "@tanstack/react-query";
+import { getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { AirQualityTypes } from "../../queries/air-quality";
 
 export function MapView() {
-  const { selectedSegment } = useSearch({ from: '/' })
+  const { data } = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+  );
 
   return (
-    <Box bg="gray.1" p="md" flex={1} h="100%">
-      <Text>Map content</Text>
-      {selectedSegment && <Text size="sm" c="dimmed">Selected: {selectedSegment}</Text>}
+    <Box bg="gray.1" flex={1} h="100%">
+      <div id="map">
+        <MapContainer
+          center={[60.1699, 24.9384]}
+          zoom={15}
+          scrollWheelZoom={false}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <LayersControl position="topright">
+
+            <LayersControl.BaseLayer checked name="Taustakartta">
+              <WMSTileLayer
+                url="https://kartta.hel.fi/ws/geoserver/avoindata/wms?"
+                layers="avoindata:Opaskartta_PKS_harmaa"
+                format="image/png"
+                transparent={false}
+                attribution="<a href='https://kartta.hel.fi/avoindata'>Helsingin opaskartta &#169; Helsingin kaupunkiympäristön toimiala / Kaupunkimittauspalvelut</a>"
+              />
+            </LayersControl.BaseLayer>
+
+            <LayersControl.BaseLayer name="Ilmakuva">
+              <WMSTileLayer
+                url="https://kartta.hel.fi/ws/geoserver/avoindata/wms?"
+                layers="avoindata:Ortoilmakuva"
+                format="image/png"
+                transparent={false}
+                attribution="<a href='https://kartta.hel.fi/avoindata'>Helsingin ortoilmakuva &#169; Helsingin kaupunkiympäristön toimiala / Kaupunkimittauspalvelut</a>"
+              />
+            </LayersControl.BaseLayer>
+
+            <LayersControl.BaseLayer name="OpenStreetMap">
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            </LayersControl.BaseLayer>
+            
+            <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
+              <FeatureGroup>
+                {data && (
+                  <GeoJSON
+                    data={data}
+                    pointToLayer={(feature: Feature<Geometry, AirQualityProps>, latlng) => {
+                      const color = getAirQualityIndicatorColor(feature?.properties?.Ilmanlaatuindeksi);
+                      return L.circleMarker(latlng, {
+                        radius: 8,
+                        color,
+                        weight: 2,
+                        fillColor: color,
+                        fillOpacity: 0.85,
+                      });
+                    }}
+                    onEachFeature={(feature: Feature<Geometry, AirQualityProps>, layer) => {
+                      const props: AirQualityProps = feature.properties ?? {};
+                      layer.bindPopup(`
+                        <div>
+                          <strong>${props.Mittausasema ?? "Mittausasema"}</strong><br/>
+                          ${props.Mittausaseman_osoite ?? ""}<br/>
+                          ${props.Aika ?? ""}<br/>
+                          Indeksi: ${props.Ilmanlaatuindeksi ?? "-"}
+                        </div>
+                      `);
+                    }}
+                  />
+                )}
+              </FeatureGroup>
+            </LayersControl.Overlay>
+          </LayersControl>
+          <AirQualityIndicator />
+        </MapContainer>
+      </div>
     </Box>
   );
 }
-

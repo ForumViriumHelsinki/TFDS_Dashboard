@@ -8,7 +8,7 @@ export function SegmentList() {
   const { selectedSegment } = useSearch({ from: '/' })
 
   const handleSegmentClick = (segmentId: string) => {
-    navigate({ search: (p) => ({ ...p, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
+    navigate({ search: (prev) => ({ ...prev, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
   };
 
   return (

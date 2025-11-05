@@ -1,6 +1,17 @@
-import { Text } from "@mantine/core";
+import { AppShell, ScrollArea } from "@mantine/core";
+import { AirQualityList } from "../airQuality/AirQualityList";
 
 export function AirQualityTab() {
-  return <Text>Ilmanlaatu tab content</Text>;
+  return (
+    <AppShell.Section
+      grow
+      component={ScrollArea}
+      mx="-md"
+      px="md"
+      type="never"
+    >
+      <AirQualityList />
+    </AppShell.Section>
+  );
 }
 

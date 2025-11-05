@@ -26,10 +26,17 @@ export function Sidebar() {
         <DisruptionsTab />
       </Tabs.Panel>
 
-      <Tabs.Panel value="Ilmanlaatu" p="md">
+      <Tabs.Panel
+        value="Ilmanlaatu"
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+        }}
+      >
         <AirQualityTab />
       </Tabs.Panel>
     </Tabs>
   );
 }
-

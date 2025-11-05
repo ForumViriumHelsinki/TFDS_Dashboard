@@ -17,7 +17,7 @@ export function DataDisplayHeader() {
       <Button
         size="xs"
         variant="white"
-        onClick={() => navigate({ search: (p) => ({ ...p, dataPanelOpen: !dataPanelOpen }), replace: true })}
+        onClick={() => navigate({ search: (prev) => ({ ...prev, dataPanelOpen: !dataPanelOpen }), replace: true })}
         color="black"
         leftSection={
           dataPanelOpen ? (
