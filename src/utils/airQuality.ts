@@ -8,7 +8,7 @@ export type AirQualityProps = {
   Mittausaseman_numero?: number;
 };
 
-export const getAqiColor = (index?: number): string => {
+export const getAirQualityIndicatorColor = (index?: number): string => {
   if (index === undefined || index === null) return "#7e7e7e";
   if (index <= 50) return "#2ecc71";
   if (index <= 75) return "#ffd400";
