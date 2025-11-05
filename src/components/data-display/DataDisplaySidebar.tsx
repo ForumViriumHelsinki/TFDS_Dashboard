@@ -33,9 +33,10 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (p) => ({ ...p, selectedSegment: value }), replace: true })}
-        data={Array(60)
-          .fill(0)
-          .map((_, index) => `1195756141337706496${index + 1}`)}
+        data={kaivuilmoitukset?.features.map((f) => {
+          const p = f.properties as AlluProps;
+          return { value: String(f.id ?? 0), label: p.osoite ?? "Unknown" };
+        }) ?? []}
       />
       <DateTimePicker
         label="Mittausaikaväli"
