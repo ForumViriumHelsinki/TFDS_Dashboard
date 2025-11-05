@@ -5,13 +5,19 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { AirQualityProps, getAirQualityStationId } from "../../utils/airQuality";
 import { useAtomValue } from "jotai";
 import { airQualityAtom } from "../../atoms/airQuality";
+import { AlluProps, disruptionsAtom } from "../../atoms/disruptions";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
   const { selectedAirQualityStation } = useSearch({ from: '/' })
   const { airQualityData } = useAtomValue(airQualityAtom);
-  
+  const { kaivuilmoitukset } = useAtomValue(disruptionsAtom);
+  const selectedAllu = kaivuilmoitukset?.features.find((f) => {
+    const p = f.properties as AlluProps;
+    return String(f.id ?? p.hakemustunnus ?? 0) === selectedSegment;
+  });
+
   return (
     <Stack
       p="md"
@@ -55,19 +61,19 @@ export function DataDisplaySidebar() {
       />
       <Group gap="xs">
         <Text fw={500} size="sm">Kaupunginosa:</Text>
-        <Text size="sm">7 ULLANLINNA</Text>
+        <Text size="sm">{selectedAllu?.properties?.kaupunginosa ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Hakemus:</Text>
-        <Text size="sm">7 Kaivuilmoitus</Text>
+        <Text size="sm">{selectedAllu?.properties?.hakemustunnus ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Ajankohta:</Text>
-        <Text size="sm">28.07.2025 - 31.08.2026</Text>
+        <Text size="sm">{selectedAllu?.properties?.tyo_alkaa_txt ?? "Unknown"} - {selectedAllu?.properties?.tyo_paattyy_txt ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={500} size="sm">Tila:</Text>
-        <Text size="sm">Käynnissä</Text>
+        <Text size="sm">{selectedAllu?.properties?.status ?? "Unknown"}</Text>
       </Group>
       <Button
         size="xs"
