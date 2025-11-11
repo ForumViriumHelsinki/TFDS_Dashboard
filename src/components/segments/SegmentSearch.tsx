@@ -6,11 +6,11 @@ export function SegmentSearch() {
 
   return (
     <TextInput
-      size="xs"
+      size="sm"
       variant="filled"
       label="Haku"
       placeholder="Syötä hakuehto"
-      description="Hae tiesegmenttiä "
+      description="Hae osoitteella tai hakemuksen "
       value={searchValue}
       onChange={(event) => setSearchValue(event.currentTarget.value)}
     />
