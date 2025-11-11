@@ -18,16 +18,8 @@ export function SegmentList() {
   const normalizedQuery = (landLeaseSearch ?? '').trim().toLowerCase();
 
   const fuse = useMemo(() => {
-    const items = groups.map((group) => {
-      const properties = group.landLeaseProperties;
-      return {
-        group,
-        address: properties?.osoite ?? '',
-        hakemustunnus: properties?.hakemustunnus ?? '',
-      };
-    });
-    return new Fuse(items, {
-      keys: ['address', 'hakemustunnus'],
+    return new Fuse(groups, {
+      keys: ['landLeaseProperties.osoite', 'landLeaseProperties.hakemustunnus'],
       threshold: 0.1,
       ignoreLocation: true,
       isCaseSensitive: false,
@@ -36,7 +28,7 @@ export function SegmentList() {
 
   const filteredGroups = useMemo(() => {
     if (!normalizedQuery) return groups;
-    return fuse.search(normalizedQuery).map((result) => result.item.group);
+    return fuse.search(normalizedQuery).map((result) => result.item);
   }, [normalizedQuery, groups, fuse]);
 
   return (
