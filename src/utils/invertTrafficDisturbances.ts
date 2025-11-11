@@ -1,5 +1,6 @@
-import type { Feature, FeatureCollection, LineString } from "geojson";
-import trafficData from "../data/traffic_disturbance_data.json";
+import type { Feature, FeatureCollection, LineString, MultiPolygon } from "geojson";
+import type { LandLeaseProps } from "../queries/land-leases";
+import trafficDisturbanceData from "../data/traffic_disturbance_data.json";
 
 export type DisturbanceType = "Kaivuilmoitus" | "Aluevuokraus";
 
@@ -23,6 +24,9 @@ export type DisturbanceGroup = {
   star_date: string;
   end_date: string;
   segments: Record<string, SegmentEntry>;
+  // Optional enrichment from WFS land-lease datasets (geometry + properties)
+  landLeaseGeometry?: MultiPolygon;
+  landLeaseProperties?: LandLeaseProps;
 };
 
 export type DisturbanceMap = Record<string, DisturbanceGroup>;
@@ -32,7 +36,7 @@ type TrafficJson = {
 };
 
 export function buildDisturbanceMapFromJson(): DisturbanceMap {
-  const src = trafficData as unknown as TrafficJson;
+  const src = trafficDisturbanceData as unknown as TrafficJson;
   const inverted: DisturbanceMap = {};
   for (const [segmentId, segment] of Object.entries(src.segmentId ?? {})) {
     for (const dc of segment.detailedCollisions ?? []) {
@@ -52,6 +56,36 @@ export function buildDisturbanceMapFromJson(): DisturbanceMap {
     }
   }
   return inverted;
+}
+
+/**
+ * Merge land-lease WFS features into an existing disturbance map by matching ids.
+ * If disturbanceType is provided, only entries of that type are considered for merging.
+ */
+export function mergeLandLeaseFeaturesIntoMap(
+  map: DisturbanceMap,
+  landLeaseFC?: FeatureCollection<MultiPolygon, LandLeaseProps>,
+  disturbanceType?: DisturbanceType
+): DisturbanceMap {
+  if (!landLeaseFC?.features?.length) return map;
+  const typesToCheck: DisturbanceType[] = disturbanceType
+    ? [disturbanceType]
+    : ["Kaivuilmoitus", "Aluevuokraus"];
+
+  for (const feature of landLeaseFC.features) {
+    const props = (feature.properties ?? {}) as LandLeaseProps;
+    const id = props.id;
+    if (id == null) continue;
+    for (const t of typesToCheck) {
+      const key = `${t}:${id}`;
+      const group = map[key];
+      if (group) {
+        group.landLeaseGeometry = feature.geometry ?? undefined;
+        group.landLeaseProperties = props;
+      }
+    }
+  }
+  return map;
 }
 
 export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureCollection<LineString, { segmentId: string }> {
