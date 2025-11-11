@@ -42,6 +42,13 @@ const theme = createTheme({
         },
       },
     },
+    Accordion: {
+      styles: {
+        chevron: {
+          color: "#C92A2A",
+        },
+      },
+    },
   },
 });
 
