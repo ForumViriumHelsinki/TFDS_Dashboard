@@ -3,19 +3,31 @@ import { ChevronDown, X } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getListLandLeaseQueryOptions, LandLeaseProps, landLeaseTypes } from "../../queries/land-leases";
 import { useQuery } from "@tanstack/react-query";
+import { buildDisturbanceMapFromJson } from "../../utils/invertTrafficDisturbances";
+import { useMemo } from "react";
 
 export function DataDisplayHeader() {
   const navigate = useNavigate({ from: '/' })
   const { dataPanelOpen } = useSearch({ from: '/' })
   const { selectedSegment } = useSearch({ from: '/' })
-  const { isPending, data } = useQuery(
+  const { isPending: isPendingLandLease, data: landLeaseData } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: selectedSegment ? landLeaseTypes.EXCAVATION_NOTICE_AREA : landLeaseTypes.LAND_LEASE_AREA }),
   );
 
-  const selectedLandLease = data?.features.find((feature) => {
-    const properties = feature.properties as LandLeaseProps;
-    return String(feature.id ?? properties.hakemustunnus ?? 0) === selectedSegment;
-  });
+  const inverted = useMemo(() => buildDisturbanceMapFromJson(), []);
+  const matchedApplicationId = useMemo(() => {
+    if (!selectedSegment) return undefined;
+    const group = Object.values(inverted).find(g => Boolean(g.segments[selectedSegment]));
+    return group?.id;
+  }, [inverted, selectedSegment]);
+  const selectedLandLease = useMemo(() => {
+    if (!landLeaseData || !matchedApplicationId) return undefined;
+    return landLeaseData.features.find((feature) => {
+      const leaseProps = feature.properties as LandLeaseProps | undefined;
+      const id = leaseProps?.id ?? "";
+      return id === matchedApplicationId;
+    });
+  }, [landLeaseData, matchedApplicationId]);
 
   return (
     <Group
@@ -37,7 +49,7 @@ export function DataDisplayHeader() {
             <ChevronDown size={16} />
           )
         }
-        disabled={isPending}
+        disabled={isPendingLandLease}
       >
         {dataPanelOpen ? "Sulje" : "Näytä"}
       </Button>
