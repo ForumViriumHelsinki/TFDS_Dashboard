@@ -9,6 +9,7 @@ import {
   Title,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
+import { AIR_QUALITY_COLORS } from "../../utils/airQuality";
 
 export function AirQualityIndicator() {
   return (
@@ -36,7 +37,7 @@ export function AirQualityIndicator() {
             style={{
               borderRadius: 25,
               background:
-                "linear-gradient(180deg, #F772D0 0%, #FF3B30 16%, #FF9500 33%, #FFEA00 50%, #7ED957 66%, #2E7D32 83%, #1B5E20 100%)",
+                `linear-gradient(180deg, ${AIR_QUALITY_COLORS["Good air quality"]} 0%, ${AIR_QUALITY_COLORS["Satisfactory air quality"]} 25%, ${AIR_QUALITY_COLORS["Fair air quality"]} 50%, ${AIR_QUALITY_COLORS["Poor air quality"]} 75%, ${AIR_QUALITY_COLORS["Very poor air quality"]} 100%)`,
             }}
           />
         </Center>

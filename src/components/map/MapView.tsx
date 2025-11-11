@@ -10,7 +10,7 @@ import {
   Pane,
 } from "react-leaflet";
 import {
-  getAirQualityIndicatorColor,
+  getAirQualityColor,
   AirQualityProps,
 } from "../../utils/airQuality";
 import L from "leaflet";
@@ -130,7 +130,7 @@ export function MapView() {
                       feature: Feature<Geometry, AirQualityProps>,
                       latlng
                     ) => {
-                      const color = getAirQualityIndicatorColor(
+                      const color = getAirQualityColor(
                         feature?.properties?.Ilmanlaatuindeksi
                       );
                       return L.circleMarker(latlng, {
