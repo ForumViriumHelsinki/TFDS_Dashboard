@@ -1,26 +1,15 @@
 
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
-import { useQuery } from '@tanstack/react-query';
-import { getListLandLeaseQueryOptions, landLeaseTypes, LandLeaseProps } from '../../queries/land-leases';
 import { Accordion, Group, Text } from '@mantine/core';
 import { useMemo } from 'react';
-import { buildDisturbanceMapFromJson } from '../../utils/invertTrafficDisturbances';
-import type { Feature as GFeature, MultiPolygon } from 'geojson';
 import Fuse from 'fuse.js';
-
+import { useMergedDisturbances } from '../../hooks/useMergedDisturbances';
 
 export function SegmentList() {
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment, landLeaseSearch } = useSearch({ from: '/' })
-  const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
-    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
-  );
-  const { isPending: isPendingLease, data: leaseData, error: leaseError } = useQuery(
-    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.LAND_LEASE_AREA }),
-  );
-
-  const inverted = useMemo(() => buildDisturbanceMapFromJson(), []);
+  const { groups, isLoading, error } = useMergedDisturbances();
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({ search: (prev) => ({ ...prev, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
@@ -29,13 +18,8 @@ export function SegmentList() {
   const normalizedQuery = (landLeaseSearch ?? '').trim().toLowerCase();
 
   const fuse = useMemo(() => {
-    const groups = Object.values(inverted);
     const items = groups.map((group) => {
-      const areaId = group.id;
-      const feature = group.type === 'Kaivuilmoitus'
-        ? excData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId)
-        : leaseData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId);
-      const properties = feature?.properties;
+      const properties = group.landLeaseProperties;
       return {
         group,
         address: properties?.osoite ?? '',
@@ -48,20 +32,20 @@ export function SegmentList() {
       ignoreLocation: true,
       isCaseSensitive: false,
     });
-  }, [inverted, excData, leaseData]);
+  }, [groups]);
 
   const filteredGroups = useMemo(() => {
-    if (!normalizedQuery) return Object.values(inverted);
+    if (!normalizedQuery) return groups;
     return fuse.search(normalizedQuery).map((result) => result.item.group);
-  }, [normalizedQuery, inverted, fuse]);
+  }, [normalizedQuery, groups, fuse]);
 
   return (
     <>
-      {(isPendingExc || isPendingLease) && <div style={{ padding: 8 }}>Ladataan…</div>}
-      {(excError || leaseError) && (
+      {isLoading && <div style={{ padding: 8 }}>Ladataan…</div>}
+      {error && (
         <div style={{ padding: 8, color: "#C92A2A" }}>
           {(() => {
-            const err = (excError ?? leaseError);
+            const err = error;
             const msg = err instanceof Error ? err.message : 'Tuntematon virhe';
             return `Virhe: ${msg}`;
           })()}
@@ -71,10 +55,7 @@ export function SegmentList() {
         {filteredGroups.map((group) => {
           const areaId = group.id;
           const typeLabel = group.type === 'Kaivuilmoitus' ? 'Kaivuilmoitus' : 'Aluevuokraus';
-          const feature = group.type === 'Kaivuilmoitus'
-            ? excData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId)
-            : leaseData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId);
-          const address = feature?.properties?.osoite;
+          const address = group.landLeaseProperties?.osoite;
           const header = (address || `${typeLabel} ${areaId}`).trim();
           return (
             <Accordion.Item key={`${group.type}:${areaId}`} value={`${group.type}:${areaId}`}>
@@ -101,7 +82,7 @@ export function SegmentList() {
           );
         })}
       </Accordion>
-      {filteredGroups.length === 0 && !(isPendingExc || isPendingLease) && (
+      {filteredGroups.length === 0 && !isLoading && (
         <div style={{ padding: 8 }}>Ei osumia hakuehdolla.</div>
       )}
     </>
