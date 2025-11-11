@@ -1,11 +1,13 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { Calendar, RefreshCcw } from "lucide-react";
+import { Calendar, ExternalLink, RefreshCcw } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
 import { getListLandLeaseQueryOptions, LandLeaseProps, landLeaseTypes } from "../../queries/land-leases";
+import { buildDisturbanceMapFromJson, getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
+import { useMemo } from "react";
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
@@ -17,11 +19,22 @@ export function DataDisplaySidebar() {
   const { isPending: isPendingLandLease, data: landLeaseData } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
   );
-  const selectedLandLease = landLeaseData?.features.find((feature) => {
-    const properties = feature.properties as LandLeaseProps;
-    return String(feature.id ?? properties.hakemustunnus ?? 0) === selectedSegment;
-  });
-
+  const trafficSegmentsFC = getTrafficSegmentsFC();
+  const inverted = useMemo(() => buildDisturbanceMapFromJson(), []);
+  const matchedApplicationId = useMemo(() => {
+    if (!selectedSegment) return undefined;
+    const group = Object.values(inverted).find(g => Boolean(g.segments[selectedSegment]));
+    return group?.id;
+  }, [inverted, selectedSegment]);
+  const selectedLandLease = useMemo(() => {
+    if (!landLeaseData || !matchedApplicationId) return undefined;
+    return landLeaseData.features.find((feature) => {
+      const leaseProps = feature.properties as LandLeaseProps | undefined;
+      const id = leaseProps?.id ?? "";
+      return id === matchedApplicationId;
+    });
+  }, [landLeaseData, matchedApplicationId]);
+    
   return (
     <Stack
       p="md"
@@ -37,9 +50,8 @@ export function DataDisplaySidebar() {
         size="xs"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedSegment: value }), replace: true })}
-        data={(landLeaseData?.features ?? []).map((feature) => {
-          const properties = feature.properties as LandLeaseProps;
-          return { value: String(feature.id ?? properties.hakemustunnus ?? 0), label: properties.osoite ?? "Unknown" };
+        data={(trafficSegmentsFC.features ?? []).map((feature) => {
+          return { value: feature.properties?.segmentId ?? "", label: feature.properties?.segmentId ?? "" };
         })}
       />
       <DateTimePicker
@@ -66,28 +78,32 @@ export function DataDisplaySidebar() {
         })}
       />
       <Group gap="xs">
-        <Text fw={500} size="sm">Kaupunginosa:</Text>
+        <Text fw={600} size="sm">Kaupunginosa:</Text>
         <Text size="sm">{selectedLandLease?.properties?.kaupunginosa ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
-        <Text fw={500} size="sm">Hakemus:</Text>
+        <Text fw={600} size="sm">Hakemus:</Text>
         <Text size="sm">{selectedLandLease?.properties?.hakemustunnus ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
-        <Text fw={500} size="sm">Ajankohta:</Text>
+        <Text fw={600} size="sm">Ajankohta:</Text>
         <Text size="sm">{selectedLandLease?.properties?.tyo_alkaa_txt ?? "Unknown"} - {selectedLandLease?.properties?.tyo_paattyy_txt ?? "Unknown"}</Text>
       </Group>
       <Group gap="xs">
-        <Text fw={500} size="sm">Tila:</Text>
+        <Text fw={600} size="sm">Tila:</Text>
         <Text size="sm">{selectedLandLease?.properties?.status ?? "Unknown"}</Text>
       </Group>
+      <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
+        Alkuperäisdata
+      </Button>
       <Button
-        size="xs"
-        variant="white"
+        size="sm"
         onClick={() => {}}
         color="black"
         leftSection={<RefreshCcw size={12} />}
         disabled={isPendingLandLease}
+        bg="black"
+        c="white"
       >
         Päivitä
       </Button>
