@@ -11,7 +11,7 @@ import type { Feature as GFeature, MultiPolygon } from 'geojson';
 
 export function SegmentList() {
   const navigate = useNavigate({ from: '/' })
-  const { selectedSegment } = useSearch({ from: '/' })
+  const { selectedSegment, landLeaseSearch } = useSearch({ from: '/' })
   const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
   );
@@ -24,6 +24,21 @@ export function SegmentList() {
   const handleSegmentClick = (segmentId: string) => {
     navigate({ search: (prev) => ({ ...prev, selectedSegment: segmentId, dataPanelOpen: true }), replace: true })
   };
+
+  const normalizedQuery = (landLeaseSearch ?? '').trim().toLowerCase();
+  const filteredGroups = useMemo(() => {
+    if (!normalizedQuery) return Object.values(inverted);
+    return Object.values(inverted).filter((group) => {
+      const areaId = group.id;
+      const feature = group.type === 'Kaivuilmoitus'
+        ? excData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId)
+        : leaseData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId);
+      const properties = feature?.properties;
+      const address = (properties?.osoite ?? '').toLowerCase();
+      const hakemustunnus = (properties?.hakemustunnus ?? '').toLowerCase();
+      return address.includes(normalizedQuery) || hakemustunnus.includes(normalizedQuery);
+    });
+  }, [inverted, excData, leaseData, normalizedQuery]);
 
   return (
     <>
@@ -38,7 +53,7 @@ export function SegmentList() {
         </div>
       )}
       <Accordion chevronPosition="right" chevronSize={18} variant="contained" defaultValue={undefined}>
-        {Object.values(inverted).map((group) => {
+        {filteredGroups.map((group) => {
           const areaId = group.id;
           const typeLabel = group.type === 'Kaivuilmoitus' ? 'Kaivuilmoitus' : 'Aluevuokraus';
           const feature = group.type === 'Kaivuilmoitus'
@@ -71,6 +86,9 @@ export function SegmentList() {
           );
         })}
       </Accordion>
+      {filteredGroups.length === 0 && !(isPendingExc || isPendingLease) && (
+        <div style={{ padding: 8 }}>Ei osumia hakuehdolla.</div>
+      )}
     </>
   );
 }
