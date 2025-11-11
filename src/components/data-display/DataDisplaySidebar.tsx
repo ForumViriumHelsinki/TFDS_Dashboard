@@ -77,19 +77,19 @@ export function DataDisplaySidebar() {
           return { value: id, label: properties.Mittausasema ?? "" };
         })}
       />
-      <Group gap="xs">
+      <Group gap={4}>
         <Text fw={600} size="sm">Kaupunginosa:</Text>
         <Text size="sm">{selectedLandLease?.properties?.kaupunginosa ?? "Unknown"}</Text>
       </Group>
-      <Group gap="xs">
+      <Group gap={4}>
         <Text fw={600} size="sm">Hakemus:</Text>
         <Text size="sm">{selectedLandLease?.properties?.hakemustunnus ?? "Unknown"}</Text>
       </Group>
-      <Group gap="xs">
+      <Group gap={4}>
         <Text fw={600} size="sm">Ajankohta:</Text>
         <Text size="sm">{selectedLandLease?.properties?.tyo_alkaa_txt ?? "Unknown"} - {selectedLandLease?.properties?.tyo_paattyy_txt ?? "Unknown"}</Text>
       </Group>
-      <Group gap="xs">
+      <Group gap={4}>
         <Text fw={600} size="sm">Tila:</Text>
         <Text size="sm">{selectedLandLease?.properties?.status ?? "Unknown"}</Text>
       </Group>
