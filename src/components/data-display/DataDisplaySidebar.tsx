@@ -47,7 +47,7 @@ export function DataDisplaySidebar() {
         label="IDEA Segment"
         placeholder="Valitse IDEA Segment"
         value={selectedSegment}
-        size="xs"
+        size="sm"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedSegment: value }), replace: true })}
         data={(trafficSegmentsFC.features ?? []).map((feature) => {
@@ -59,7 +59,7 @@ export function DataDisplaySidebar() {
         placeholder="Valitse aikaväli"
         leftSection={<Calendar size={12} />}
         value={new Date("2025-07-28")}
-        size="xs"
+        size="sm"
         variant="filled"
         clearable
       />
@@ -68,7 +68,7 @@ export function DataDisplaySidebar() {
         placeholder="Valitse mittauspiste"
         disabled={isPendingAirQuality}
         value={selectedAirQualityStation ?? null}
-        size="xs"
+        size="sm"
         variant="filled"
         onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedAirQualityStation: value ?? undefined }), replace: true })}
         data={(airQualityData?.features ?? []).map((feature) => {

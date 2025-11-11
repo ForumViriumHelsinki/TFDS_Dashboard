@@ -9,6 +9,7 @@ export function DataDisplayContent() {
   return (
     <Group
       h="100%"
+      mah="548px"
       gap={0}
       align="flex-start"
       display={dataPanelOpen ? "flex" : "none"}

@@ -1,5 +1,4 @@
-import { Box, Group, Stack, Text } from "@mantine/core";
-import { useSearch } from "@tanstack/react-router";
+import { Group, Stack, Text } from "@mantine/core";
 import {
   CartesianGrid,
   LineChart,
@@ -46,54 +45,49 @@ const BORDER_COLOR = "#ADB5BD";
 const ALERT_BG = "#FFE3E3";
 
 export function DataDisplayGraphs() {
-  const { selectedSegment } = useSearch({ from: "/" });
 
   return (
     <Stack flex={1} p="md" h="100%" gap="xs">
-      <Stack gap={4}>
+      <Stack gap={4} flex={1}>
         <Text size="xs" c={TITLE_STYLE_COLOR}>
           Liikenteen sujuvuus m/h
         </Text>
-        <Box>
-          <Box h={230} w="100%">
-            <ResponsiveContainer>
-              <LineChart data={trafficData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <CartesianGrid vertical={false} stroke="transparent" />
-                {/* Plot-area background only */}
-                <ReferenceArea
-                  x1="00:00"
-                  x2="12:00"
-                  y1={0}
-                  y2={8}
-                  fill={BG_COLOR}
-                  fillOpacity={1}
-                  stroke="none"
-                />
-                {/* Left axis 0..8 with integer ticks */}
-                <YAxis
-                  ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8]}
-                  domain={[0, 8]}
-                  width={30}
-                  tick={AXIS_TICK_STYLE}
-                  axisLine={{ stroke: BORDER_COLOR }}
-                  tickLine={false}
-                  tickMargin={6}
-                />
-                <XAxis
-                  dataKey="time"
-                  ticks={timeLabels}
-                  tick={AXIS_TICK_STYLE}
-                  axisLine={{ stroke: BORDER_COLOR }}
-                  tickLine={false}
-                  tickMargin={6}
-                />
-                {/* Highlight windows (06:00–07:00 and 10:00–12:00) */}
-                <ReferenceArea x1="06:00" x2="07:00" fill={ALERT_BG} fillOpacity={1} stroke="none" />
-                <ReferenceArea x1="10:00" x2="12:00" fill={ALERT_BG} fillOpacity={1} stroke="none" />
-              </LineChart>
-            </ResponsiveContainer>
-          </Box>
-        </Box>
+        <ResponsiveContainer>
+          <LineChart data={trafficData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+            <CartesianGrid vertical={false} stroke="transparent" />
+            {/* Plot-area background only */}
+            <ReferenceArea
+              x1="00:00"
+              x2="12:00"
+              y1={0}
+              y2={8}
+              fill={BG_COLOR}
+              fillOpacity={1}
+              stroke="none"
+            />
+            {/* Left axis 0..8 with integer ticks */}
+            <YAxis
+              ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8]}
+              domain={[0, 8]}
+              width={30}
+              tick={AXIS_TICK_STYLE}
+              axisLine={{ stroke: BORDER_COLOR }}
+              tickLine={false}
+              tickMargin={6}
+            />
+            <XAxis
+              dataKey="time"
+              ticks={timeLabels}
+              tick={AXIS_TICK_STYLE}
+              axisLine={{ stroke: BORDER_COLOR }}
+              tickLine={false}
+              tickMargin={6}
+            />
+            {/* Highlight windows (06:00–07:00 and 10:00–12:00) */}
+            <ReferenceArea x1="06:00" x2="07:00" fill={ALERT_BG} fillOpacity={1} stroke="none" />
+            <ReferenceArea x1="10:00" x2="12:00" fill={ALERT_BG} fillOpacity={1} stroke="none" />
+          </LineChart>
+        </ResponsiveContainer>
       </Stack>
 
       <Stack gap={4} flex={1}>
@@ -103,50 +97,40 @@ export function DataDisplayGraphs() {
           </Text>
           <CircleHelp size={16} color="#000000" opacity={0.8} />
         </Group>
-        <Box>
-          <Box h={200} w="100%">
-            <ResponsiveContainer>
-              <LineChart data={aqiData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <CartesianGrid vertical={false} stroke="transparent" />
-                {/* Plot-area background only */}
-                <ReferenceArea
-                  x1="00:00"
-                  x2="12:00"
-                  y1={0}
-                  y2={150}
-                  fill={BG_COLOR}
-                  fillOpacity={1}
-                  stroke="none"
-                />
-                <YAxis
-                  domain={[0, 150]}
-                  ticks={[150, 100, 75, 50, 0]}
-                  width={30}
-                  tick={AXIS_TICK_STYLE}
-                  tickFormatter={(v: number) => (v === 0 ? "AQI" : `${v}`)}
-                  axisLine={{ stroke: BORDER_COLOR }}
-                  tickLine={false}
-                  tickMargin={6}
-                />
-                <XAxis
-                  dataKey="time"
-                  ticks={timeLabels}
-                  tick={AXIS_TICK_STYLE}
-                  axisLine={{ stroke: BORDER_COLOR }}
-                  tickLine={false}
-                  tickMargin={6}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </Box>
-        </Box>
+        <ResponsiveContainer>
+          <LineChart data={aqiData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+            <CartesianGrid vertical={false} stroke="transparent" />
+            {/* Plot-area background only */}
+            <ReferenceArea
+              x1="00:00"
+              x2="12:00"
+              y1={0}
+              y2={150}
+              fill={BG_COLOR}
+              fillOpacity={1}
+              stroke="none"
+            />
+            <YAxis
+              domain={[0, 150]}
+              ticks={[150, 100, 75, 50, 0]}
+              width={30}
+              tick={AXIS_TICK_STYLE}
+              tickFormatter={(v: number) => (v === 0 ? "AQI" : `${v}`)}
+              axisLine={{ stroke: BORDER_COLOR }}
+              tickLine={false}
+              tickMargin={6}
+            />
+            <XAxis
+              dataKey="time"
+              ticks={timeLabels}
+              tick={AXIS_TICK_STYLE}
+              axisLine={{ stroke: BORDER_COLOR }}
+              tickLine={false}
+              tickMargin={6}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </Stack>
-
-      {selectedSegment && (
-        <Text size="sm" c="dimmed">
-          Showing data for: {selectedSegment}
-        </Text>
-      )}
     </Stack>
   );
 }
