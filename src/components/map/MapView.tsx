@@ -26,12 +26,37 @@ import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
 export function MapView() {
   const trafficSegmentsFC = getTrafficSegmentsFC();
   const { selectedSegment } = useSearch({ from: "/" });
+  const { dataPanelOpen } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   const { data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
     })
   );
+
+  function InvalidateSizeOnLayoutChange({ panelOpen }: { panelOpen: boolean }) {
+    const map = useMap();
+    useEffect(() => {
+      if (!map) return;
+      map.invalidateSize();
+    }, [map, panelOpen]);
+    useEffect(() => {
+      if (!map) return;
+      const container = map.getContainer();
+      if (!container) return;
+      const observer = new ResizeObserver(() => {
+        map.invalidateSize();
+      });
+      observer.observe(container);
+      const onResize = () => map.invalidateSize();
+      window.addEventListener("resize", onResize);
+      return () => {
+        observer.disconnect();
+        window.removeEventListener("resize", onResize);
+      };
+    }, [map]);
+    return null;
+  }
 
   function FitMapToSelected() {
     const map = useMap();
@@ -51,22 +76,23 @@ export function MapView() {
       const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
       if (bounds.isValid()) {
         const center = bounds.getCenter();
-        map.setView(center, Math.max(map.getZoom(), 15), { animate: true });
+        map.setView(center, Math.max(map.getZoom(), 16), { animate: true });
       }
-    }, [map, trafficSegmentsFC, selectedSegment]);
+    });
 
     return null;
   }
 
   return (
-    <Box bg="gray.1" flex={1} h="100%">
-      <div id="map">
+    <Box bg="gray.1" flex={1} h="100%" style={{ minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div id="map" style={{ flex: 1 }}>
         <MapContainer
           center={[60.1699, 24.9384]}
           zoom={15}
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
+          <InvalidateSizeOnLayoutChange panelOpen={Boolean(dataPanelOpen)} />
           <LayersControl position="topright">
             <LayersControl.BaseLayer checked name="Taustakartta">
               <WMSTileLayer
@@ -108,11 +134,13 @@ export function MapView() {
                         feature?.properties?.Ilmanlaatuindeksi
                       );
                       return L.circleMarker(latlng, {
-                        radius: 8,
-                        color,
-                        weight: 2,
+                        radius: 10,
+                        color: "#000000",
+                        weight: 1,
                         fillColor: color,
-                        fillOpacity: 0.85,
+                        fillOpacity: 1,
+                        stroke: true,
+                        className: "aq-marker",
                       });
                     }}
                     onEachFeature={(
