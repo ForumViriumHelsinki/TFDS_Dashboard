@@ -7,6 +7,7 @@ import { Accordion, Group, Text } from '@mantine/core';
 import { useMemo } from 'react';
 import { buildDisturbanceMapFromJson } from '../../utils/invertTrafficDisturbances';
 import type { Feature as GFeature, MultiPolygon } from 'geojson';
+import Fuse from 'fuse.js';
 
 
 export function SegmentList() {
@@ -26,19 +27,33 @@ export function SegmentList() {
   };
 
   const normalizedQuery = (landLeaseSearch ?? '').trim().toLowerCase();
-  const filteredGroups = useMemo(() => {
-    if (!normalizedQuery) return Object.values(inverted);
-    return Object.values(inverted).filter((group) => {
+
+  const fuse = useMemo(() => {
+    const groups = Object.values(inverted);
+    const items = groups.map((group) => {
       const areaId = group.id;
       const feature = group.type === 'Kaivuilmoitus'
         ? excData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId)
         : leaseData?.features.find((f: GFeature<MultiPolygon, LandLeaseProps>) => f.properties?.id === areaId);
       const properties = feature?.properties;
-      const address = (properties?.osoite ?? '').toLowerCase();
-      const hakemustunnus = (properties?.hakemustunnus ?? '').toLowerCase();
-      return address.includes(normalizedQuery) || hakemustunnus.includes(normalizedQuery);
+      return {
+        group,
+        address: properties?.osoite ?? '',
+        hakemustunnus: properties?.hakemustunnus ?? '',
+      };
     });
-  }, [inverted, excData, leaseData, normalizedQuery]);
+    return new Fuse(items, {
+      keys: ['address', 'hakemustunnus'],
+      threshold: 0.1,
+      ignoreLocation: true,
+      isCaseSensitive: false,
+    });
+  }, [inverted, excData, leaseData]);
+
+  const filteredGroups = useMemo(() => {
+    if (!normalizedQuery) return Object.values(inverted);
+    return fuse.search(normalizedQuery).map((result) => result.item.group);
+  }, [normalizedQuery, inverted, fuse]);
 
   return (
     <>
