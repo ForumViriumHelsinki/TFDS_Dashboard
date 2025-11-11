@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Box } from "@mantine/core";
 import {
   MapContainer,
@@ -20,26 +19,9 @@ import { AirQualityIndicator } from "./AirQualityIndicator";
 import { useQuery } from "@tanstack/react-query";
 import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
-import {
-  getListLandLeaseQueryOptions,
-  landLeaseTypes,
-} from "../../queries/land-leases";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import masterSegments from "../../data/master_segment_history.json";
-import type { MasterSegmentsById } from "../../types/master-segment";
-import trafficDisturbances from "../../data/traffic_disturbance_data.json";
-  
-
-export const getTrafficSegmentsFC = () => {
-  const source = masterSegments as unknown as MasterSegmentsById;
-  const features = Object.entries(source).map(([sid, entry]) => ({
-    type: "Feature",
-    geometry: entry.current_geometry,
-    properties: { segmentId: sid },
-  }));
-  return { type: "FeatureCollection", features } as GeoJsonObject;
-};
+import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
 
 export function MapView() {
   const trafficSegmentsFC = getTrafficSegmentsFC();
@@ -50,67 +32,6 @@ export function MapView() {
       airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
     })
   );
-  const { data: excavationNoticeAreaData } = useQuery(
-    getListLandLeaseQueryOptions({
-      landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA,
-    })
-  );
-  const { data: landLeaseAreaData } = useQuery(
-    getListLandLeaseQueryOptions({
-      landLeaseType: landLeaseTypes.LAND_LEASE_AREA,
-    })
-  );
-
-  // Build disturbance (Kaivuilmoitus/Aluevuokraus) -> segments mapping from traffic_disturbance_data.json
-  useEffect(() => {
-    type DisturbanceType = "Kaivuilmoitus" | "Aluevuokraus";
-    type CollisionProps = {
-      traffic_disturbance_type: DisturbanceType;
-      traffic_disturbance_id: number;
-      application_id: string;
-      star_date: string;
-      end_date: string;
-    };
-    type SegmentEntry = {
-      geometry: { type: "LineString"; coordinates: [number, number][] };
-      detailedCollisions: Array<{ properties: CollisionProps }>;
-    };
-    type TrafficJson = {
-      segmentId: Record<string, SegmentEntry>;
-    };
-    const src = trafficDisturbances as unknown as TrafficJson;
-    const inverted: Record<
-      string,
-      {
-        type: DisturbanceType;
-        id: number;
-        application_id: string;
-        star_date: string;
-        end_date: string;
-        segments: Record<string, SegmentEntry>;
-      }
-    > = {};
-    for (const [segmentId, segment] of Object.entries(src.segmentId ?? {})) {
-      for (const dc of segment.detailedCollisions ?? []) {
-        const p = dc.properties;
-        const key = `${p.traffic_disturbance_type}:${p.traffic_disturbance_id}`;
-        if (!inverted[key]) {
-          inverted[key] = {
-            type: p.traffic_disturbance_type,
-            id: p.traffic_disturbance_id,
-            application_id: p.application_id,
-            star_date: p.star_date,
-            end_date: p.end_date,
-            segments: {},
-          };
-        }
-        inverted[key].segments[segmentId] = segment;
-      }
-    }
-    // Only log for now; not wiring into UI yet per request
-    // eslint-disable-next-line no-console
-    console.log("disturbanceToSegments (inverted from traffic_disturbance_data.json):", inverted);
-  }, []);
 
   function FitMapToSelected() {
     const map = useMap();
@@ -130,7 +51,7 @@ export function MapView() {
       const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
       if (bounds.isValid()) {
         const center = bounds.getCenter();
-        map.setView(center, Math.max(map.getZoom(), 16), { animate: true });
+        map.setView(center, Math.max(map.getZoom(), 15), { animate: true });
       }
     }, [map, trafficSegmentsFC, selectedSegment]);
 
@@ -212,32 +133,6 @@ export function MapView() {
                   />
                 )}
               </FeatureGroup>
-              <FeatureGroup>
-                {excavationNoticeAreaData && (
-                  <GeoJSON
-                    data={excavationNoticeAreaData}
-                    style={{
-                      color: "#F37438",
-                      weight: 3,
-                      fillColor: "#F37438",
-                      fillOpacity: 0.35,
-                    }}
-                  />
-                )}
-              </FeatureGroup>
-              <FeatureGroup>
-                {landLeaseAreaData && (
-                  <GeoJSON
-                    data={landLeaseAreaData}
-                    style={{
-                      color: "#ff00ff",
-                      weight: 3,
-                      fillColor: "#ff00ff",
-                      fillOpacity: 0.35,
-                    }}
-                  />
-                )}
-              </FeatureGroup>
               <Pane name="traffic-segments" style={{ zIndex: 650 }}>
                 <FeatureGroup>
                   <GeoJSON
@@ -249,8 +144,9 @@ export function MapView() {
                       const sid = feature?.properties?.segmentId;
                       const isSelected = sid && sid === selectedSegment;
                       return {
-                        color: isSelected ? "#F37438" : "#00ff00",
-                        weight: isSelected ? 4 : 3,
+                        color: "#FF5000",
+                        weight: isSelected ? 12 : 6,
+                        opacity: isSelected ? 1 : 0.5,
                       };
                     }}
                     onEachFeature={(
@@ -269,6 +165,11 @@ export function MapView() {
                             replace: true,
                           });
                         }
+                      layer.bindPopup(`
+                          <div>
+                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                          </div>
+                        `);
                       });
                     }}
                   />
