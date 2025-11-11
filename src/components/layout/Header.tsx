@@ -1,6 +1,7 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from '@tanstack/react-router'
+import { Calendar } from "lucide-react";
 
 export function Header() {
   const navigate = useNavigate({ from: '/' })
@@ -29,10 +30,11 @@ export function Header() {
       </Group>
       <Checkbox.Group value={sources} onChange={setSources}>
         <Group>
-          <Text size="xs" fw={500}>Ajankohta</Text>
+          <Text size="sm" fw={600}>Ajankohta</Text>
           <DateTimePicker 
             w={200} 
             value={new Date("2025-07-28")} 
+            leftSection={<Calendar size={16} />}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
           <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />
