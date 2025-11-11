@@ -10,7 +10,7 @@ export function SegmentSearch() {
       variant="filled"
       label="Haku"
       placeholder="Syötä hakuehto"
-      description="Hae osoitteella tai hakemuksen "
+      description="Hae osoitteella tai hakemuksen tunnuksella"
       value={searchValue}
       onChange={(event) => setSearchValue(event.currentTarget.value)}
     />
