@@ -13,8 +13,11 @@ ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 WORKDIR /app
 
 # Copy package files and install dependencies
+# Note: Using 'npm install' instead of 'npm ci' to work around npm bug with
+# optional dependencies (https://github.com/npm/cli/issues/4828) that prevents
+# Rollup's platform-specific native bindings from being installed correctly
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy application source
 COPY . .
