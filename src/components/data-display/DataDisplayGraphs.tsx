@@ -8,6 +8,9 @@ import {
   ReferenceArea,
 } from "recharts";
 import { CircleHelp } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
+import { useSearch } from "@tanstack/react-router";
 
 type TimePoint = { time: string; value: number };
 
@@ -44,7 +47,19 @@ const BG_COLOR = "#F8F9FA";
 const BORDER_COLOR = "#ADB5BD";
 const ALERT_BG = "#FFE3E3";
 
+
+
 export function DataDisplayGraphs() {
+  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
+  
+  const query = useQuery(
+    getTrafficFlowQueryOptions({
+      start: selectedStartDate ?? new Date(),
+      end: selectedEndDate ?? new Date(),
+      segmentId: selectedSegment ?? "",
+    })
+  );
+  console.log(query.data);
 
   return (
     <Stack flex={1} p="md" h="100%" gap="xs">

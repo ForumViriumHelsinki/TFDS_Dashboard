@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 
 const DEFAULT_END_DATE = new Date();
 const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
@@ -40,17 +39,7 @@ export function DataDisplaySidebar() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const startForQuery = selectedStartDate ?? DEFAULT_START_DATE;
-  const endForQuery = selectedEndDate ?? DEFAULT_END_DATE;
-  
-  const query = useQuery(
-    getTrafficFlowQueryOptions({
-      start: startForQuery,
-      end: endForQuery,
-      segmentId: selectedSegment ?? "",
-    })
-  );
-  console.log(query.data);
+
   return (
     <Stack
       p="md"
