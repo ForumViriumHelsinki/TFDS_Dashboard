@@ -31,10 +31,11 @@ export function Header() {
       <Checkbox.Group value={sources} onChange={setSources}>
         <Group>
           <Text size="sm" fw={600}>Ajankohta</Text>
-          <DateTimePicker 
-            w={200} 
-            value={new Date("2025-07-28")} 
+          <DateTimePicker
+            w={200}
+            value={new Date("2025-07-28")}
             leftSection={<Calendar size={16} />}
+            popoverProps={{ withinPortal: true, zIndex: 1200 }}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
           <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />
