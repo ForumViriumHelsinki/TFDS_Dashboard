@@ -86,7 +86,6 @@ export function DataDisplaySidebar() {
         }}
         size="sm"
         variant="filled"
-        clearable
       />
       <DateTimePicker
         label="Mittausaikaväli päättyen"
@@ -104,7 +103,7 @@ export function DataDisplaySidebar() {
         }}
         size="sm"
         variant="filled"
-        clearable
+        
       />
       <Select
         label="Ilmanlaadun mittauspiste"
