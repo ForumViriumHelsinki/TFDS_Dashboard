@@ -42,6 +42,7 @@ const TITLE_STYLE_COLOR = "#495057";
 const BG_COLOR = "#F8F9FA";
 const BORDER_COLOR = "#ADB5BD";
 // const ALERT_BG = "#FFE3E3";
+const CLOSED_BG = "#FFE3E3";
 
 
 
@@ -68,7 +69,9 @@ export function DataDisplayGraphs() {
           typeof fcdValueRaw === "number"
             ? fcdValueRaw
             : Number.parseFloat(String(fcdValueRaw ?? 0));
-        return { ts, fcd: Number.isFinite(fcdValue) ? fcdValue : 0 };
+        const statusRaw = row["segment_closure_status"] as string | number | boolean | null;
+        const status = String(statusRaw ?? "").toLowerCase();
+        return { ts, fcd: Number.isFinite(fcdValue) ? fcdValue : 0, status };
       })
     : [];
   
@@ -76,6 +79,44 @@ export function DataDisplayGraphs() {
   const seriesMin = trafficSeries.length ? Math.min(...trafficSeries.map((d) => d.ts)) : undefined;
   const seriesMax = trafficSeries.length ? Math.max(...trafficSeries.map((d) => d.ts)) : undefined;
   const rangeMs = seriesMin !== undefined && seriesMax !== undefined ? seriesMax - seriesMin : 0;
+
+  // Determine data step (default to 5 minutes)
+  const inferredStepMs =
+    trafficSeries.length >= 2 ? Math.max(1, trafficSeries[1].ts - trafficSeries[0].ts) : 5 * 60 * 1000;
+
+  // Build full-height bands for a given status and clamp to current domain
+  type Band = { x1: number; x2: number };
+  function buildStatusBands(targetStatus: "open" | "closed"): Band[] {
+    if (!trafficSeries.length || seriesMin === undefined || seriesMax === undefined) return [];
+    const bands: Band[] = [];
+    let currentStart: number | null = null;
+    for (let i = 0; i < trafficSeries.length; i++) {
+      const point = trafficSeries[i];
+      const statusNorm = String(point.status ?? "").toLowerCase();
+      const isTarget = statusNorm === targetStatus;
+      const next = trafficSeries[i + 1];
+      const nextStatusNorm = next ? String(next.status ?? "").toLowerCase() : "";
+      const nextIsTarget = next ? nextStatusNorm === targetStatus : false;
+
+      if (isTarget && currentStart === null) {
+        currentStart = point.ts;
+      }
+      if (isTarget && !nextIsTarget) {
+        const rawX1 = currentStart ?? point.ts;
+        const rawX2 = next ? next.ts : point.ts + inferredStepMs;
+        // Clamp to domain to ensure visibility
+        const x1 = Math.max(seriesMin, rawX1);
+        const x2 = Math.min(seriesMax, rawX2);
+        if (x2 > x1) {
+          bands.push({ x1, x2 });
+        }
+        currentStart = null;
+      }
+    }
+    return bands;
+  }
+  // Render closed bands by default
+  const closedBands = buildStatusBands("closed");
 
   function chooseStepMs(totalRangeMs: number): number {
     // Allowed "nice" steps
@@ -144,6 +185,19 @@ export function DataDisplayGraphs() {
         <ResponsiveContainer>
           <LineChart data={trafficSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <CartesianGrid vertical={false} stroke="transparent" />
+            {/* Closed segment bands */}
+            {closedBands.map((b, i) => (
+              <ReferenceArea
+                key={i}
+                x1={b.x1}
+                x2={b.x2}
+                y1={0}
+                y2={10}
+                fill={CLOSED_BG}
+                fillOpacity={1}
+                stroke="none"
+              />
+            ))}
             {/* Left axis 0..10 with integer ticks */}
             <YAxis
               ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
