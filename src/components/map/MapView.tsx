@@ -24,7 +24,6 @@ import { useEffect } from "react";
 import {
   buildDisturbanceMapFromJson,
   buildSegmentsFeatureCollection,
-  type DisturbanceType,
 } from "../../utils/invertTrafficDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
@@ -37,27 +36,31 @@ export function MapView() {
   const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
-  const selectedDisturbanceTypes: DisturbanceType[] = useMemo(() => {
-    const t: DisturbanceType[] = [];
-    if (showAreaRentals) t.push("Aluevuokraus");
-    if (showExcavationNotices) t.push("Kaivuilmoitus");
-    return t;
-  }, [showAreaRentals, showExcavationNotices]);
-
-  const filteredTrafficSegmentsFC = useMemo(() => {
-    if (selectedDisturbanceTypes.length === 0) {
+  const disturbanceMap = useMemo(() => buildDisturbanceMapFromJson(), []);
+  const areaRentalSegmentsFC = useMemo(() => {
+    if (!showAreaRentals) {
       return {
         type: "FeatureCollection",
         features: [],
       } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
     }
-    const base = buildDisturbanceMapFromJson();
-    const filteredEntries = Object.entries(base).filter(
-      ([, group]) => selectedDisturbanceTypes.includes(group.type)
+    const entries = Object.entries(disturbanceMap).filter(
+      ([, group]) => group.type === "Aluevuokraus"
     );
-    const filteredMap = Object.fromEntries(filteredEntries);
-    return buildSegmentsFeatureCollection(filteredMap);
-  }, [selectedDisturbanceTypes]);
+    return buildSegmentsFeatureCollection(Object.fromEntries(entries));
+  }, [showAreaRentals, disturbanceMap]);
+  const excavationSegmentsFC = useMemo(() => {
+    if (!showExcavationNotices) {
+      return {
+        type: "FeatureCollection",
+        features: [],
+      } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
+    }
+    const entries = Object.entries(disturbanceMap).filter(
+      ([, group]) => group.type === "Kaivuilmoitus"
+    );
+    return buildSegmentsFeatureCollection(Object.fromEntries(entries));
+  }, [showExcavationNotices, disturbanceMap]);
 
   const { data: airQualityData } = useQuery({
     ...getListAirQualityQueryOptions({
@@ -95,14 +98,13 @@ export function MapView() {
 
     useEffect(() => {
       if (!map || !selectedSegment) return;
-      const fc = filteredTrafficSegmentsFC as unknown as {
-        type: string;
-        features?: Array<Feature<Geometry, { segmentId?: string }>>;
-      };
-      const matched =
-        fc.features?.find(
-          (f) => f?.properties?.segmentId === selectedSegment
-        ) ?? null;
+      const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> = [
+        ...((areaRentalSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+        ...((excavationSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+      ];
+      const matched = allFeatures.find(
+        (f) => f?.properties?.segmentId === selectedSegment
+      ) ?? null;
       if (!matched) return;
       const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
       if (bounds.isValid()) {
@@ -196,13 +198,60 @@ export function MapView() {
               </LayersControl.Overlay>
             )}
 
-            {(showAreaRentals || showExcavationNotices) && (
-              <LayersControl.Overlay name="Häiriösegmentit" checked>
-                <Pane name="traffic-segments" style={{ zIndex: 650 }}>
+            {showAreaRentals && (
+              <LayersControl.Overlay name="Aluevuokraus" checked>
+                <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
                   <FeatureGroup>
                     <GeoJSON
-                      pane="traffic-segments"
-                      data={filteredTrafficSegmentsFC}
+                      pane="traffic-segments-area"
+                      data={areaRentalSegmentsFC}
+                      style={(
+                        feature?: Feature<Geometry, { segmentId?: string }>
+                      ) => {
+                        const sid = feature?.properties?.segmentId;
+                        const isSelected = sid && sid === selectedSegment;
+                        return {
+                          color: "#FF5000",
+                          weight: isSelected ? 12 : 6,
+                          opacity: isSelected ? 1 : 0.5,
+                        };
+                      }}
+                      onEachFeature={(
+                        feature: Feature<Geometry, { segmentId?: string }>,
+                        layer
+                      ) => {
+                        layer.on("click", () => {
+                          const segmentId = feature.properties?.segmentId;
+                          if (segmentId) {
+                            navigate({
+                              search: (s) => ({
+                                ...s,
+                                selectedSegment: segmentId,
+                                dataPanelOpen: true,
+                              }),
+                              replace: true,
+                            });
+                          }
+                          layer.bindPopup(`
+                            <div>
+                              ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                            </div>
+                          `);
+                        });
+                      }}
+                    />
+                  </FeatureGroup>
+                </Pane>
+              </LayersControl.Overlay>
+            )}
+
+            {showExcavationNotices && (
+              <LayersControl.Overlay name="Kaivuilmoitus" checked>
+                <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
+                  <FeatureGroup>
+                    <GeoJSON
+                      pane="traffic-segments-exc"
+                      data={excavationSegmentsFC}
                       style={(
                         feature?: Feature<Geometry, { segmentId?: string }>
                       ) => {
