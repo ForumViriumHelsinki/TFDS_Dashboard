@@ -101,8 +101,9 @@ export function AirQualityChart() {
 
   const seriesMinTs = filteredSeries.length ? filteredSeries[0].ts : undefined;
   const seriesMaxTs = filteredSeries.length ? filteredSeries[filteredSeries.length - 1].ts : undefined;
-  const axisMin = seriesMinTs ?? requestedStartTs;
-  const axisMax = seriesMaxTs ?? requestedEndTs;
+  // Prefer requested range when available so charts line up on the same ticks
+  const axisMin = requestedStartTs ?? seriesMinTs;
+  const axisMax = requestedEndTs ?? seriesMaxTs;
   const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   function formatTick(ts: number): string {

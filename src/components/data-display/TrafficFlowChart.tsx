@@ -50,8 +50,9 @@ export function TrafficFlowChart() {
 
   const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
   const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
-  const axisMin = seriesMin ?? requestedStartTs;
-  const axisMax = seriesMax ?? requestedEndTs;
+  // Prefer requested range when available so charts line up on the same ticks
+  const axisMin = requestedStartTs ?? seriesMin;
+  const axisMax = requestedEndTs ?? seriesMax;
   const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const inferredStepMs =
