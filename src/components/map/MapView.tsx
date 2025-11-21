@@ -155,141 +155,135 @@ export function MapView() {
             </LayersControl.BaseLayer>
 
             {showAirQuality && (
-              <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
-                <FeatureGroup>
-                  {airQualityData && (
-                    <GeoJSON
-                      data={airQualityData}
-                      pointToLayer={(
-                        feature: Feature<Geometry, AirQualityProps>,
-                        latlng
-                      ) => {
-                        const color = getAirQualityColor(
-                          feature?.properties?.Ilmanlaatuindeksi
-                        );
-                        return L.circleMarker(latlng, {
-                          radius: 10,
-                          color: "#000000",
-                          weight: 1,
-                          fillColor: color,
-                          fillOpacity: 1,
-                          stroke: true,
-                          className: "aq-marker",
-                        });
-                      }}
-                      onEachFeature={(
-                        feature: Feature<Geometry, AirQualityProps>,
-                        layer
-                      ) => {
-                        const properties: AirQualityProps =
-                          feature.properties ?? {};
-                        layer.bindPopup(`
-                          <div>
-                            <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
-                            ${properties.Mittausaseman_osoite ?? ""}<br/>
-                            ${properties.Aika ?? ""}<br/>
-                            Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
-                          </div>
-                        `);
-                      }}
-                    />
-                  )}
-                </FeatureGroup>
-              </LayersControl.Overlay>
+              <FeatureGroup>
+                {airQualityData && (
+                  <GeoJSON
+                    data={airQualityData}
+                    pointToLayer={(
+                      feature: Feature<Geometry, AirQualityProps>,
+                      latlng
+                    ) => {
+                      const color = getAirQualityColor(
+                        feature?.properties?.Ilmanlaatuindeksi
+                      );
+                      return L.circleMarker(latlng, {
+                        radius: 10,
+                        color: "#000000",
+                        weight: 1,
+                        fillColor: color,
+                        fillOpacity: 1,
+                        stroke: true,
+                        className: "aq-marker",
+                      });
+                    }}
+                    onEachFeature={(
+                      feature: Feature<Geometry, AirQualityProps>,
+                      layer
+                    ) => {
+                      const properties: AirQualityProps =
+                        feature.properties ?? {};
+                      layer.bindPopup(`
+                        <div>
+                          <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
+                          ${properties.Mittausaseman_osoite ?? ""}<br/>
+                          ${properties.Aika ?? ""}<br/>
+                          Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
+                        </div>
+                      `);
+                    }}
+                  />
+                )}
+              </FeatureGroup>
             )}
 
             {showAreaRentals && (
-              <LayersControl.Overlay name="Aluevuokraus" checked>
-                <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
-                  <FeatureGroup>
-                    <GeoJSON
-                      pane="traffic-segments-area"
-                      data={areaRentalSegmentsFC}
-                      style={(
-                        feature?: Feature<Geometry, { segmentId?: string }>
-                      ) => {
-                        const sid = feature?.properties?.segmentId;
-                        const isSelected = sid && sid === selectedSegment;
-                        return {
-                          color: "#FF5000",
-                          weight: isSelected ? 12 : 6,
-                          opacity: isSelected ? 1 : 0.5,
-                        };
-                      }}
-                      onEachFeature={(
-                        feature: Feature<Geometry, { segmentId?: string }>,
-                        layer
-                      ) => {
-                        layer.on("click", () => {
-                          const segmentId = feature.properties?.segmentId;
-                          if (segmentId) {
-                            navigate({
-                              search: (s) => ({
-                                ...s,
-                                selectedSegment: segmentId,
-                                dataPanelOpen: true,
-                              }),
-                              replace: true,
-                            });
-                          }
-                          layer.bindPopup(`
-                            <div>
-                              ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
-                            </div>
-                          `);
-                        });
-                      }}
-                    />
-                  </FeatureGroup>
-                </Pane>
-              </LayersControl.Overlay>
+              <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
+                <FeatureGroup>
+                  <GeoJSON
+                    pane="traffic-segments-area"
+                    data={areaRentalSegmentsFC}
+                    style={(
+                      feature?: Feature<Geometry, { segmentId?: string }>
+                    ) => {
+                      const sid = feature?.properties?.segmentId;
+                      const isSelected = sid && sid === selectedSegment;
+                      return {
+                        color: "#FF5000",
+                        weight: isSelected ? 12 : 6,
+                        opacity: isSelected ? 1 : 0.5,
+                      };
+                    }}
+                    onEachFeature={(
+                      feature: Feature<Geometry, { segmentId?: string }>,
+                      layer
+                    ) => {
+                      layer.on("click", () => {
+                        const segmentId = feature.properties?.segmentId;
+                        if (segmentId) {
+                          navigate({
+                            search: (s) => ({
+                              ...s,
+                              selectedSegment: segmentId,
+                              dataPanelOpen: true,
+                            }),
+                            replace: true,
+                          });
+                        }
+                        layer.bindPopup(`
+                          <div>
+                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                          </div>
+                        `);
+                      });
+                    }}
+                  />
+                </FeatureGroup>
+              </Pane>
             )}
 
             {showExcavationNotices && (
-              <LayersControl.Overlay name="Kaivuilmoitus" checked>
-                <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
-                  <FeatureGroup>
-                    <GeoJSON
-                      pane="traffic-segments-exc"
-                      data={excavationSegmentsFC}
-                      style={(
-                        feature?: Feature<Geometry, { segmentId?: string }>
-                      ) => {
-                        const sid = feature?.properties?.segmentId;
-                        const isSelected = sid && sid === selectedSegment;
-                        return {
-                          color: "#FF5000",
-                          weight: isSelected ? 12 : 6,
-                          opacity: isSelected ? 1 : 0.5,
-                        };
-                      }}
-                      onEachFeature={(
-                        feature: Feature<Geometry, { segmentId?: string }>,
-                        layer
-                      ) => {
-                        layer.on("click", () => {
-                          const segmentId = feature.properties?.segmentId;
-                          if (segmentId) {
-                            navigate({
-                              search: (s) => ({
-                                ...s,
-                                selectedSegment: segmentId,
-                                dataPanelOpen: true,
-                              }),
-                              replace: true,
-                            });
-                          }
-                          layer.bindPopup(`
-                            <div>
-                              ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
-                            </div>
-                          `);
-                        });
-                      }}
-                    />
-                  </FeatureGroup>
-                </Pane>
-              </LayersControl.Overlay>
+              <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
+                <FeatureGroup>
+                  <GeoJSON
+                    pane="traffic-segments-exc"
+                    data={excavationSegmentsFC}
+                    style={(
+                      feature?: Feature<Geometry, { segmentId?: string }>
+                    ) => {
+                      const sid = feature?.properties?.segmentId;
+                      const isSelected = sid && sid === selectedSegment;
+                      return {
+                        color: "#FF5000",
+                        weight: isSelected ? 12 : 6,
+                        opacity: isSelected ? 1 : 0.5,
+                      };
+                    }}
+                    onEachFeature={(
+                      feature: Feature<Geometry, { segmentId?: string }>,
+                      layer
+                    ) => {
+                      layer.on("click", () => {
+                        const segmentId = feature.properties?.segmentId;
+                        if (segmentId) {
+                          navigate({
+                            search: (s) => ({
+                              ...s,
+                              selectedSegment: segmentId,
+                              dataPanelOpen: true,
+                            }),
+                            replace: true,
+                          });
+                        }
+                        layer.bindPopup(`
+                          <div>
+                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                          </div>
+                        `);
+                      });
+                    }}
+                  />
+                </FeatureGroup>
+              </Pane>
             )}
           </LayersControl>
           <AirQualityIndicator />

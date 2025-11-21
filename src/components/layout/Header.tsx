@@ -38,7 +38,7 @@ export function Header() {
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
           <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />
-          <Checkbox value="air-quality" label="Ilmanlaatu" />
+          <Checkbox value="air-quality" label="Ilmanlaatu nyt" />
         </Group>
       </Checkbox.Group>
       <Group gap="lg">
