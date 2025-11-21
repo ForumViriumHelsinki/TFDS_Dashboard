@@ -1,7 +1,5 @@
 import type { Feature, FeatureCollection, LineString, MultiPolygon } from "geojson";
 import type { LandLeaseProps } from "../queries/land-leases";
-import trafficDisturbanceData from "../data/traffic_disturbance_data.json";
-import segmentsMapping from "../data/segments_mapping.json";
 
 export type DisturbanceType = "Kaivuilmoitus" | "Aluevuokraus";
 
@@ -32,12 +30,15 @@ export type DisturbanceGroup = {
 
 export type DisturbanceMap = Record<string, DisturbanceGroup>;
 
-type TrafficJson = {
+export type TrafficJson = {
   segmentId: Record<string, SegmentEntry>;
 };
 
-export function buildDisturbanceMapFromJson(): DisturbanceMap {
-  const src = trafficDisturbanceData as unknown as TrafficJson;
+export type SegmentsMappingJson = {
+  segmentId: Record<string, { geometry: LineString }>;
+};
+
+export function buildDisturbanceMapFromJson(src: TrafficJson): DisturbanceMap {
   const inverted: DisturbanceMap = {};
   for (const [segmentId, segment] of Object.entries(src.segmentId ?? {})) {
     for (const dc of segment.detailedCollisions ?? []) {
@@ -106,16 +107,13 @@ export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureColl
   return { type: "FeatureCollection", features } as FeatureCollection<LineString, { segmentId: string }>;
 }
 
-export const getTrafficSegmentsFC = (): FeatureCollection<LineString, { segmentId: string }> => {
-  const src = segmentsMapping as unknown as {
-    segmentId: Record<string, { geometry: LineString }>;
-  };
-  const disturbance = trafficDisturbanceData as unknown as {
-    segmentId: Record<string, unknown>;
-  };
+export const getTrafficSegmentsFC = (
+  mapping: SegmentsMappingJson,
+  disturbance: { segmentId: Record<string, unknown> }
+): FeatureCollection<LineString, { segmentId: string }> => {
   const allowedSegmentIds = new Set(Object.keys(disturbance.segmentId ?? {}));
   const features: Array<Feature<LineString, { segmentId: string }>> = [];
-  for (const [segmentId, entry] of Object.entries(src.segmentId ?? {})) {
+  for (const [segmentId, entry] of Object.entries(mapping.segmentId ?? {})) {
     if (!entry?.geometry) continue;
     if (!allowedSegmentIds.has(segmentId)) continue;
     features.push({

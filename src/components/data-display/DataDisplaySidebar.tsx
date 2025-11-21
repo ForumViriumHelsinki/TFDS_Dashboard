@@ -6,6 +6,7 @@ import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
 import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
+import { getSegmentsMappingQueryOptions, getTrafficDisturbancesQueryOptions } from "../../queries/traffic-disturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
@@ -18,7 +19,14 @@ export function DataDisplaySidebar() {
   const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
-  const trafficSegmentsFC = getTrafficSegmentsFC();
+  const { data: segmentsJson } = useQuery(getSegmentsMappingQueryOptions());
+  const { data: trafficJson } = useQuery(getTrafficDisturbancesQueryOptions());
+  const trafficSegmentsFC = useMemo(() => {
+    if (!segmentsJson || !trafficJson) {
+      return { type: "FeatureCollection", features: [] } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
+    }
+    return getTrafficSegmentsFC(segmentsJson, trafficJson);
+  }, [segmentsJson, trafficJson]);
   const { isLoading, getSelectedGroupBySegment } = useMergedDisturbances();
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),

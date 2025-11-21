@@ -21,10 +21,8 @@ import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import {
-  buildDisturbanceMapFromJson,
-  buildSegmentsFeatureCollection,
-} from "../../utils/invertTrafficDisturbances";
+import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
+import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
 
@@ -36,7 +34,7 @@ export function MapView() {
   const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
-  const disturbanceMap = useMemo(() => buildDisturbanceMapFromJson(), []);
+  const { map: disturbanceMap } = useMergedDisturbances();
   const areaRentalSegmentsFC = useMemo(() => {
     if (!showAreaRentals) {
       return {
@@ -196,7 +194,7 @@ export function MapView() {
               </FeatureGroup>
             )}
 
-            {showAreaRentals && (
+            {showAreaRentals && areaRentalSegmentsFC.features.length > 0 && (
               <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
                 <FeatureGroup>
                   <GeoJSON
@@ -241,7 +239,7 @@ export function MapView() {
               </Pane>
             )}
 
-            {showExcavationNotices && (
+            {showExcavationNotices && excavationSegmentsFC.features.length > 0 && (
               <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
                 <FeatureGroup>
                   <GeoJSON

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getListLandLeaseQueryOptions, landLeaseTypes } from "../queries/land-leases";
+import { getTrafficDisturbancesQueryOptions } from "../queries/traffic-disturbances";
 import {
   buildDisturbanceMapFromJson,
   mergeLandLeaseFeaturesIntoMap,
@@ -17,6 +18,11 @@ type UseMergedDisturbancesReturn = {
 };
 
 export function useMergedDisturbances(): UseMergedDisturbancesReturn {
+  // Static JSON mounted/served via /data
+  const { isPending: isPendingTraffic, data: trafficJson, error: trafficError } = useQuery(
+    getTrafficDisturbancesQueryOptions(),
+  );
+
   const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
   );
@@ -25,11 +31,12 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   );
 
   const map = useMemo<DisturbanceMap>(() => {
-    const base = buildDisturbanceMapFromJson();
+    if (!trafficJson) return {} as DisturbanceMap;
+    const base = buildDisturbanceMapFromJson(trafficJson);
     mergeLandLeaseFeaturesIntoMap(base, excData, "Kaivuilmoitus");
     mergeLandLeaseFeaturesIntoMap(base, leaseData, "Aluevuokraus");
     return base;
-  }, [excData, leaseData]);
+  }, [trafficJson, excData, leaseData]);
 
   const groups = useMemo<DisturbanceGroup[]>(() => Object.values(map), [map]);
 
@@ -41,8 +48,8 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   return {
     map,
     groups,
-    isLoading: Boolean(isPendingExc || isPendingLease),
-    error: excError ?? leaseError ?? null,
+    isLoading: Boolean(isPendingTraffic || isPendingExc || isPendingLease),
+    error: trafficError ?? excError ?? leaseError ?? null,
     getSelectedGroupBySegment,
   };
 }
