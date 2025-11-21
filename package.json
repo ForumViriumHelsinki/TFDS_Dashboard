@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@influxdata/influxdb-client": "^1.35.0",
+    "@influxdata/influxdb-client-browser": "^1.35.0",
     "@mantine/core": "^8.3.5",
     "@mantine/dates": "^8.3.5",
     "@mantine/hooks": "^8.3.5",
