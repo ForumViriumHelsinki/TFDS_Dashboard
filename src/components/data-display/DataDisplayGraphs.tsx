@@ -1,4 +1,4 @@
-import { Group, Stack, Text } from "@mantine/core";
+import { Box, Group, Stack, Text } from "@mantine/core";
 import {
   CartesianGrid,
   LineChart,
@@ -78,7 +78,12 @@ export function DataDisplayGraphs() {
   // Compute ticks for time-based axis to avoid overcrowding
   const seriesMin = trafficSeries.length ? Math.min(...trafficSeries.map((d) => d.ts)) : undefined;
   const seriesMax = trafficSeries.length ? Math.max(...trafficSeries.map((d) => d.ts)) : undefined;
-  const rangeMs = seriesMin !== undefined && seriesMax !== undefined ? seriesMax - seriesMin : 0;
+  // Fallback to selected date range when there is no data so that axes still render
+  const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
+  const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
+  const axisMin = seriesMin ?? requestedStartTs;
+  const axisMax = seriesMax ?? requestedEndTs;
+  const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   // Determine data step (default to 5 minutes)
   const inferredStepMs =
@@ -174,7 +179,7 @@ export function DataDisplayGraphs() {
     return d.toLocaleDateString(undefined, { month: "short", day: "2-digit" });
   }
 
-  const xTicks = generateTimeTicks(seriesMin, seriesMax);
+  const xTicks = generateTimeTicks(axisMin, axisMax);
 
   return (
     <Stack flex={1} p="md" h="100%" gap="xs">
@@ -182,48 +187,67 @@ export function DataDisplayGraphs() {
         <Text size="xs" c={TITLE_STYLE_COLOR}>
           Liikenteen sujuvuus m/h
         </Text>
-        <ResponsiveContainer>
-          <LineChart data={trafficSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-            <CartesianGrid vertical={false} stroke="transparent" />
-            {/* Closed segment bands */}
-            {closedBands.map((b, i) => (
-              <ReferenceArea
-                key={i}
-                x1={b.x1}
-                x2={b.x2}
-                y1={0}
-                y2={10}
-                fill={CLOSED_BG}
-                fillOpacity={1}
-                stroke="none"
+        <Box pos="relative" h="100%" w="100%">
+          <ResponsiveContainer>
+            <LineChart data={trafficSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+              <CartesianGrid vertical={false} stroke="transparent" />
+              {/* Closed segment bands */}
+              {closedBands.map((b, i) => (
+                <ReferenceArea
+                  key={i}
+                  x1={b.x1}
+                  x2={b.x2}
+                  y1={0}
+                  y2={10}
+                  fill={CLOSED_BG}
+                  fillOpacity={1}
+                  stroke="none"
+                />
+              ))}
+              {/* Left axis 0..10 with integer ticks */}
+              <YAxis
+                ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
+                domain={[0, 10]}
+                width={30}
+                tick={AXIS_TICK_STYLE}
+                axisLine={{ stroke: BORDER_COLOR }}
+                tickLine={false}
+                tickMargin={6}
               />
-            ))}
-            {/* Left axis 0..10 with integer ticks */}
-            <YAxis
-              ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-              domain={[0, 10]}
-              width={30}
-              tick={AXIS_TICK_STYLE}
-              axisLine={{ stroke: BORDER_COLOR }}
-              tickLine={false}
-              tickMargin={6}
-            />
-            <XAxis
-              dataKey="ts"
-              type="number"
-              scale="time"
-              domain={["dataMin", "dataMax"]}
-              ticks={xTicks}
-              tick={AXIS_TICK_STYLE}
-              minTickGap={12}
-              tickFormatter={(value: number) => formatTick(value)}
-              axisLine={{ stroke: BORDER_COLOR }}
-              tickLine={false}
-              tickMargin={6}
-            />
-            <Line type="monotone" dataKey="fcd" stroke="#1971C2" strokeWidth={2} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
+              <XAxis
+                dataKey="ts"
+                type="number"
+                scale="time"
+                domain={[
+                  axisMin !== undefined ? (axisMin as number) : "dataMin",
+                  axisMax !== undefined ? (axisMax as number) : "dataMax",
+                ]}
+                ticks={xTicks}
+                tick={AXIS_TICK_STYLE}
+                minTickGap={12}
+                tickFormatter={(value: number) => formatTick(value)}
+                axisLine={{ stroke: BORDER_COLOR }}
+                tickLine={false}
+                tickMargin={6}
+              />
+              <Line type="monotone" dataKey="fcd" stroke="#1971C2" strokeWidth={2} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+          {trafficSeries.length === 0 && (
+            <Box
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                pointerEvents: "none",
+              }}
+            >
+              <Text size="sm" c="#868e96">No data found</Text>
+            </Box>
+          )}
+        </Box>
       </Stack>
 
       <Stack gap={4} flex={1}>
