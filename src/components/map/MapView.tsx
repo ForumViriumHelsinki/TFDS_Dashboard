@@ -21,18 +21,50 @@ import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
+import {
+  buildDisturbanceMapFromJson,
+  buildSegmentsFeatureCollection,
+  type DisturbanceType,
+} from "../../utils/invertTrafficDisturbances";
+import { useMemo } from "react";
+import { Sources } from "../../router";
 
 export function MapView() {
-  const trafficSegmentsFC = getTrafficSegmentsFC();
   const { selectedSegment } = useSearch({ from: "/" });
   const { dataPanelOpen } = useSearch({ from: "/" });
+  const { sources } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
-  const { data: airQualityData } = useQuery(
-    getListAirQualityQueryOptions({
+  const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
+  const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
+  const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
+  const selectedDisturbanceTypes: DisturbanceType[] = useMemo(() => {
+    const t: DisturbanceType[] = [];
+    if (showAreaRentals) t.push("Aluevuokraus");
+    if (showExcavationNotices) t.push("Kaivuilmoitus");
+    return t;
+  }, [showAreaRentals, showExcavationNotices]);
+
+  const filteredTrafficSegmentsFC = useMemo(() => {
+    if (selectedDisturbanceTypes.length === 0) {
+      return {
+        type: "FeatureCollection",
+        features: [],
+      } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
+    }
+    const base = buildDisturbanceMapFromJson();
+    const filteredEntries = Object.entries(base).filter(
+      ([, group]) => selectedDisturbanceTypes.includes(group.type)
+    );
+    const filteredMap = Object.fromEntries(filteredEntries);
+    return buildSegmentsFeatureCollection(filteredMap);
+  }, [selectedDisturbanceTypes]);
+
+  const { data: airQualityData } = useQuery({
+    ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
-    })
-  );
+    }),
+    enabled: Boolean(showAirQuality),
+  });
 
   function InvalidateSizeOnLayoutChange({ panelOpen }: { panelOpen: boolean }) {
     const map = useMap();
@@ -63,7 +95,7 @@ export function MapView() {
 
     useEffect(() => {
       if (!map || !selectedSegment) return;
-      const fc = trafficSegmentsFC as unknown as {
+      const fc = filteredTrafficSegmentsFC as unknown as {
         type: string;
         features?: Array<Feature<Geometry, { segmentId?: string }>>;
       };
@@ -120,89 +152,96 @@ export function MapView() {
               />
             </LayersControl.BaseLayer>
 
-            <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
-              <FeatureGroup>
-                {airQualityData && (
-                  <GeoJSON
-                    data={airQualityData}
-                    pointToLayer={(
-                      feature: Feature<Geometry, AirQualityProps>,
-                      latlng
-                    ) => {
-                      const color = getAirQualityColor(
-                        feature?.properties?.Ilmanlaatuindeksi
-                      );
-                      return L.circleMarker(latlng, {
-                        radius: 10,
-                        color: "#000000",
-                        weight: 1,
-                        fillColor: color,
-                        fillOpacity: 1,
-                        stroke: true,
-                        className: "aq-marker",
-                      });
-                    }}
-                    onEachFeature={(
-                      feature: Feature<Geometry, AirQualityProps>,
-                      layer
-                    ) => {
-                      const properties: AirQualityProps =
-                        feature.properties ?? {};
-                      layer.bindPopup(`
-                        <div>
-                          <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
-                          ${properties.Mittausaseman_osoite ?? ""}<br/>
-                          ${properties.Aika ?? ""}<br/>
-                          Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
-                        </div>
-                      `);
-                    }}
-                  />
-                )}
-              </FeatureGroup>
-              <Pane name="traffic-segments" style={{ zIndex: 650 }}>
+            {showAirQuality && (
+              <LayersControl.Overlay name="Ilmanlaatu nyt" checked>
                 <FeatureGroup>
-                  <GeoJSON
-                    pane="traffic-segments"
-                    data={trafficSegmentsFC}
-                    style={(
-                      feature?: Feature<Geometry, { segmentId?: string }>
-                    ) => {
-                      const sid = feature?.properties?.segmentId;
-                      const isSelected = sid && sid === selectedSegment;
-                      return {
-                        color: "#FF5000",
-                        weight: isSelected ? 12 : 6,
-                        opacity: isSelected ? 1 : 0.5,
-                      };
-                    }}
-                    onEachFeature={(
-                      feature: Feature<Geometry, { segmentId?: string }>,
-                      layer
-                    ) => {
-                      layer.on("click", () => {
-                        const segmentId = feature.properties?.segmentId;
-                        if (segmentId) {
-                          navigate({
-                            search: (s) => ({
-                              ...s,
-                              selectedSegment: segmentId,
-                              dataPanelOpen: true,
-                            }),
-                            replace: true,
-                          });
-                        }
-                      layer.bindPopup(`
+                  {airQualityData && (
+                    <GeoJSON
+                      data={airQualityData}
+                      pointToLayer={(
+                        feature: Feature<Geometry, AirQualityProps>,
+                        latlng
+                      ) => {
+                        const color = getAirQualityColor(
+                          feature?.properties?.Ilmanlaatuindeksi
+                        );
+                        return L.circleMarker(latlng, {
+                          radius: 10,
+                          color: "#000000",
+                          weight: 1,
+                          fillColor: color,
+                          fillOpacity: 1,
+                          stroke: true,
+                          className: "aq-marker",
+                        });
+                      }}
+                      onEachFeature={(
+                        feature: Feature<Geometry, AirQualityProps>,
+                        layer
+                      ) => {
+                        const properties: AirQualityProps =
+                          feature.properties ?? {};
+                        layer.bindPopup(`
                           <div>
-                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                            <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
+                            ${properties.Mittausaseman_osoite ?? ""}<br/>
+                            ${properties.Aika ?? ""}<br/>
+                            Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
                           </div>
                         `);
-                      });
-                    }}
-                  />
+                      }}
+                    />
+                  )}
                 </FeatureGroup>
-              </Pane>
-            </LayersControl.Overlay>
+              </LayersControl.Overlay>
+            )}
+
+            {(showAreaRentals || showExcavationNotices) && (
+              <LayersControl.Overlay name="Häiriösegmentit" checked>
+                <Pane name="traffic-segments" style={{ zIndex: 650 }}>
+                  <FeatureGroup>
+                    <GeoJSON
+                      pane="traffic-segments"
+                      data={filteredTrafficSegmentsFC}
+                      style={(
+                        feature?: Feature<Geometry, { segmentId?: string }>
+                      ) => {
+                        const sid = feature?.properties?.segmentId;
+                        const isSelected = sid && sid === selectedSegment;
+                        return {
+                          color: "#FF5000",
+                          weight: isSelected ? 12 : 6,
+                          opacity: isSelected ? 1 : 0.5,
+                        };
+                      }}
+                      onEachFeature={(
+                        feature: Feature<Geometry, { segmentId?: string }>,
+                        layer
+                      ) => {
+                        layer.on("click", () => {
+                          const segmentId = feature.properties?.segmentId;
+                          if (segmentId) {
+                            navigate({
+                              search: (s) => ({
+                                ...s,
+                                selectedSegment: segmentId,
+                                dataPanelOpen: true,
+                              }),
+                              replace: true,
+                            });
+                          }
+                          layer.bindPopup(`
+                            <div>
+                              ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
+                            </div>
+                          `);
+                        });
+                      }}
+                    />
+                  </FeatureGroup>
+                </Pane>
+              </LayersControl.Overlay>
+            )}
           </LayersControl>
           <AirQualityIndicator />
           <FitMapToSelected />

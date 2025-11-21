@@ -5,10 +5,11 @@ import { Accordion, Group, Text } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Fuse from 'fuse.js';
 import { useMergedDisturbances } from '../../hooks/useMergedDisturbances';
+import { Sources } from '../../router';
 
 export function SegmentList() {
   const navigate = useNavigate({ from: '/' })
-  const { selectedSegment, landLeaseSearch } = useSearch({ from: '/' })
+  const { selectedSegment, landLeaseSearch, sources } = useSearch({ from: '/' })
   const { groups, isLoading, error, getSelectedGroupBySegment } = useMergedDisturbances();
   const [accordionManualValues, setAccordionManualValues] = useState<string[]>([]);
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -19,19 +20,29 @@ export function SegmentList() {
 
   const normalizedQuery = (landLeaseSearch ?? '').trim().toLowerCase();
 
+  const includeAreaRentals = sources?.includes(Sources.AREA_RENTALS);
+  const includeExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
+  const sourceFilteredGroups = useMemo(() => {
+    return groups.filter((g) => {
+      if (g.type === 'Aluevuokraus') return Boolean(includeAreaRentals);
+      if (g.type === 'Kaivuilmoitus') return Boolean(includeExcavationNotices);
+      return false;
+    });
+  }, [groups, includeAreaRentals, includeExcavationNotices]);
+
   const fuse = useMemo(() => {
-    return new Fuse(groups, {
+    return new Fuse(sourceFilteredGroups, {
       keys: ['landLeaseProperties.osoite', 'landLeaseProperties.hakemustunnus'],
       threshold: 0.1,
       ignoreLocation: true,
       isCaseSensitive: false,
     });
-  }, [groups]);
+  }, [sourceFilteredGroups]);
 
   const filteredGroups = useMemo(() => {
-    if (!normalizedQuery) return groups;
+    if (!normalizedQuery) return sourceFilteredGroups;
     return fuse.search(normalizedQuery).map((result) => result.item);
-  }, [normalizedQuery, groups, fuse]);
+  }, [normalizedQuery, sourceFilteredGroups, fuse]);
 
   // Derive which accordion item should be open from the selected segment
   const selectedGroupValue = useMemo(() => {

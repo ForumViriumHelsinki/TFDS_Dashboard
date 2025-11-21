@@ -4,6 +4,7 @@ import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/ai
 import { useSearch } from "@tanstack/react-router";
 import type { FeatureCollection, Geometry } from "geojson";
 import type { AirQualityProps } from "../../utils/airQuality";
+import { Sources } from "../../router";
 
 type TimePoint = { ts: number; index: number };
 
@@ -67,10 +68,16 @@ function generateTimeTicks(minTs?: number, maxTs?: number): number[] {
 }
 
 export function AirQualityChart() {
-  const { selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' });
-  const { data } = useQuery(
-    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX }),
-  );
+  const { selectedAirQualityStation, selectedStartDate, selectedEndDate, sources } = useSearch({ from: '/' });
+  const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
+  const { data } = useQuery({
+    ...getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX }),
+    enabled: Boolean(showAirQuality),
+  });
+
+  if (!showAirQuality) {
+    return null;
+  }
 
   const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
   const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
