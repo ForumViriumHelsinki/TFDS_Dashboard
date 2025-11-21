@@ -1,53 +1,173 @@
-import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, YAxis, XAxis } from "recharts";
+import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, YAxis, XAxis, Line } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { useSearch } from "@tanstack/react-router";
+import type { FeatureCollection, Geometry } from "geojson";
+import type { AirQualityProps } from "../../utils/airQuality";
 
-type TimePoint = { time: string; value: number };
-
-const timeLabels: string[] = [
-  "00:00", "01:00", "02:00", "03:00", "04:00", "05:00",
-  "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
-];
-
-const aqiData: TimePoint[] = timeLabels.map((t, i) => ({
-  time: t,
-  value: Math.max(0, Math.min(150, 60 + Math.cos(i / 2) * 20)),
-}));
+type TimePoint = { ts: number; index: number };
 
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
-const BG_COLOR = "#F8F9FA";
 const BORDER_COLOR = "#ADB5BD";
+const BG_COLOR = "#F8F9FA";
+
+function parseFinnishAikaToDate(aika?: string): Date | null {
+  if (!aika) return null;
+  // Supports formats like "8.11.2025 klo 3" or "08.11.2025 klo 03:30"
+  const re = /(\d{1,2})\.(\d{1,2})\.(\d{4})\s*klo\s*(\d{1,2})(?::(\d{2}))?/i;
+  const m = re.exec(aika.trim());
+  if (!m) return null;
+  const day = Number(m[1]);
+  const month = Number(m[2]) - 1; // JS months 0-11
+  const year = Number(m[3]);
+  const hour = Number(m[4]);
+  const minute = m[5] ? Number(m[5]) : 0;
+  const d = new Date(year, month, day, hour, minute, 0, 0);
+  if (Number.isNaN(d.getTime())) return null;
+  return d;
+}
+
+function chooseStepMs(totalRangeMs: number): number {
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const candidates = [
+    5 * minute,
+    15 * minute,
+    30 * minute,
+    1 * hour,
+    2 * hour,
+    3 * hour,
+    6 * hour,
+    12 * hour,
+    1 * day,
+    2 * day,
+  ];
+  const maxLabels = 8;
+  for (const step of candidates) {
+    if (totalRangeMs / step <= maxLabels) return step;
+  }
+  return 7 * day;
+}
+
+function alignToStepCeil(ts: number, stepMs: number): number {
+  return Math.ceil(ts / stepMs) * stepMs;
+}
+
+function generateTimeTicks(minTs?: number, maxTs?: number): number[] {
+  if (minTs === undefined || maxTs === undefined || minTs >= maxTs) return [];
+  const step = chooseStepMs(maxTs - minTs);
+  let t = alignToStepCeil(minTs, step);
+  const ticks: number[] = [];
+  while (t <= maxTs) {
+    ticks.push(t);
+    t += step;
+  }
+  return ticks;
+}
 
 export function AirQualityChart() {
+  const { selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' });
+  const { data } = useQuery(
+    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX }),
+  );
+
+  const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
+  const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
+
+  const features = (data as FeatureCollection<Geometry, AirQualityProps> | undefined)?.features ?? [];
+
+  const filteredSeries: TimePoint[] = features
+    .filter((f) => {
+      const aqProps = f.properties ?? {};
+      const stationId = String(aqProps.Mittausaseman_numero ?? "");
+      if (!selectedAirQualityStation) return false;
+      if (stationId !== String(selectedAirQualityStation)) return false;
+      const d = parseFinnishAikaToDate(aqProps.Aika);
+      if (!d) return false;
+      const ts = d.getTime();
+      if (requestedStartTs !== undefined && ts < requestedStartTs) return false;
+      if (requestedEndTs !== undefined && ts > requestedEndTs) return false;
+      return true;
+    })
+    .map((f) => {
+      const aqProps = f.properties ?? {};
+      const d = parseFinnishAikaToDate(aqProps.Aika);
+      const ts = d ? d.getTime() : 0;
+      const indexVal = Number(aqProps.Ilmanlaatuindeksi ?? 0);
+      return { ts, index: Number.isFinite(indexVal) ? indexVal : 0 };
+    })
+    .sort((a, b) => a.ts - b.ts);
+
+  const seriesMinTs = filteredSeries.length ? filteredSeries[0].ts : undefined;
+  const seriesMaxTs = filteredSeries.length ? filteredSeries[filteredSeries.length - 1].ts : undefined;
+  const axisMin = seriesMinTs ?? requestedStartTs;
+  const axisMax = seriesMaxTs ?? requestedEndTs;
+  const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
+
+  function formatTick(ts: number): string {
+    const d = new Date(ts);
+    if (rangeMs <= 24 * 60 * 60 * 1000) {
+      return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    }
+    if (rangeMs <= 3 * 24 * 60 * 60 * 1000) {
+      return d.toLocaleString(undefined, {
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+      });
+    }
+    return d.toLocaleDateString(undefined, { month: "short", day: "2-digit" });
+  }
+
+  const xTicks = generateTimeTicks(axisMin, axisMax);
+
+  const yValues = filteredSeries.map((p) => p.index);
+  const yMin = yValues.length ? Math.min(...yValues) : 0;
+  const yMax = yValues.length ? Math.max(...yValues) : 1;
+  const yDomain =
+    yValues.length && yMin !== yMax
+      ? [yMin, yMax]
+      : [Math.max(0, yMin - 1), yMax + 1];
+
   return (
     <ResponsiveContainer>
-      <LineChart data={aqiData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+      <LineChart data={filteredSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
         <CartesianGrid vertical={false} stroke="transparent" />
         <ReferenceArea
-          x1="00:00"
-          x2="12:00"
-          y1={0}
-          y2={150}
+          x1={axisMin !== undefined ? (axisMin as number) : undefined}
+          x2={axisMax !== undefined ? (axisMax as number) : undefined}
+          y1={yDomain[0]}
+          y2={yDomain[1]}
           fill={BG_COLOR}
           fillOpacity={1}
           stroke="none"
         />
         <YAxis
-          domain={[0, 150]}
-          ticks={[150, 100, 75, 50, 0]}
+          domain={yDomain as [number, number]}
           width={30}
           tick={AXIS_TICK_STYLE}
-          tickFormatter={(v: number) => (v === 0 ? "AQI" : `${v}`)}
           axisLine={{ stroke: BORDER_COLOR }}
           tickLine={false}
           tickMargin={6}
         />
         <XAxis
-          dataKey="time"
-          ticks={timeLabels}
+          dataKey="ts"
+          type="number"
+          scale="time"
+          domain={[
+            axisMin !== undefined ? (axisMin as number) : "dataMin",
+            axisMax !== undefined ? (axisMax as number) : "dataMax",
+          ]}
+          ticks={xTicks}
           tick={AXIS_TICK_STYLE}
+          minTickGap={12}
+          tickFormatter={(value: number) => formatTick(value)}
           axisLine={{ stroke: BORDER_COLOR }}
           tickLine={false}
           tickMargin={6}
         />
+        <Line type="monotone" dataKey="index" stroke="#1971C2" strokeWidth={2} dot={false} />
       </LineChart>
     </ResponsiveContainer>
   );
