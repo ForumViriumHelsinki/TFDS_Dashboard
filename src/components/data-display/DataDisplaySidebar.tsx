@@ -6,13 +6,16 @@ import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
 import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
+import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
+
+const DEFAULT_END_DATE = new Date();
+const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
 
 export function DataDisplaySidebar() {
   const navigate = useNavigate({ from: '/' })
-  const { selectedSegment } = useSearch({ from: '/' })
-  const { selectedAirQualityStation } = useSearch({ from: '/' })
+  const { selectedSegment, selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
   const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
@@ -22,7 +25,32 @@ export function DataDisplaySidebar() {
     () => getSelectedGroupBySegment(selectedSegment),
     [getSelectedGroupBySegment, selectedSegment]
   );
-    
+ 
+  // Initialize URL search params with defaults on first load if missing
+  useEffect(() => {
+    if (!selectedStartDate || !selectedEndDate) {
+      navigate({
+        search: (prev) => ({
+          ...prev,
+          selectedStartDate: selectedStartDate ?? DEFAULT_START_DATE,
+          selectedEndDate: selectedEndDate ?? DEFAULT_END_DATE,
+        }),
+        replace: true,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const startForQuery = selectedStartDate ?? DEFAULT_START_DATE;
+  const endForQuery = selectedEndDate ?? DEFAULT_END_DATE;
+  
+  const query = useQuery(
+    getTrafficFlowQueryOptions({
+      start: startForQuery,
+      end: endForQuery,
+      segmentId: selectedSegment ?? "",
+    })
+  );
+  console.log(query.data);
   return (
     <Stack
       p="md"
@@ -43,10 +71,37 @@ export function DataDisplaySidebar() {
         })}
       />
       <DateTimePicker
-        label="Mittausaikaväli"
-        placeholder="Valitse aikaväli"
+        label="Mittausaikaväli alkaen"
+        placeholder="Valitse alkuhetki"
         leftSection={<Calendar size={12} />}
-        value={new Date("2025-07-28")}
+        value={selectedStartDate ?? null}
+        onChange={(value) => {
+          void navigate({
+            search: (prev) => ({
+              ...prev,
+              selectedStartDate: value ?? undefined,
+            }),
+            replace: true,
+          });
+        }}
+        size="sm"
+        variant="filled"
+        clearable
+      />
+      <DateTimePicker
+        label="Mittausaikaväli päättyen"
+        placeholder="Valitse loppuhetki"
+        leftSection={<Calendar size={12} />}
+        value={selectedEndDate ?? null}
+        onChange={(value) => {
+          void navigate({
+            search: (prev) => ({
+              ...prev,
+              selectedEndDate: value ?? undefined,
+            }),
+            replace: true,
+          });
+        }}
         size="sm"
         variant="filled"
         clearable
