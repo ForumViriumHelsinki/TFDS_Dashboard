@@ -75,6 +75,8 @@ export function DataDisplaySidebar() {
         }}
         size="sm"
         variant="filled"
+        clearable
+        maxDate={new Date()}
       />
       <DateTimePicker
         label="Mittausaikaväli päättyen"
@@ -92,6 +94,8 @@ export function DataDisplaySidebar() {
         }}
         size="sm"
         variant="filled"
+        clearable
+        maxDate={new Date()}
         
       />
       <Select
