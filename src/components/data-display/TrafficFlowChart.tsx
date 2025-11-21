@@ -16,6 +16,7 @@ import type { TrafficFlowRow } from "../../queries/traffic-flow";
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
 const BORDER_COLOR = "#ADB5BD";
 const CLOSED_BG = "#FFE3E3";
+const BG_COLOR = "#F8F9FA";
 
 export function TrafficFlowChart() {
   const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
@@ -150,6 +151,15 @@ export function TrafficFlowChart() {
       <ResponsiveContainer>
         <LineChart data={trafficSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} stroke="transparent" />
+          <ReferenceArea
+            x1={axisMin !== undefined ? (axisMin as number) : undefined}
+            x2={axisMax !== undefined ? (axisMax as number) : undefined}
+            y1={0}
+            y2={10}
+            fill={BG_COLOR}
+            fillOpacity={1}
+            stroke="none"
+          />
           {closedBands.map((b, i) => (
             <ReferenceArea
               key={i}
