@@ -1,6 +1,7 @@
 import type { Feature, FeatureCollection, LineString, MultiPolygon } from "geojson";
 import type { LandLeaseProps } from "../queries/land-leases";
 import trafficDisturbanceData from "../data/traffic_disturbance_data.json";
+import segmentsMapping from "../data/segments_mapping.json";
 
 export type DisturbanceType = "Kaivuilmoitus" | "Aluevuokraus";
 
@@ -106,7 +107,23 @@ export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureColl
 }
 
 export const getTrafficSegmentsFC = (): FeatureCollection<LineString, { segmentId: string }> => {
-    const map = buildDisturbanceMapFromJson();
-    return buildSegmentsFeatureCollection(map);
+  const src = segmentsMapping as unknown as {
+    segmentId: Record<string, { geometry: LineString }>;
   };
-  
+  const disturbance = trafficDisturbanceData as unknown as {
+    segmentId: Record<string, unknown>;
+  };
+  const allowedSegmentIds = new Set(Object.keys(disturbance.segmentId ?? {}));
+  const features: Array<Feature<LineString, { segmentId: string }>> = [];
+  for (const [segmentId, entry] of Object.entries(src.segmentId ?? {})) {
+    if (!entry?.geometry) continue;
+    if (!allowedSegmentIds.has(segmentId)) continue;
+    features.push({
+      type: "Feature",
+      geometry: entry.geometry,
+      properties: { segmentId },
+    });
+  }
+  return { type: "FeatureCollection", features } as FeatureCollection<LineString, { segmentId: string }>;
+};
+ 
