@@ -63,7 +63,7 @@ export function MapView() {
 
     useEffect(() => {
       if (!map || !selectedSegment) return;
-      // Center to the selected road segment from trafficSegmentsFC (master_segment_history.json)
+      // Center to the selected road segment from trafficSegmentsFC (segments_mapping.json)
       const fc = trafficSegmentsFC as unknown as {
         type: string;
         features?: Array<Feature<Geometry, { segmentId?: string }>>;
