@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
   ReferenceArea,
+  Tooltip,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
@@ -17,6 +18,48 @@ const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
 const BORDER_COLOR = "#ADB5BD";
 const CLOSED_BG = "#FFE3E3";
 const BG_COLOR = "#F8F9FA";
+
+type TrafficPoint = { ts: number; fcd: number; status: string };
+
+function TrafficFlowTooltip(props: {
+  active?: boolean;
+  payload?: Array<{ value: number; payload: TrafficPoint }>;
+  label?: number;
+}) {
+  const { active, payload } = props;
+  if (!active || !payload || !payload.length) return null;
+
+  const point = payload[0].payload;
+  const d = new Date(point.ts);
+  const timeLabel = d.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const statusLabel =
+    point.status === "closed" ? "Closed" : point.status === "open" ? "Open" : point.status || "Unknown";
+
+  return (
+    <div
+      style={{
+        background: "white",
+        border: `1px solid ${BORDER_COLOR}`,
+        borderRadius: 4,
+        padding: "4px 8px",
+        fontSize: 12,
+      }}
+    >
+      <div>{timeLabel}</div>
+      <div>
+        FCD: <strong>{point.fcd}</strong>
+      </div>
+      <div>Status: {statusLabel}</div>
+    </div>
+  );
+}
 
 export function TrafficFlowChart() {
   const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
@@ -30,7 +73,7 @@ export function TrafficFlowChart() {
   );
   // console.log(query.data);
 
-  const trafficSeries = Array.isArray(query.data)
+  const trafficSeries: TrafficPoint[] = Array.isArray(query.data)
     ? (query.data as TrafficFlowRow[]).map((row) => {
         const iso = String((row["_time"] as string | number | boolean | null) ?? "");
         const date = new Date(iso);
@@ -196,6 +239,10 @@ export function TrafficFlowChart() {
             axisLine={{ stroke: BORDER_COLOR }}
             tickLine={false}
             tickMargin={6}
+          />
+          <Tooltip
+            content={<TrafficFlowTooltip />}
+            cursor={{ stroke: BORDER_COLOR, strokeDasharray: "3 3" }}
           />
           <Line type="monotone" dataKey="fcd" stroke="#1971C2" strokeWidth={2} dot={false} />
         </LineChart>

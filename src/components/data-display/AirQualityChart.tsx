@@ -1,4 +1,4 @@
-import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, YAxis, XAxis, Line } from "recharts";
+import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, YAxis, XAxis, Line, Tooltip } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useSearch } from "@tanstack/react-router";
@@ -64,6 +64,42 @@ function generateTimeTicks(minTs?: number, maxTs?: number): number[] {
     t += step;
   }
   return ticks;
+}
+
+function AirQualityTooltip(props: {
+  active?: boolean;
+  payload?: Array<{ value: number; payload: TimePoint }>;
+  label?: number;
+}) {
+  const { active, payload } = props;
+  if (!active || !payload || !payload.length) return null;
+
+  const point = payload[0].payload;
+  const d = new Date(point.ts);
+  const timeLabel = d.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return (
+    <div
+      style={{
+        background: "white",
+        border: `1px solid ${BORDER_COLOR}`,
+        borderRadius: 4,
+        padding: "4px 8px",
+        fontSize: 12,
+      }}
+    >
+      <div>{timeLabel}</div>
+      <div>
+        Ilmanlaatuindeksi: <strong>{point.index}</strong>
+      </div>
+    </div>
+  );
 }
 
 export function AirQualityChart() {
@@ -167,6 +203,10 @@ export function AirQualityChart() {
           axisLine={{ stroke: BORDER_COLOR }}
           tickLine={false}
           tickMargin={6}
+        />
+        <Tooltip
+          content={<AirQualityTooltip />}
+          cursor={{ stroke: BORDER_COLOR, strokeDasharray: "3 3" }}
         />
         <Line type="monotone" dataKey="index" stroke="#1971C2" strokeWidth={2} dot={false} />
       </LineChart>
