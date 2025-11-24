@@ -44,7 +44,7 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
     if (!segmentId) return undefined;
     return groups.find((g) => Boolean(g.segments[segmentId]));
   };
-
+  
   return {
     map,
     groups,
