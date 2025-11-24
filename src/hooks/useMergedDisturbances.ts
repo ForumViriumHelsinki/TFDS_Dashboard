@@ -8,6 +8,7 @@ import {
   type DisturbanceGroup,
   type DisturbanceMap,
 } from "../utils/invertTrafficDisturbances";
+import { useSearch } from "@tanstack/react-router";
 
 type UseMergedDisturbancesReturn = {
   map: DisturbanceMap;
@@ -22,6 +23,8 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   const { isPending: isPendingTraffic, data: trafficJson, error: trafficError } = useQuery(
     getTrafficDisturbancesQueryOptions(),
   );
+
+  const { selectedDate } = useSearch({ from: "/" });
 
   const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
@@ -38,15 +41,25 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
     return base;
   }, [trafficJson, excData, leaseData]);
 
-  const groups = useMemo<DisturbanceGroup[]>(() => Object.values(map), [map]);
+  const filteredMap = useMemo(() => {
+    if (!selectedDate) return map;
+    return Object.entries(map).filter(([ , group ]) => {
+      return new Date(group.star_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
+    }).reduce((acc, [ key, group ]) => {
+      acc[key] = group;
+      return acc;
+    }, {} as Record<string, DisturbanceGroup>);
+  }, [map, selectedDate]);
+
+  const groups = useMemo<DisturbanceGroup[]>(() => Object.values(filteredMap), [filteredMap]);
 
   const getSelectedGroupBySegment = (segmentId?: string) => {
     if (!segmentId) return undefined;
     return groups.find((g) => Boolean(g.segments[segmentId]));
   };
-  
+
   return {
-    map,
+    map: filteredMap,
     groups,
     isLoading: Boolean(isPendingTraffic || isPendingExc || isPendingLease),
     error: trafficError ?? excError ?? leaseError ?? null,

@@ -21,7 +21,7 @@ import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { buildSegmentsFeatureCollection, DisturbanceGroup } from "../../utils/invertTrafficDisturbances";
+import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
@@ -29,23 +29,13 @@ import { Sources } from "../../router";
 export function MapView() {
   const { selectedSegment } = useSearch({ from: "/" });
   const { dataPanelOpen } = useSearch({ from: "/" });
-  const { sources, selectedDate } = useSearch({ from: "/" });
+  const { sources } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
   const { map: disturbanceMap } = useMergedDisturbances();
-  console.log("disturbanceMap", disturbanceMap, selectedDate);
-  const filteredDisturbanceMap = useMemo(() => {
-    if (!selectedDate) return disturbanceMap;
-    return Object.entries(disturbanceMap).filter(([ , group ]) => {
-      return new Date(group.star_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
-    }).reduce((acc, [ key, group ]) => {
-      acc[key] = group;
-      return acc;
-    }, {} as Record<string, DisturbanceGroup>);
-  }, [disturbanceMap, selectedDate]);
-  console.log("filteredDisturbanceMap", filteredDisturbanceMap);
+  console.log("disturbanceMap", disturbanceMap);
   const areaRentalSegmentsFC = useMemo(() => {
     if (!showAreaRentals) {
       return {
