@@ -107,7 +107,7 @@ export function MapView() {
       const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
       if (bounds.isValid()) {
         const center = bounds.getCenter();
-        map.setView(center, Math.max(map.getZoom(), 16), { animate: true });
+        map.panTo(center, { animate: true });
       }
     });
 
