@@ -9,6 +9,7 @@ import {
   type DisturbanceMap,
 } from "../utils/invertTrafficDisturbances";
 import { useSearch } from "@tanstack/react-router";
+import { Sources } from "../router";
 
 type UseMergedDisturbancesReturn = {
   map: DisturbanceMap;
@@ -24,7 +25,7 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
     getTrafficDisturbancesQueryOptions(),
   );
 
-  const { selectedDate } = useSearch({ from: "/" });
+  const { selectedDate, sources } = useSearch({ from: "/" });
 
   const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
     getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
@@ -42,14 +43,23 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   }, [trafficJson, excData, leaseData]);
 
   const filteredMap = useMemo(() => {
-    if (!selectedDate) return map;
     return Object.entries(map).filter(([ , group ]) => {
-      return new Date(group.star_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
+      // 1. Filter by Source
+      if (group.type === 'Aluevuokraus' && !sources?.includes(Sources.AREA_RENTALS)) {
+        return false;
+      }
+      if (group.type === 'Kaivuilmoitus' && !sources?.includes(Sources.EXCAVATION_NOTICES)) {
+        return false;
+      }
+
+      // 2. Filter by Date (if selected)
+      if (!selectedDate) return true;
+      return new Date(group.start_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
     }).reduce((acc, [ key, group ]) => {
       acc[key] = group;
       return acc;
     }, {} as Record<string, DisturbanceGroup>);
-  }, [map, selectedDate]);
+  }, [map, selectedDate, sources]);
 
   const groups = useMemo<DisturbanceGroup[]>(() => Object.values(filteredMap), [filteredMap]);
 

@@ -35,31 +35,18 @@ export function MapView() {
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
   const { map: disturbanceMap } = useMergedDisturbances();
-  console.log("disturbanceMap", disturbanceMap);
   const areaRentalSegmentsFC = useMemo(() => {
-    if (!showAreaRentals) {
-      return {
-        type: "FeatureCollection",
-        features: [],
-      } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
-    }
     const entries = Object.entries(disturbanceMap).filter(
       ([, group]) => group.type === "Aluevuokraus"
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
-  }, [showAreaRentals, disturbanceMap]);
+  }, [disturbanceMap]);
   const excavationSegmentsFC = useMemo(() => {
-    if (!showExcavationNotices) {
-      return {
-        type: "FeatureCollection",
-        features: [],
-      } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
-    }
     const entries = Object.entries(disturbanceMap).filter(
       ([, group]) => group.type === "Kaivuilmoitus"
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
-  }, [showExcavationNotices, disturbanceMap]);
+  }, [disturbanceMap]);
 
   const { data: airQualityData } = useQuery({
     ...getListAirQualityQueryOptions({
