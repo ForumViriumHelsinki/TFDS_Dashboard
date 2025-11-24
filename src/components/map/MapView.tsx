@@ -15,7 +15,7 @@ import {
   getAirQualityStationId,
 } from "../../utils/airQuality";
 import L from "leaflet";
-import type { Geometry, Feature, GeoJsonObject } from "geojson";
+import type { Geometry, Feature, GeoJsonObject, FeatureCollection } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -24,6 +24,37 @@ import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
+
+function FitMapToSelected({
+  selectedSegment,
+  areaRentalSegmentsFC,
+  excavationSegmentsFC,
+}: {
+  selectedSegment?: string;
+  areaRentalSegmentsFC: FeatureCollection;
+  excavationSegmentsFC: FeatureCollection;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map || !selectedSegment) return;
+    const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> = [
+      ...((areaRentalSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+      ...((excavationSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+    ];
+    const matched = allFeatures.find(
+      (f) => f?.properties?.segmentId === selectedSegment
+    ) ?? null;
+    if (!matched) return;
+    const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
+    if (bounds.isValid()) {
+      const center = bounds.getCenter();
+      map.panTo(center, { animate: true });
+    }
+  }, [map, selectedSegment, areaRentalSegmentsFC, excavationSegmentsFC]);
+
+  return null;
+}
 
 export function MapView() {
   const { selectedSegment, selectedDate } = useSearch({ from: "/" });
@@ -76,28 +107,6 @@ export function MapView() {
     return null;
   }
 
-  function FitMapToSelected() {
-    const map = useMap();
-
-    useEffect(() => {
-      if (!map || !selectedSegment) return;
-      const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> = [
-        ...((areaRentalSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
-        ...((excavationSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
-      ];
-      const matched = allFeatures.find(
-        (f) => f?.properties?.segmentId === selectedSegment
-      ) ?? null;
-      if (!matched) return;
-      const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
-      if (bounds.isValid()) {
-        const center = bounds.getCenter();
-        map.panTo(center, { animate: true });
-      }
-    });
-
-    return null;
-  }
 
   return (
     <Box bg="gray.1" flex={1} h="100%" style={{ minHeight: 0, display: "flex", flexDirection: "column" }}>
@@ -286,7 +295,11 @@ export function MapView() {
             )}
           </LayersControl>
           <AirQualityIndicator />
-          <FitMapToSelected />
+          <FitMapToSelected
+            selectedSegment={selectedSegment}
+            areaRentalSegmentsFC={areaRentalSegmentsFC}
+            excavationSegmentsFC={excavationSegmentsFC}
+          />
         </MapContainer>
       </div>
     </Box>
