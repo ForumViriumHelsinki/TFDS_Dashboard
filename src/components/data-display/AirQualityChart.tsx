@@ -3,29 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useSearch } from "@tanstack/react-router";
 import type { FeatureCollection, Geometry } from "geojson";
-import type { AirQualityProps } from "../../utils/airQuality";
+import { parseFinnishAikaToDate, type AirQualityProps } from "../../utils/airQuality";
 
 type TimePoint = { ts: number; index: number };
 
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
 const BORDER_COLOR = "#ADB5BD";
 const BG_COLOR = "#F8F9FA";
-
-function parseFinnishAikaToDate(aika?: string): Date | null {
-  if (!aika) return null;
-  // Supports formats like "8.11.2025 klo 3" or "08.11.2025 klo 03:30"
-  const re = /(\d{1,2})\.(\d{1,2})\.(\d{4})\s*klo\s*(\d{1,2})(?::(\d{2}))?/i;
-  const m = re.exec(aika.trim());
-  if (!m) return null;
-  const day = Number(m[1]);
-  const month = Number(m[2]) - 1; // JS months 0-11
-  const year = Number(m[3]);
-  const hour = Number(m[4]);
-  const minute = m[5] ? Number(m[5]) : 0;
-  const d = new Date(year, month, day, hour, minute, 0, 0);
-  if (Number.isNaN(d.getTime())) return null;
-  return d;
-}
 
 function chooseStepMs(totalRangeMs: number): number {
   const minute = 60 * 1000;

@@ -12,6 +12,8 @@ import {
 import {
   getAirQualityColor,
   AirQualityProps,
+  parseFinnishAikaToDate,
+  getAirQualityStationId,
 } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature, GeoJsonObject } from "geojson";
@@ -50,10 +52,37 @@ export function MapView() {
 
   const { data: airQualityData } = useQuery({
     ...getListAirQualityQueryOptions({
-      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
+      airQualityType: selectedDate
+        ? AirQualityTypes.AIR_QUALITY_24H_MAX
+        : AirQualityTypes.AIR_QUALITY_NOW,
     }),
     enabled: Boolean(showAirQuality),
   });
+
+  const filteredAirQualityData = useMemo(() => {
+    if (!airQualityData || !selectedDate) return airQualityData;
+
+    const targetTs = selectedDate.getTime();
+    const stationMap = new Map<string, { diff: number; feature: Feature<Geometry, AirQualityProps> }>();
+
+    for (const feature of airQualityData.features) {
+      const aqProps = feature.properties ?? {};
+      const d = parseFinnishAikaToDate(aqProps.Aika);
+      if (!d) continue;
+
+      const diff = Math.abs(d.getTime() - targetTs);
+      const stationId = getAirQualityStationId(feature);
+
+      if (!stationMap.has(stationId) || diff < stationMap.get(stationId)!.diff) {
+        stationMap.set(stationId, { diff, feature });
+      }
+    }
+
+    return {
+      type: "FeatureCollection",
+      features: Array.from(stationMap.values()).map(v => v.feature)
+    } as import("geojson").FeatureCollection<Geometry, AirQualityProps>;
+  }, [airQualityData, selectedDate]);
 
   function InvalidateSizeOnLayoutChange({ panelOpen }: { panelOpen: boolean }) {
     const map = useMap();
@@ -142,9 +171,10 @@ export function MapView() {
 
             {showAirQuality && (
               <FeatureGroup>
-                {airQualityData && (
+                {filteredAirQualityData && (
                   <GeoJSON
-                    data={airQualityData}
+                    key={`air-quality-${selectedDate?.toISOString() ?? 'now'}`}
+                    data={filteredAirQualityData}
                     pointToLayer={(
                       feature: Feature<Geometry, AirQualityProps>,
                       latlng
