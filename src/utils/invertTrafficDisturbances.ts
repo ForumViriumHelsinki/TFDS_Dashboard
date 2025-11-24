@@ -20,7 +20,7 @@ export type DisturbanceGroup = {
   type: DisturbanceType;
   id: number;
   application_id: string;
-  star_date: string;
+  start_date: string;
   end_date: string;
   segments: Record<string, SegmentEntry>;
   // Optional enrichment from WFS land-lease datasets (geometry + properties)
@@ -49,7 +49,7 @@ export function buildDisturbanceMapFromJson(src: TrafficJson): DisturbanceMap {
           type: p.traffic_disturbance_type,
           id: p.traffic_disturbance_id,
           application_id: p.application_id,
-          star_date: p.star_date,
+          start_date: p.star_date,
           end_date: p.end_date,
           segments: {},
         };
