@@ -2,12 +2,26 @@ import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { Calendar } from "lucide-react";
+import { useEffect } from "react";
 
 export function Header() {
   const navigate = useNavigate({ from: '/' })
-  const { sources } = useSearch({ from: '/' })
+  const { sources, selectedDate } = useSearch({ from: '/' })
   const setSources = (next: string[]) =>
     navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true })
+
+  // Initialize selectedDate to current time on first load if missing
+  useEffect(() => {
+    if (!selectedDate) {
+      void navigate({
+        search: (prev) => ({
+          ...prev,
+          selectedDate: new Date(),
+        }),
+        replace: true,
+      });
+    }
+  }, [navigate, selectedDate]);
 
   return (
     <Group justify="space-between">
@@ -33,7 +47,16 @@ export function Header() {
           <Text size="sm" fw={600}>Ajankohta</Text>
           <DateTimePicker
             w={200}
-            value={new Date("2025-07-28")}
+            value={selectedDate ?? null}
+            onChange={(value) => {
+              void navigate({
+                search: (prev) => ({
+                  ...prev,
+                  selectedDate: value ?? undefined,
+                }),
+                replace: true,
+              });
+            }}
             leftSection={<Calendar size={16} />}
             popoverProps={{ withinPortal: true, zIndex: 1200 }}
           />

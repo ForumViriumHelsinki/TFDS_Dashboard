@@ -18,6 +18,7 @@ const searchSchema = z.object({
   landLeaseSearch: z.string().optional(),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),
+  selectedDate: z.coerce.date().optional(),
   sources: z.array(z.enum(Sources)).default(Object.values(Sources)).catch(Object.values(Sources)),
 })
 
