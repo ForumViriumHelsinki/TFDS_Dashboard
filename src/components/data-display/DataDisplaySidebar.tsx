@@ -19,7 +19,7 @@ export function DataDisplaySidebar() {
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
   
-  const { map, getSelectedGroupBySegment } = useMergedDisturbances();
+  const { map, getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
   const trafficSegmentsFC = useMemo(() => {
     return buildSegmentsFeatureCollection(map);
@@ -29,6 +29,13 @@ export function DataDisplaySidebar() {
     () => getSelectedGroupBySegment(selectedSegment),
     [getSelectedGroupBySegment, selectedSegment]
   );
+
+  // If selected segment is not found (e.g. filtered out), clear it
+  useEffect(() => {
+    if (!isLoading && selectedSegment && !selectedGroup) {
+      navigate({ search: (prev) => ({ ...prev, selectedSegment: undefined }), replace: true })
+    }
+  }, [isLoading, selectedSegment, selectedGroup, navigate]);
  
   // Initialize URL search params with defaults on first load if missing
   useEffect(() => {
