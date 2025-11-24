@@ -1,5 +1,4 @@
-import { Group, Stack, Text } from "@mantine/core";
-import { CircleHelp } from "lucide-react";
+import { Stack, Text } from "@mantine/core";
 import { TrafficFlowChart } from "./TrafficFlowChart";
 import { AirQualityChart } from "./AirQualityChart";
 
@@ -13,12 +12,9 @@ export function DataDisplayGraphs() {
         <TrafficFlowChart />
       </Stack>
       <Stack gap={4} flex={1}>
-        <Group gap={8} align="center">
           <Text size="xs" c="dimmed">
             Ilmanlaatu
           </Text>
-          <CircleHelp size={16} color="#000000" opacity={0.8} />
-        </Group>
         <AirQualityChart />
       </Stack>
     </Stack>

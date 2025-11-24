@@ -21,7 +21,7 @@ import { getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { AirQualityTypes } from "../../queries/air-quality";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
+import { buildSegmentsFeatureCollection, isDisturbanceActiveOnDate } from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
@@ -30,6 +30,7 @@ export function MapView() {
   const { selectedSegment } = useSearch({ from: "/" });
   const { dataPanelOpen } = useSearch({ from: "/" });
   const { sources } = useSearch({ from: "/" });
+  const { selectedDate } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
@@ -42,11 +43,11 @@ export function MapView() {
         features: [],
       } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
     }
-    const entries = Object.entries(disturbanceMap).filter(
-      ([, group]) => group.type === "Aluevuokraus"
+    const entries = Object.entries(disturbanceMap).filter(([ , group ]) =>
+      group.type === "Aluevuokraus" && isDisturbanceActiveOnDate(group, selectedDate)
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
-  }, [showAreaRentals, disturbanceMap]);
+  }, [showAreaRentals, disturbanceMap, selectedDate]);
   const excavationSegmentsFC = useMemo(() => {
     if (!showExcavationNotices) {
       return {
@@ -54,11 +55,11 @@ export function MapView() {
         features: [],
       } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
     }
-    const entries = Object.entries(disturbanceMap).filter(
-      ([, group]) => group.type === "Kaivuilmoitus"
+    const entries = Object.entries(disturbanceMap).filter(([ , group ]) =>
+      group.type === "Kaivuilmoitus" && isDisturbanceActiveOnDate(group, selectedDate)
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
-  }, [showExcavationNotices, disturbanceMap]);
+  }, [showExcavationNotices, disturbanceMap, selectedDate]);
 
   const { data: airQualityData } = useQuery({
     ...getListAirQualityQueryOptions({
