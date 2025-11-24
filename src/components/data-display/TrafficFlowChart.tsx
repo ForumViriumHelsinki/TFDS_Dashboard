@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
 
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
@@ -63,6 +63,7 @@ function TrafficFlowTooltip(props: {
 }
 
 export function TrafficFlowChart() {
+  const navigate = useNavigate({ from: '/' });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' })
   
   const query = useQuery(
@@ -198,7 +199,19 @@ export function TrafficFlowChart() {
   return (
     <Box pos="relative" h="100%" w="100%">
       <ResponsiveContainer>
-        <LineChart data={trafficSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+        <LineChart
+          data={trafficSeries}
+          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          onClick={(state) => {
+            if (state && state.activePayload && state.activePayload.length > 0) {
+              const point = state.activePayload[0].payload as TrafficPoint;
+              navigate({
+                search: (prev) => ({ ...prev, selectedDate: new Date(point.ts) }),
+                replace: true,
+              });
+            }
+          }}
+        >
           <CartesianGrid vertical={false} stroke="transparent" />
           <ReferenceArea
             x1={axisMin !== undefined ? (axisMin as number) : undefined}

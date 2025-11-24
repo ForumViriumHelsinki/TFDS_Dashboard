@@ -1,7 +1,7 @@
 import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, ReferenceLine, YAxis, XAxis, Line, Tooltip } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { FeatureCollection, Geometry } from "geojson";
 import { parseFinnishAikaToDate, type AirQualityProps } from "../../utils/airQuality";
 
@@ -87,6 +87,7 @@ function AirQualityTooltip(props: {
 }
 
 export function AirQualityChart() {
+  const navigate = useNavigate({ from: '/' });
   const { selectedAirQualityStation, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' });
   const { data } = useQuery({
     ...getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX }),
@@ -158,7 +159,19 @@ export function AirQualityChart() {
 
   return (
     <ResponsiveContainer>
-      <LineChart data={filteredSeries} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+      <LineChart
+        data={filteredSeries}
+        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+        onClick={(state) => {
+          if (state && state.activePayload && state.activePayload.length > 0) {
+            const point = state.activePayload[0].payload as TimePoint;
+            navigate({
+              search: (prev) => ({ ...prev, selectedDate: new Date(point.ts) }),
+              replace: true,
+            });
+          }
+        }}
+      >
         <CartesianGrid vertical={false} stroke="transparent" />
         <ReferenceArea
           x1={axisMin !== undefined ? (axisMin as number) : undefined}
