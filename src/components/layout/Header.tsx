@@ -1,5 +1,5 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
-import { DateTimePicker } from "@mantine/dates";
+import { DatePickerInput } from "@mantine/dates";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { Calendar } from "lucide-react";
 import { useEffect } from "react";
@@ -45,9 +45,11 @@ export function Header() {
       <Checkbox.Group value={sources} onChange={setSources}>
         <Group>
           <Text size="sm" fw={600}>Ajankohta</Text>
-          <DateTimePicker
+          <DatePickerInput
             w={200}
             value={selectedDate ?? null}
+            valueFormat="DD/MM/YYYY"
+            clearable
             onChange={(value) => {
               void navigate({
                 search: (prev) => ({
