@@ -182,6 +182,7 @@ export function MapView() {
                       const color = getAirQualityColor(
                         feature?.properties?.Ilmanlaatuindeksi
                       );
+                      
                       return L.circleMarker(latlng, {
                         radius: 10,
                         color: "#000000",
@@ -206,6 +207,18 @@ export function MapView() {
                           Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
                         </div>
                       `);
+                      layer.on("click", () => {
+                        const stationId = getAirQualityStationId(feature);
+                        if (stationId) {
+                          navigate({
+                            search: (s) => ({
+                              ...s,
+                              selectedAirQualityStation: stationId,
+                            }),
+                            replace: true,
+                          });
+                        }
+                      });
                     }}
                   />
                 )}
