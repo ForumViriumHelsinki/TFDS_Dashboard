@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
   ReferenceArea,
+  ReferenceLine,
   Tooltip,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
@@ -62,7 +63,7 @@ function TrafficFlowTooltip(props: {
 }
 
 export function TrafficFlowChart() {
-  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
+  const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' })
   
   const query = useQuery(
     getTrafficFlowQueryOptions({
@@ -98,6 +99,11 @@ export function TrafficFlowChart() {
   const axisMin = requestedStartTs ?? seriesMin;
   const axisMax = requestedEndTs ?? seriesMax;
   const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
+
+  const selectedDateTs =
+    selectedDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(selectedDate).getTime()
+      : undefined;
 
   const inferredStepMs =
     trafficSeries.length >= 2 ? Math.max(1, trafficSeries[1].ts - trafficSeries[0].ts) : 5 * 60 * 1000;
@@ -240,6 +246,18 @@ export function TrafficFlowChart() {
             tickLine={false}
             tickMargin={6}
           />
+          {selectedDateTs !== undefined &&
+            axisMin !== undefined &&
+            axisMax !== undefined &&
+            selectedDateTs >= axisMin &&
+            selectedDateTs <= axisMax && (
+              <ReferenceLine
+                x={selectedDateTs}
+                stroke="#FA5252"
+                strokeWidth={1}
+                strokeDasharray="4 2"
+              />
+            )}
           <Tooltip
             content={<TrafficFlowTooltip />}
             cursor={{ stroke: BORDER_COLOR, strokeDasharray: "3 3" }}

@@ -1,4 +1,4 @@
-import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, YAxis, XAxis, Line, Tooltip } from "recharts";
+import { ResponsiveContainer, LineChart, CartesianGrid, ReferenceArea, ReferenceLine, YAxis, XAxis, Line, Tooltip } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useSearch } from "@tanstack/react-router";
@@ -103,7 +103,7 @@ function AirQualityTooltip(props: {
 }
 
 export function AirQualityChart() {
-  const { selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' });
+  const { selectedAirQualityStation, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' });
   const { data } = useQuery({
     ...getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX }),
   });
@@ -141,6 +141,11 @@ export function AirQualityChart() {
   const axisMin = requestedStartTs ?? seriesMinTs;
   const axisMax = requestedEndTs ?? seriesMaxTs;
   const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
+
+  const selectedDateTs =
+    selectedDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(selectedDate).getTime()
+      : undefined;
 
   function formatTick(ts: number): string {
     const d = new Date(ts);
@@ -204,6 +209,18 @@ export function AirQualityChart() {
           tickLine={false}
           tickMargin={6}
         />
+        {selectedDateTs !== undefined &&
+          axisMin !== undefined &&
+          axisMax !== undefined &&
+          selectedDateTs >= axisMin &&
+          selectedDateTs <= axisMax && (
+            <ReferenceLine
+              x={selectedDateTs}
+              stroke="#FA5252"
+              strokeWidth={1}
+              strokeDasharray="4 2"
+            />
+          )}
         <Tooltip
           content={<AirQualityTooltip />}
           cursor={{ stroke: BORDER_COLOR, strokeDasharray: "3 3" }}
