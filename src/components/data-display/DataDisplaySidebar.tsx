@@ -1,6 +1,6 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { Calendar, ExternalLink, RefreshCcw } from "lucide-react";
+import { Calendar, ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
@@ -27,7 +27,7 @@ export function DataDisplaySidebar() {
     }
     return getTrafficSegmentsFC(segmentsJson, trafficJson);
   }, [segmentsJson, trafficJson]);
-  const { isLoading, getSelectedGroupBySegment } = useMergedDisturbances();
+  const { getSelectedGroupBySegment } = useMergedDisturbances();
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
     [getSelectedGroupBySegment, selectedSegment]
@@ -138,17 +138,6 @@ export function DataDisplaySidebar() {
       </Group>
       <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
         Alkuperäisdata
-      </Button>
-      <Button
-        size="sm"
-        onClick={() => {}}
-        color="black"
-        leftSection={<RefreshCcw size={12} />}
-        disabled={isLoading}
-        bg="black"
-        c="white"
-      >
-        Päivitä
       </Button>
     </Stack>
   );

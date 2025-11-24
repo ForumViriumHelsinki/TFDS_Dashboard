@@ -38,21 +38,6 @@ export type SegmentsMappingJson = {
   segmentId: Record<string, { geometry: LineString }>;
 };
 
-export function isDisturbanceActiveOnDate(group: DisturbanceGroup, date?: Date): boolean {
-  if (!date) return true;
-  const start = new Date(group.star_date);
-  const end = new Date(group.end_date);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return true;
-
-  // Compare using calendar dates (ignore time-of-day)
-  const stripTime = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-  const target = stripTime(date);
-  const startDay = stripTime(start);
-  const endDay = stripTime(end);
-
-  return target >= startDay && target <= endDay;
-}
-
 export function buildDisturbanceMapFromJson(src: TrafficJson): DisturbanceMap {
   const inverted: DisturbanceMap = {};
   for (const [segmentId, segment] of Object.entries(src.segmentId ?? {})) {
