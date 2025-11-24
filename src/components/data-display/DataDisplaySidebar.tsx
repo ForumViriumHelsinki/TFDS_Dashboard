@@ -5,8 +5,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
-import { getTrafficSegmentsFC } from "../../utils/invertTrafficDisturbances";
-import { getSegmentsMappingQueryOptions, getTrafficDisturbancesQueryOptions } from "../../queries/traffic-disturbances";
+import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
@@ -19,15 +18,13 @@ export function DataDisplaySidebar() {
   const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
     getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
   );
-  const { data: segmentsJson } = useQuery(getSegmentsMappingQueryOptions());
-  const { data: trafficJson } = useQuery(getTrafficDisturbancesQueryOptions());
+  
+  const { map, getSelectedGroupBySegment } = useMergedDisturbances();
+
   const trafficSegmentsFC = useMemo(() => {
-    if (!segmentsJson || !trafficJson) {
-      return { type: "FeatureCollection", features: [] } as import("geojson").FeatureCollection<import("geojson").LineString, { segmentId: string }>;
-    }
-    return getTrafficSegmentsFC(segmentsJson, trafficJson);
-  }, [segmentsJson, trafficJson]);
-  const { getSelectedGroupBySegment } = useMergedDisturbances();
+    return buildSegmentsFeatureCollection(map);
+  }, [map]);
+  
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
     [getSelectedGroupBySegment, selectedSegment]
@@ -66,6 +63,8 @@ export function DataDisplaySidebar() {
         data={(trafficSegmentsFC.features ?? []).map((feature) => {
           return { value: feature.properties?.segmentId ?? "", label: feature.properties?.segmentId ?? "" };
         })}
+        clearable
+        onClear={() => navigate({ search: (prev) => ({ ...prev, selectedSegment: "" }), replace: true })}
       />
       <DateTimePicker
         label="Mittausaikaväli alkaen"
