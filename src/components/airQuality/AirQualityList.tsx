@@ -3,16 +3,13 @@ import { useMemo } from "react";
 import { getAirQualityColor, getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityItem } from "./AirQualityItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
+import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 
 export function AirQualityList() {
-  const { selectedAirQualityStation } = useSearch({ from: "/" });
+  const { selectedAirQualityStation, selectedDate } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   
-  const { isPending, isError, data, error } = useQuery(
-    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
-  );
+  const { isPending, isError, data, error } = useFilteredAirQuality(selectedDate);
 
   const items = useMemo(() => data?.features ?? [], [data]);
 

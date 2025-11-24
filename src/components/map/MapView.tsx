@@ -10,23 +10,20 @@ import {
   Pane,
 } from "react-leaflet";
 import {
-  getAirQualityColor,
   AirQualityProps,
-  parseFinnishAikaToDate,
+  getAirQualityColor,
   getAirQualityStationId,
 } from "../../utils/airQuality";
 import L from "leaflet";
 import type { Geometry, Feature, GeoJsonObject } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
-import { useQuery } from "@tanstack/react-query";
-import { getListAirQualityQueryOptions } from "../../queries/air-quality";
-import { AirQualityTypes } from "../../queries/air-quality";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
+import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 
 export function MapView() {
   const { selectedSegment, selectedDate } = useSearch({ from: "/" });
@@ -50,39 +47,10 @@ export function MapView() {
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
 
-  const { data: airQualityData } = useQuery({
-    ...getListAirQualityQueryOptions({
-      airQualityType: selectedDate
-        ? AirQualityTypes.AIR_QUALITY_24H_MAX
-        : AirQualityTypes.AIR_QUALITY_NOW,
-    }),
-    enabled: Boolean(showAirQuality),
-  });
-
-  const filteredAirQualityData = useMemo(() => {
-    if (!airQualityData || !selectedDate) return airQualityData;
-
-    const targetTs = selectedDate.getTime();
-    const stationMap = new Map<string, { diff: number; feature: Feature<Geometry, AirQualityProps> }>();
-
-    for (const feature of airQualityData.features) {
-      const aqProps = feature.properties ?? {};
-      const d = parseFinnishAikaToDate(aqProps.Aika);
-      if (!d) continue;
-
-      const diff = Math.abs(d.getTime() - targetTs);
-      const stationId = getAirQualityStationId(feature);
-
-      if (!stationMap.has(stationId) || diff < stationMap.get(stationId)!.diff) {
-        stationMap.set(stationId, { diff, feature });
-      }
-    }
-
-    return {
-      type: "FeatureCollection",
-      features: Array.from(stationMap.values()).map(v => v.feature)
-    } as import("geojson").FeatureCollection<Geometry, AirQualityProps>;
-  }, [airQualityData, selectedDate]);
+  const { data: filteredAirQualityData } = useFilteredAirQuality(
+    selectedDate,
+    Boolean(showAirQuality)
+  );
 
   function InvalidateSizeOnLayoutChange({ panelOpen }: { panelOpen: boolean }) {
     const map = useMap();
