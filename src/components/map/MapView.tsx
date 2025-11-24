@@ -27,7 +27,7 @@ import { useMemo } from "react";
 import { Sources } from "../../router";
 
 export function MapView() {
-  const { selectedSegment } = useSearch({ from: "/" });
+  const { selectedSegment, selectedDate } = useSearch({ from: "/" });
   const { dataPanelOpen } = useSearch({ from: "/" });
   const { sources } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
@@ -186,6 +186,7 @@ export function MapView() {
               <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
                 <FeatureGroup>
                   <GeoJSON
+                    key={`area-rentals-${selectedDate?.toISOString() ?? 'all'}`}
                     pane="traffic-segments-area"
                     data={areaRentalSegmentsFC}
                     style={(
@@ -231,6 +232,7 @@ export function MapView() {
               <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
                 <FeatureGroup>
                   <GeoJSON
+                    key={`excavation-${selectedDate?.toISOString() ?? 'all'}`}
                     pane="traffic-segments-exc"
                     data={excavationSegmentsFC}
                     style={(
