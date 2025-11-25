@@ -1,4 +1,4 @@
-FROM node:23-alpine AS build
+FROM node:22-alpine AS build
 
 # Build arguments for Vite environment variables and Sentry
 ARG VITE_APP_VERSION
