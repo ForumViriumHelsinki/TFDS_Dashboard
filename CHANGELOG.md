@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.0...tfds-dashboard-v0.3.1) (2025-11-25)
+
+
+### Bug Fixes
+
+* downgrade to Node.js 22 LTS for Docker build compatibility ([#22](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/22)) ([105ebf0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/105ebf0adfbad57e6d84320e09d11677ec878c84))
+
 ## [0.3.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.2.0...tfds-dashboard-v0.3.0) (2025-11-20)
 
 
