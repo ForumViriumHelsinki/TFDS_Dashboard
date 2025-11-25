@@ -4,12 +4,12 @@ import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/ai
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { FeatureCollection, Geometry } from "geojson";
 import { parseFinnishAikaToDate, type AirQualityProps } from "../../utils/airQuality";
+import { BORDER_COLOR, BRAND_COLOR, BG_COLOR } from "../../main";
+import { Paper, Text } from "@mantine/core";
 
 type TimePoint = { ts: number; index: number };
 
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
-const BORDER_COLOR = "#ADB5BD";
-const BG_COLOR = "#F8F9FA";
 
 function chooseStepMs(totalRangeMs: number): number {
   const minute = 60 * 1000;
@@ -69,20 +69,15 @@ function AirQualityTooltip(props: {
   });
 
   return (
-    <div
-      style={{
-        background: "white",
-        border: `1px solid ${BORDER_COLOR}`,
-        borderRadius: 4,
-        padding: "4px 8px",
-        fontSize: 12,
-      }}
+    <Paper
+      withBorder
+      p="xs"
     >
-      <div>{timeLabel}</div>
-      <div>
+      <Text size="xs">{timeLabel}</Text>
+      <Text size="xs">
         Ilmanlaatuindeksi: <strong>{point.index}</strong>
-      </div>
-    </div>
+      </Text>
+    </Paper>
   );
 }
 
@@ -216,7 +211,7 @@ export function AirQualityChart() {
           selectedDateTs <= axisMax && (
             <ReferenceLine
               x={selectedDateTs}
-              stroke="#FA5252"
+              stroke={BRAND_COLOR}
               strokeWidth={1}
               strokeDasharray="4 2"
             />

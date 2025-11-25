@@ -1,5 +1,6 @@
 import { NavLink } from "@mantine/core";
 import { Circle } from "lucide-react";
+import { BRAND_COLOR } from "../../main";
 
 interface AirQualityStationItemProps {
   id: string;
@@ -22,7 +23,7 @@ export function AirQualityStationItem({ id, label, description, colorHex, isSele
       }
       active={isSelected}
       style={{
-        borderRight: isSelected ? "3px solid #F37438" : "none",
+        borderRight: isSelected ? `3px solid ${BRAND_COLOR}` : "none",
       }}
       styles={{
         label: {

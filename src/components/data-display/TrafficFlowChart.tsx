@@ -1,4 +1,4 @@
-import { Box, Text } from "@mantine/core";
+import { Box, Paper, Text } from "@mantine/core";
 import {
   CartesianGrid,
   LineChart,
@@ -14,11 +14,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
+import { BORDER_COLOR, BRAND_COLOR, BG_COLOR } from "../../main";
 
 const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
-const BORDER_COLOR = "#ADB5BD";
 const CLOSED_BG = "#FFE3E3";
-const BG_COLOR = "#F8F9FA";
 
 type TrafficPoint = { ts: number; fcd: number; status: string };
 
@@ -44,21 +43,16 @@ function TrafficFlowTooltip(props: {
     point.status === "closed" ? "Closed" : point.status === "open" ? "Open" : point.status || "Unknown";
 
   return (
-    <div
-      style={{
-        background: "white",
-        border: `1px solid ${BORDER_COLOR}`,
-        borderRadius: 4,
-        padding: "4px 8px",
-        fontSize: 12,
-      }}
+    <Paper
+      withBorder
+      p="xs"
     >
-      <div>{timeLabel}</div>
-      <div>
+      <Text size="xs">{timeLabel}</Text>
+      <Text size="xs">
         FCD: <strong>{point.fcd}</strong>
-      </div>
-      <div>Status: {statusLabel}</div>
-    </div>
+      </Text>
+      <Text size="xs">Status: <strong>{statusLabel}</strong></Text>
+    </Paper>  
   );
 }
 
@@ -269,7 +263,7 @@ export function TrafficFlowChart() {
             selectedDateTs <= axisMax && (
               <ReferenceLine
                 x={selectedDateTs}
-                stroke="#FA5252"
+                stroke={BRAND_COLOR}
                 strokeWidth={1}
                 strokeDasharray="4 2"
               />

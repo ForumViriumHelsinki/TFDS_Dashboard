@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
+import { BORDER_COLOR } from "../../main";
 
 const DEFAULT_END_DATE = new Date();
 const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
@@ -58,7 +59,7 @@ export function DataDisplaySidebar() {
       h="100%"
       gap="xs"
       miw={300}
-      style={{ borderRight: "1px solid #F1F3F5" }}
+      style={{ borderRight: `1px solid ${BORDER_COLOR}` }}
     >
       <Select
         label="IDEA Segment"

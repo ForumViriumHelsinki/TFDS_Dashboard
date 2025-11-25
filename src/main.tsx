@@ -33,9 +33,28 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+// Brand color constant
+export const BRAND_COLOR = '#FF5000';
+export const BORDER_COLOR = '#F1F3F5';
+export const BG_COLOR = '#F8F9FA';
+
 const theme = createTheme({
   fontFamily: "Montserrat, sans-serif",
-  primaryColor: "orange",
+  primaryColor: "brand",
+  colors: {
+    brand: [
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+    ],
+  },
   components: {
     Tabs: {
       styles: {
@@ -48,7 +67,7 @@ const theme = createTheme({
     Accordion: {
       styles: {
         chevron: {
-          color: "#C92A2A",
+          color: BRAND_COLOR,
         },
       },
     },

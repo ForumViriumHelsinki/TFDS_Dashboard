@@ -3,6 +3,7 @@ import { ChevronDown, X } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
+import { BORDER_COLOR } from "../../main";
 
 export function DataDisplayHeader() {
   const navigate = useNavigate({ from: '/' })
@@ -19,7 +20,7 @@ export function DataDisplayHeader() {
       justify="space-between"
       px="md"
       py="xs"
-      style={{ borderBottom: "1px solid #F1F3F5" }}
+      style={{ borderBottom: `1px solid ${BORDER_COLOR}` }}
     >
       <Text>{selectedGroup?.landLeaseProperties?.osoite ?? "Unknown"}</Text>
       <Button
