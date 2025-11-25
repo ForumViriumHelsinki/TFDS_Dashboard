@@ -1,7 +1,6 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { Calendar } from "lucide-react";
 import { useEffect } from "react";
 
 export function Header() {
@@ -46,10 +45,7 @@ export function Header() {
         <Group>
           <Text size="sm" fw={600}>Ajankohta</Text>
           <DateTimePicker
-            w={220}
             value={selectedDate ?? null}
-            valueFormat="DD.MM.YYYY HH:mm"
-            clearable
             onChange={(value) => {
               void navigate({
                 search: (prev) => ({
@@ -59,8 +55,6 @@ export function Header() {
                 replace: true,
               });
             }}
-            leftSection={<Calendar size={16} />}
-            popoverProps={{ withinPortal: true, zIndex: 1200 }}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
           <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />

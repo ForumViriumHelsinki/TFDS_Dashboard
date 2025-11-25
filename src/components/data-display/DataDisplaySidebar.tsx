@@ -1,6 +1,6 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { Calendar, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getAirQualityStationId } from "../../utils/airQuality";
 import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
@@ -76,42 +76,36 @@ export function DataDisplaySidebar() {
       <DateTimePicker
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
-        leftSection={<Calendar size={12} />}
         value={selectedStartDate ?? null}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
               ...prev,
-              selectedStartDate: value ?? undefined,
+              selectedStartDate: value ?? DEFAULT_START_DATE,
             }),
             replace: true,
           });
         }}
         size="sm"
         variant="filled"
-        clearable
         maxDate={new Date()}
-        popoverProps={{ withinPortal: true, zIndex: 1200 }}
       />
       <DateTimePicker
         label="Mittausaikaväli päättyen"
         placeholder="Valitse loppuhetki"
-        leftSection={<Calendar size={12} />}
         value={selectedEndDate ?? null}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
               ...prev,
-              selectedEndDate: value ?? undefined,
+              selectedEndDate: value ?? DEFAULT_END_DATE,
             }),
             replace: true,
           });
         }}
         size="sm"
         variant="filled"
-        clearable
         maxDate={new Date()}
-        popoverProps={{ withinPortal: true, zIndex: 1200 }}
       />
       <Select
         label="Ilmanlaadun mittauspiste"

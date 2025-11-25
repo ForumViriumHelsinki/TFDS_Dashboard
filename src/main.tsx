@@ -7,6 +7,7 @@ import "./index.css";
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
 import { createTheme, MantineProvider } from "@mantine/core";
+import { Calendar } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatesProvider } from "@mantine/dates";
 import 'dayjs/locale/fi';
@@ -49,6 +50,14 @@ const theme = createTheme({
         chevron: {
           color: "#C92A2A",
         },
+      },
+    },
+    DateTimePicker: {
+      defaultProps: {
+        clearable: true,
+        valueFormat: "DD.MM.YYYY HH:mm",
+        leftSection: <Calendar size={16} />,
+        popoverProps: { withinPortal: true, zIndex: 1200 },
       },
     },
   },
