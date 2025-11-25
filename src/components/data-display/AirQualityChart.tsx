@@ -166,7 +166,10 @@ export function AirQualityChart() {
           if (state && state.activePayload && state.activePayload.length > 0) {
             const point = state.activePayload[0].payload as TimePoint;
             navigate({
-              search: (prev) => ({ ...prev, selectedDate: new Date(point.ts) }),
+              search: (prev) => ({
+                ...prev,
+                selectedDate: new Date(point.ts),
+              }),
               replace: true,
             });
           }

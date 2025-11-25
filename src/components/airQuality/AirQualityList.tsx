@@ -9,7 +9,9 @@ export function AirQualityList() {
   const { selectedAirQualityStation, selectedDate } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   
-  const { isPending, isError, data, error } = useFilteredAirQuality(selectedDate);
+  const { isPending, isError, data, error } = useFilteredAirQuality(
+    selectedDate
+  );
 
   const items = useMemo(() => data?.features ?? [], [data]);
 

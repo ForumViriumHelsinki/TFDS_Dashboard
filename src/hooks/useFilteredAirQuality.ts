@@ -9,23 +9,42 @@ import {
   parseFinnishAikaToDate,
   AirQualityProps,
 } from "../utils/airQuality";
-import type { Feature, Geometry } from "geojson";
+import type { Feature, Geometry, FeatureCollection } from "geojson";
+
+export const AIR_QUALITY_NOW_QUERY_KEY = [
+  "air-quality",
+  { airQualityType: AirQualityTypes.AIR_QUALITY_NOW },
+];
+
+export const AIR_QUALITY_24H_QUERY_KEY = [
+  "air-quality",
+  { airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX },
+];
 
 export function useFilteredAirQuality(
   selectedDate: Date | null | undefined,
   enabled: boolean = true
 ) {
-  const { data: airQualityData, ...rest } = useQuery({
+  const nowQuery = useQuery({
     ...getListAirQualityQueryOptions({
-      airQualityType: selectedDate
-        ? AirQualityTypes.AIR_QUALITY_24H_MAX
-        : AirQualityTypes.AIR_QUALITY_NOW,
+      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
     }),
+    queryKey: AIR_QUALITY_NOW_QUERY_KEY,
     enabled,
   });
 
-  const filteredData = useMemo(() => {
-    if (!airQualityData || !selectedDate) return airQualityData;
+  const shouldFetchHistorical = enabled && nowQuery.isSuccess;
+
+  const historicalQuery = useQuery({
+    ...getListAirQualityQueryOptions({
+      airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
+    }),
+    queryKey: AIR_QUALITY_24H_QUERY_KEY,
+    enabled: shouldFetchHistorical,
+  });
+
+  const filteredHistoricalData = useMemo(() => {
+    if (!historicalQuery.data || !selectedDate) return undefined;
 
     const targetTs = selectedDate.getTime();
     const stationMap = new Map<
@@ -33,7 +52,7 @@ export function useFilteredAirQuality(
       { diff: number; feature: Feature<Geometry, AirQualityProps> }
     >();
 
-    for (const feature of airQualityData.features) {
+    for (const feature of historicalQuery.data.features) {
       const aqProps = feature.properties ?? {};
       const d = parseFinnishAikaToDate(aqProps.Aika);
       if (!d) continue;
@@ -52,12 +71,36 @@ export function useFilteredAirQuality(
     return {
       type: "FeatureCollection",
       features: Array.from(stationMap.values()).map((v) => v.feature),
-    } as import("geojson").FeatureCollection<Geometry, AirQualityProps>;
-  }, [airQualityData, selectedDate]);
+    } as FeatureCollection<Geometry, AirQualityProps>;
+  }, [historicalQuery.data, selectedDate]);
+
+  const data = selectedDate
+    ? filteredHistoricalData ?? nowQuery.data
+    : nowQuery.data;
+
+  const isPending = selectedDate
+    ? historicalQuery.isPending &&
+      !filteredHistoricalData &&
+      !nowQuery.data
+    : nowQuery.isPending && !nowQuery.data;
+
+  const isError = selectedDate
+    ? historicalQuery.isError &&
+      !filteredHistoricalData &&
+      !nowQuery.data
+    : nowQuery.isError;
+
+  const error = selectedDate ? historicalQuery.error : nowQuery.error;
 
   return {
-    data: filteredData,
-    ...rest,
+    data,
+    isPending,
+    isFetching: selectedDate
+      ? historicalQuery.isFetching
+      : nowQuery.isFetching,
+    isError,
+    error,
+    refetch: selectedDate ? historicalQuery.refetch : nowQuery.refetch,
   };
 }
 

@@ -1,26 +1,19 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
 
 export function Header() {
   const navigate = useNavigate({ from: '/' })
+  const queryClient = useQueryClient()
   const { sources, selectedDate } = useSearch({ from: '/' })
+  const fallbackDate = useMemo(() => new Date(), [])
+  const [showFallback, setShowFallback] = useState(true)
+  const displayDate = selectedDate ?? (showFallback ? fallbackDate : null)
   const setSources = (next: string[]) =>
     navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true })
-
-  // Initialize selectedDate to current time on first load if missing
-  useEffect(() => {
-    if (!selectedDate) {
-      void navigate({
-        search: (prev) => ({
-          ...prev,
-          selectedDate: new Date(),
-        }),
-        replace: true,
-      });
-    }
-  }, [navigate, selectedDate]);
 
   return (
     <Group justify="space-between">
@@ -45,8 +38,15 @@ export function Header() {
         <Group>
           <Text size="sm" fw={600}>Ajankohta</Text>
           <DateTimePicker
-            value={selectedDate ?? null}
+            clearable
+            value={displayDate}
             onChange={(value) => {
+              if (!value) {
+                // Clear selectedDate in URL, but visually fall back to current time
+                setShowFallback(true);
+              } else {
+                setShowFallback(false);
+              }
               void navigate({
                 search: (prev) => ({
                   ...prev,
@@ -54,6 +54,11 @@ export function Header() {
                 }),
                 replace: true,
               });
+              if (!value) {
+                void queryClient.invalidateQueries({
+                  queryKey: AIR_QUALITY_NOW_QUERY_KEY,
+                });
+              }
             }}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
