@@ -1,5 +1,5 @@
 import { AppShell, ScrollArea } from "@mantine/core";
-import { AirQualityList } from "../airQuality/AirQualityList";
+import { AirQualityStationList } from "../air-quality-stations/AirQualityStationList";
 
 export function AirQualityTab() {
   return (
@@ -10,7 +10,7 @@ export function AirQualityTab() {
       px="md"
       type="never"
     >
-      <AirQualityList />
+      <AirQualityStationList />
     </AppShell.Section>
   );
 }

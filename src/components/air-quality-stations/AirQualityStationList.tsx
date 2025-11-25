@@ -1,11 +1,11 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
 import { getAirQualityColor, getAirQualityStationId } from "../../utils/airQuality";
-import { AirQualityItem } from "./AirQualityItem";
+import { AirQualityStationItem } from "./AirQualityStationItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 
-export function AirQualityList() {
+export function AirQualityStationList() {
   const { selectedAirQualityStation, selectedDate } = useSearch({ from: "/" });
   const navigate = useNavigate({ from: "/" });
   
@@ -38,7 +38,7 @@ export function AirQualityList() {
         const properties = feature.properties ?? {};
         const id = getAirQualityStationId(feature);
         return (
-          <AirQualityItem
+          <AirQualityStationItem
             key={id}
             id={id}
             label={properties.Mittausasema ?? ""}

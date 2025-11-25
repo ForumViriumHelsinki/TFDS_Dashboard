@@ -1,7 +1,7 @@
 import { NavLink } from "@mantine/core";
 import { Circle } from "lucide-react";
 
-interface AirQualityItemProps {
+interface AirQualityStationItemProps {
   id: string;
   label: string;
   description: string;
@@ -10,7 +10,7 @@ interface AirQualityItemProps {
   onClick: () => void;
 }
 
-export function AirQualityItem({ id, label, description, colorHex, isSelected, onClick }: AirQualityItemProps) {
+export function AirQualityStationItem({ id, label, description, colorHex, isSelected, onClick }: AirQualityStationItemProps) {
   return (
     <NavLink
       href="#required-for-focus"
