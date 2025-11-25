@@ -91,6 +91,7 @@ export function DataDisplaySidebar() {
         variant="filled"
         clearable
         maxDate={new Date()}
+        popoverProps={{ withinPortal: true, zIndex: 1200 }}
       />
       <DateTimePicker
         label="Mittausaikaväli päättyen"
@@ -110,7 +111,7 @@ export function DataDisplaySidebar() {
         variant="filled"
         clearable
         maxDate={new Date()}
-        
+        popoverProps={{ withinPortal: true, zIndex: 1200 }}
       />
       <Select
         label="Ilmanlaadun mittauspiste"
