@@ -51,7 +51,8 @@ function FitMapToSelected({
       const center = bounds.getCenter();
       map.panTo(center, { animate: true });
     }
-  }, [map, selectedSegment, areaRentalSegmentsFC, excavationSegmentsFC]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, selectedSegment]);
 
   return null;
 }
