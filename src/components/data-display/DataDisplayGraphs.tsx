@@ -7,13 +7,13 @@ export function DataDisplayGraphs() {
     <Stack flex={1} p="md" h="100%" gap="xs">
       <Stack gap={4} flex={1}>
         <Text size="xs" c="dimmed">
-          Liikenteen sujuvuus m/h
+          Liikenteen sujuvuus
         </Text>
         <TrafficFlowChart />
       </Stack>
       <Stack gap={4} flex={1}>
           <Text size="xs" c="dimmed">
-            Ilmanlaatu
+            Ilmanlaatuindeksi
           </Text>
         <AirQualityChart />
       </Stack>
