@@ -88,12 +88,11 @@ createRoot(rootEl).render(
           <Sentry.ErrorBoundary
             fallback={({ error }) => (
               <Box p="2xl" style={{ textAlign: "center" }}>
-                <Title order={1}>Application Error</Title>
-                <Text>Sorry, something went wrong.</Text>
+                <Title order={1}>Virhe</Title>
+                <Text>Pahoittelut, jotain meni pieleen.</Text>
                 <details style={{ marginTop: "1rem" }}>
-                  <summary>Error details</summary>
-                  <pre style={{ textAlign: "left", marginTop: "1rem" }}>
-                    {String(error)}</pre>
+                  <summary>Virheen yksityiskohdat</summary>
+                  <Text>{String(error)}</Text>
                 </details>
               </Box>
             )}
