@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.3...tfds-dashboard-v0.3.4) (2025-11-25)
+
+
+### Bug Fixes
+
+* include public directory in Docker build context ([#29](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/29)) ([0605b10](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/0605b105b5d678bc3350a40089b63c1f8bda2d22))
+
 ## [0.3.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.2...tfds-dashboard-v0.3.3) (2025-11-25)
 
 
