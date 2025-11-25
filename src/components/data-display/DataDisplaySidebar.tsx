@@ -1,4 +1,4 @@
-import { Button, Group, Select, Stack, Text } from "@mantine/core";
+import { Button, Group, Popover, Select, Stack, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
@@ -137,9 +137,57 @@ export function DataDisplaySidebar() {
         <Text fw={600} size="sm">Tila:</Text>
         <Text size="sm">{selectedGroup?.landLeaseProperties?.status ?? "Unknown"}</Text>
       </Group>
-      <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
-        Alkuperäisdata
-      </Button>
+      <Popover width={268} shadow="sm" withinPortal zIndex={1200}>
+        <Popover.Target>
+          <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
+            Alkuperäisdata
+          </Button>
+        </Popover.Target>
+        <Popover.Dropdown p={0} py="xs">
+          <Stack gap={4}>
+            <Button
+              size="sm"
+              variant="subtle"
+              color="black"
+              fullWidth
+              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Kaivuilmoitus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
+            >
+              Kaivuilmoitukset
+            </Button>
+            <Button
+              variant="subtle"
+              color="black"
+              size="sm"
+              fullWidth
+              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Aluevuokraus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
+            >
+              Aluevuokraukset
+            </Button>
+            <Button
+              variant="subtle"
+              color="black"
+              size="sm" 
+              fullWidth
+              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_nyt&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
+            >
+              Ilmanlaatu nyt
+            </Button>
+            <Button
+              variant="subtle"
+              color="black"
+              size="sm"
+              fullWidth
+              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_24h_maksimiarvo&count=10000&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
+            >
+              Ilmanlaatu max 24h
+            </Button>
+          </Stack>
+        </Popover.Dropdown>
+      </Popover>
     </Stack>
   );
 }
