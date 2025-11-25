@@ -27,23 +27,23 @@ import { DisturbanceLayer } from "./DisturbanceLayer";
 
 function FitMapToSelected({
   selectedSegment,
-  areaRentalSegmentsFC,
-  excavationSegmentsFC,
+  areaRentalSegmentsFeatureCollection,
+  excavationSegmentsFeatureCollection,
 }: {
   selectedSegment?: string;
-  areaRentalSegmentsFC: FeatureCollection;
-  excavationSegmentsFC: FeatureCollection;
+  areaRentalSegmentsFeatureCollection: FeatureCollection;
+  excavationSegmentsFeatureCollection: FeatureCollection;
 }) {
   const map = useMap();
 
   useEffect(() => {
     if (!map || !selectedSegment) return;
     const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> = [
-      ...((areaRentalSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
-      ...((excavationSegmentsFC.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+      ...((areaRentalSegmentsFeatureCollection.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
+      ...((excavationSegmentsFeatureCollection.features as Array<Feature<Geometry, { segmentId?: string }>> | undefined) ?? []),
     ];
     const matched = allFeatures.find(
-      (f) => f?.properties?.segmentId === selectedSegment
+      (feature) => feature?.properties?.segmentId === selectedSegment
     ) ?? null;
     if (!matched) return;
     const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
@@ -68,13 +68,13 @@ export function MapView() {
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
   const { map: disturbanceMap } = useMergedDisturbances();
   
-  const areaRentalSegmentsFC = useMemo(() => {
+  const areaRentalSegmentsFeatureCollection = useMemo(() => {
     const entries = Object.entries(disturbanceMap).filter(
       ([, group]) => group.type === "Aluevuokraus"
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
-  const excavationSegmentsFC = useMemo(() => {
+  const excavationSegmentsFeatureCollection = useMemo(() => {
     const entries = Object.entries(disturbanceMap).filter(
       ([, group]) => group.type === "Kaivuilmoitus"
     );
@@ -216,23 +216,23 @@ export function MapView() {
               </FeatureGroup>
             )}
 
-            {showAreaRentals && areaRentalSegmentsFC.features.length > 0 && (
+            {showAreaRentals && areaRentalSegmentsFeatureCollection.features.length > 0 && (
               <DisturbanceLayer
                 layerKey={`area-rentals-${selectedDate?.toISOString() ?? "all"}`}
                 paneName="traffic-segments-area"
                 zIndex={650}
-                featureCollection={areaRentalSegmentsFC}
+                featureCollection={areaRentalSegmentsFeatureCollection}
                 selectedSegment={selectedSegment}
                 onSegmentSelect={handleSegmentSelect}
               />
             )}
 
-            {showExcavationNotices && excavationSegmentsFC.features.length > 0 && (
+            {showExcavationNotices && excavationSegmentsFeatureCollection.features.length > 0 && (
               <DisturbanceLayer
                 layerKey={`excavation-${selectedDate?.toISOString() ?? "all"}`}
                 paneName="traffic-segments-exc"
                 zIndex={651}
-                featureCollection={excavationSegmentsFC}
+                featureCollection={excavationSegmentsFeatureCollection}
                 selectedSegment={selectedSegment}
                 onSegmentSelect={handleSegmentSelect}
               />
@@ -241,8 +241,8 @@ export function MapView() {
           <AirQualityIndicator />
           <FitMapToSelected
             selectedSegment={selectedSegment}
-            areaRentalSegmentsFC={areaRentalSegmentsFC}
-            excavationSegmentsFC={excavationSegmentsFC}
+            areaRentalSegmentsFeatureCollection={areaRentalSegmentsFeatureCollection}
+            excavationSegmentsFeatureCollection={excavationSegmentsFeatureCollection}
           />
         </MapContainer>
       </div>

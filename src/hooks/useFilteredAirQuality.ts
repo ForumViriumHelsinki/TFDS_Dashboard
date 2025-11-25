@@ -53,11 +53,11 @@ export function useFilteredAirQuality(
     >();
 
     for (const feature of historicalQuery.data.features) {
-      const aqProps = feature.properties ?? {};
-      const d = parseFinnishAikaToDate(aqProps.Aika);
-      if (!d) continue;
+      const airQualityProperties = feature.properties ?? {};
+      const date = parseFinnishAikaToDate(airQualityProperties.Aika);
+      if (!date) continue;
 
-      const diff = Math.abs(d.getTime() - targetTs);
+      const diff = Math.abs(date.getTime() - targetTs);
       const stationId = getAirQualityStationId(feature);
 
       if (
@@ -70,7 +70,7 @@ export function useFilteredAirQuality(
 
     return {
       type: "FeatureCollection",
-      features: Array.from(stationMap.values()).map((v) => v.feature),
+      features: Array.from(stationMap.values()).map((value) => value.feature),
     } as FeatureCollection<Geometry, AirQualityProps>;
   }, [historicalQuery.data, selectedDate]);
 

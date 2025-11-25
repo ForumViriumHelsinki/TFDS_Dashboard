@@ -27,7 +27,7 @@ import {
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { ChartTooltip } from "./ChartTooltip";
 
-type TimePoint = { ts: number; index: number };
+type TimePoint = { timestamp: number; index: number };
 
 function AirQualityTooltipContent(point: TimePoint) {
   return (
@@ -64,30 +64,30 @@ export function AirQualityChart() {
       ?.features ?? [];
 
   const filteredSeries: TimePoint[] = features
-    .filter((f) => {
-      const aqProps = f.properties ?? {};
-      const stationId = String(aqProps.Mittausaseman_numero ?? "");
+    .filter((feature) => {
+      const airQualityProperties = feature.properties ?? {};
+      const stationId = String(airQualityProperties.Mittausaseman_numero ?? "");
       if (!selectedAirQualityStation) return false;
       if (stationId !== String(selectedAirQualityStation)) return false;
-      const d = parseFinnishAikaToDate(aqProps.Aika);
-      if (!d) return false;
-      const ts = d.getTime();
-      if (requestedStartTs !== undefined && ts < requestedStartTs) return false;
-      if (requestedEndTs !== undefined && ts > requestedEndTs) return false;
+      const date = parseFinnishAikaToDate(airQualityProperties.Aika);
+      if (!date) return false;
+      const timestamp = date.getTime();
+      if (requestedStartTs !== undefined && timestamp < requestedStartTs) return false;
+      if (requestedEndTs !== undefined && timestamp > requestedEndTs) return false;
       return true;
     })
-    .map((f) => {
-      const aqProps = f.properties ?? {};
-      const d = parseFinnishAikaToDate(aqProps.Aika);
-      const ts = d ? d.getTime() : 0;
-      const indexVal = Number(aqProps.Ilmanlaatuindeksi ?? 0);
-      return { ts, index: Number.isFinite(indexVal) ? indexVal : 0 };
+    .map((feature) => {
+      const airQualityProperties = feature.properties ?? {};
+      const date = parseFinnishAikaToDate(airQualityProperties.Aika);
+      const timestamp = date ? date.getTime() : 0;
+      const indexVal = Number(airQualityProperties.Ilmanlaatuindeksi ?? 0);
+      return { timestamp, index: Number.isFinite(indexVal) ? indexVal : 0 };
     })
-    .sort((a, b) => a.ts - b.ts);
+    .sort((a, b) => a.timestamp - b.timestamp);
 
-  const seriesMinTs = filteredSeries.length ? filteredSeries[0].ts : undefined;
+  const seriesMinTs = filteredSeries.length ? filteredSeries[0].timestamp : undefined;
   const seriesMaxTs = filteredSeries.length
-    ? filteredSeries[filteredSeries.length - 1].ts
+    ? filteredSeries[filteredSeries.length - 1].timestamp
     : undefined;
   // Prefer requested range when available so charts line up on the same ticks
   const axisMin = requestedStartTs ?? seriesMinTs;
@@ -103,7 +103,7 @@ export function AirQualityChart() {
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
-  const yValues = filteredSeries.map((p) => p.index);
+  const yValues = filteredSeries.map((point) => point.index);
   const yMin = yValues.length ? Math.min(...yValues) : 0;
   const yMax = yValues.length ? Math.max(...yValues) : 1;
   const yDomain =
@@ -127,7 +127,7 @@ export function AirQualityChart() {
               navigate({
                 search: (prev) => ({
                   ...prev,
-                  selectedDate: new Date(point.ts),
+                  selectedDate: new Date(point.timestamp),
                 }),
                 replace: true,
               });
@@ -153,7 +153,7 @@ export function AirQualityChart() {
             tickMargin={6}
           />
           <XAxis
-            dataKey="ts"
+            dataKey="timestamp"
             type="number"
             scale="time"
             domain={[

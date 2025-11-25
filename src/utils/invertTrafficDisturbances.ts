@@ -38,19 +38,19 @@ export type SegmentsMappingJson = {
   segmentId: Record<string, { geometry: LineString }>;
 };
 
-export function buildDisturbanceMapFromJson(src: TrafficJson): DisturbanceMap {
+export function buildDisturbanceMapFromJson(source: TrafficJson): DisturbanceMap {
   const inverted: DisturbanceMap = {};
-  for (const [segmentId, segment] of Object.entries(src.segmentId ?? {})) {
-    for (const dc of segment.detailedCollisions ?? []) {
-      const p = dc.properties;
-      const key = `${p.traffic_disturbance_type}:${p.traffic_disturbance_id}`;
+  for (const [segmentId, segment] of Object.entries(source.segmentId ?? {})) {
+    for (const detailedCollision of segment.detailedCollisions ?? []) {
+      const properties = detailedCollision.properties;
+      const key = `${properties.traffic_disturbance_type}:${properties.traffic_disturbance_id}`;
       if (!inverted[key]) {
         inverted[key] = {
-          type: p.traffic_disturbance_type,
-          id: p.traffic_disturbance_id,
-          application_id: p.application_id,
-          start_date: p.star_date,
-          end_date: p.end_date,
+          type: properties.traffic_disturbance_type,
+          id: properties.traffic_disturbance_id,
+          application_id: properties.application_id,
+          start_date: properties.star_date,
+          end_date: properties.end_date,
           segments: {},
         };
       }
@@ -94,12 +94,12 @@ export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureColl
   const seen: Record<string, true> = {};
   const features: Array<Feature<LineString, { segmentId: string }>> = [];
   for (const group of Object.values(map)) {
-    for (const [segmentId, seg] of Object.entries(group.segments)) {
+    for (const [segmentId, segment] of Object.entries(group.segments)) {
       if (seen[segmentId]) continue;
       seen[segmentId] = true;
       features.push({
         type: "Feature",
-        geometry: seg.geometry,
+        geometry: segment.geometry,
         properties: { segmentId },
       });
     }

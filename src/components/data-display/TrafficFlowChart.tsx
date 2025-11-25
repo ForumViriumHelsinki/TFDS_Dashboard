@@ -20,7 +20,7 @@ import {
   formatTick,
 } from "../../utils/chartUtils";
 
-type TrafficPoint = { ts: number; fcd: number; status: string };
+type TrafficPoint = { timestamp: number; floatingCarData: number; status: string };
 
 function TrafficFlowTooltipContent(point: TrafficPoint) {
   const statusLabel =
@@ -29,7 +29,7 @@ function TrafficFlowTooltipContent(point: TrafficPoint) {
   return (
     <>
       <Text size="xs">
-        FCD: <strong>{point.fcd}</strong>
+        FCD: <strong>{point.floatingCarData}</strong>
       </Text>
       <Text size="xs">Status: <strong>{statusLabel}</strong></Text>
     </>
@@ -51,22 +51,22 @@ export function TrafficFlowChart() {
 
   const trafficSeries: TrafficPoint[] = Array.isArray(query.data)
     ? (query.data as TrafficFlowRow[]).map((row) => {
-        const iso = String((row["_time"] as string | number | boolean | null) ?? "");
-        const date = new Date(iso);
-        const ts = date.getTime();
-        const fcdValueRaw = row["fcd"] as number | string | boolean | null;
-        const fcdValue =
-          typeof fcdValueRaw === "number"
-            ? fcdValueRaw
-            : Number.parseFloat(String(fcdValueRaw ?? 0));
+        const isoString = String((row["_time"] as string | number | boolean | null) ?? "");
+        const date = new Date(isoString);
+        const timestamp = date.getTime();
+        const floatingCarDataValueRaw = row["fcd"] as number | string | boolean | null;
+        const floatingCarDataValue =
+          typeof floatingCarDataValueRaw === "number"
+            ? floatingCarDataValueRaw
+            : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
         const statusRaw = row["segment_closure_status"] as string | number | boolean | null;
         const status = String(statusRaw ?? "").toLowerCase();
-        return { ts, fcd: Number.isFinite(fcdValue) ? fcdValue : 0, status };
+        return { timestamp, floatingCarData: Number.isFinite(floatingCarDataValue) ? floatingCarDataValue : 0, status };
       })
     : [];
 
-  const seriesMin = trafficSeries.length ? Math.min(...trafficSeries.map((d) => d.ts)) : undefined;
-  const seriesMax = trafficSeries.length ? Math.max(...trafficSeries.map((d) => d.ts)) : undefined;
+  const seriesMin = trafficSeries.length ? Math.min(...trafficSeries.map((point) => point.timestamp)) : undefined;
+  const seriesMax = trafficSeries.length ? Math.max(...trafficSeries.map((point) => point.timestamp)) : undefined;
 
   const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
   const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
@@ -81,7 +81,7 @@ export function TrafficFlowChart() {
       : undefined;
 
   const inferredStepMs =
-    trafficSeries.length >= 2 ? Math.max(1, trafficSeries[1].ts - trafficSeries[0].ts) : 5 * 60 * 1000;
+    trafficSeries.length >= 2 ? Math.max(1, trafficSeries[1].timestamp - trafficSeries[0].timestamp) : 5 * 60 * 1000;
 
   type Band = { x1: number; x2: number };
   function buildStatusBands(targetStatus: "open" | "closed"): Band[] {
@@ -97,11 +97,11 @@ export function TrafficFlowChart() {
       const nextIsTarget = next ? nextStatusNorm === targetStatus : false;
 
       if (isTarget && currentStart === null) {
-        currentStart = point.ts;
+        currentStart = point.timestamp;
       }
       if (isTarget && !nextIsTarget) {
-        const rawX1 = currentStart ?? point.ts;
-        const rawX2 = next ? next.ts : point.ts + inferredStepMs;
+        const rawX1 = currentStart ?? point.timestamp;
+        const rawX2 = next ? next.timestamp : point.timestamp + inferredStepMs;
         const x1 = Math.max(seriesMin, rawX1);
         const x2 = Math.min(seriesMax, rawX2);
         if (x2 > x1) {
@@ -129,7 +129,7 @@ export function TrafficFlowChart() {
               navigate({
               search: (prev) => ({
                 ...prev,
-                selectedDate: new Date(point.ts),
+                selectedDate: new Date(point.timestamp),
               }),
                 replace: true,
               });
@@ -173,7 +173,7 @@ export function TrafficFlowChart() {
             }}
           />
           <XAxis
-            dataKey="ts"
+            dataKey="timestamp"
             type="number"
             scale="time"
             domain={[
@@ -204,7 +204,7 @@ export function TrafficFlowChart() {
             content={<ChartTooltip renderContent={TrafficFlowTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
-          <Line type="monotone" dataKey="fcd" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="floatingCarData" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
       {trafficSeries.length === 0 && (

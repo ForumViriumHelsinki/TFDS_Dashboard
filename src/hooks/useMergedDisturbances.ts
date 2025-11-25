@@ -55,9 +55,9 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
       // 2. Filter by Date (if selected)
       if (!selectedDate) return true;
       return new Date(group.start_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
-    }).reduce((acc, [ key, group ]) => {
-      acc[key] = group;
-      return acc;
+    }).reduce((accumulator, [ key, group ]) => {
+      accumulator[key] = group;
+      return accumulator;
     }, {} as Record<string, DisturbanceGroup>);
   }, [map, selectedDate, sources]);
 
@@ -65,7 +65,7 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
 
   const getSelectedGroupBySegment = (segmentId?: string) => {
     if (!segmentId) return undefined;
-    return groups.find((g) => Boolean(g.segments[segmentId]));
+    return groups.find((group) => Boolean(group.segments[segmentId]));
   };
 
   return {

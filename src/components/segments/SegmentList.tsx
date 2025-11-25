@@ -36,8 +36,8 @@ export function SegmentList() {
 
   // Derive which accordion item should be open from the selected segment
   const selectedGroupValue = useMemo(() => {
-    const g = getSelectedGroupBySegment(selectedSegment);
-    return g ? `${g.type}:${g.id}` : null;
+    const selectedGroup = getSelectedGroupBySegment(selectedSegment);
+    return selectedGroup ? `${selectedGroup.type}:${selectedGroup.id}` : null;
   }, [selectedSegment, getSelectedGroupBySegment]);
 
   const effectiveAccordionValues = useMemo(() => {
@@ -74,13 +74,13 @@ export function SegmentList() {
   // Scroll the selected segment into view when it changes (after accordion opens/animates)
   useEffect(() => {
     if (!selectedSegment) return;
-    const el = itemRefs.current[selectedSegment];
-    if (!el) return;
+    const element = itemRefs.current[selectedSegment];
+    if (!element) return;
     // Try a few times to account for accordion transition/layout settling
     let attemptsRemaining = 3;
     const scheduleTry = (delayMs: number) => {
       const id = window.setTimeout(() => {
-        ensureElementVisibleWithinContainer(el);
+        ensureElementVisibleWithinContainer(element);
         attemptsRemaining -= 1;
         if (attemptsRemaining > 0) {
           // Increase delay slightly for next attempt
@@ -90,10 +90,10 @@ export function SegmentList() {
       return () => window.clearTimeout(id);
     };
     // First attempt next frame, then retry after small delays
-    const raf = requestAnimationFrame(() => ensureElementVisibleWithinContainer(el));
+    const requestAnimationFrameId = requestAnimationFrame(() => ensureElementVisibleWithinContainer(element));
     const cancelTimeout = scheduleTry(80);
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(requestAnimationFrameId);
       cancelTimeout();
     };
   }, [selectedSegment, ensureElementVisibleWithinContainer]);
@@ -104,9 +104,9 @@ export function SegmentList() {
       {error && (
         <div style={{ padding: theme.spacing.xs, color: theme.colors.red[7] }}>
           {(() => {
-            const err = error;
-            const msg = err instanceof Error ? err.message : 'Tuntematon virhe';
-            return `Virhe: ${msg}`;
+            const errorValue = error;
+            const message = errorValue instanceof Error ? errorValue.message : 'Tuntematon virhe';
+            return `Virhe: ${message}`;
           })()}
         </div>
       )}
@@ -137,7 +137,7 @@ export function SegmentList() {
                 {Object.keys(group.segments).map((segmentId) => (
                   <div
                     key={segmentId}
-                    ref={(el) => { itemRefs.current[segmentId] = el; }}
+                    ref={(element) => { itemRefs.current[segmentId] = element; }}
                     data-segment-id={segmentId}
                   >
                     <SegmentItem

@@ -38,8 +38,8 @@ export function DisturbanceLayer({
           pane={paneName}
           data={featureCollection}
           style={(feature?: Feature<Geometry, SegmentFeatureProps>) => {
-            const sid = feature?.properties?.segmentId;
-            const isSelected = Boolean(sid && sid === selectedSegment);
+            const segmentId = feature?.properties?.segmentId;
+            const isSelected = Boolean(segmentId && segmentId === selectedSegment);
             return {
               color: theme.colors.brand[0],
               weight: isSelected ? 12 : 6,
