@@ -12,6 +12,43 @@ import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 const DEFAULT_END_DATE = new Date();
 const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
 
+interface PropertyDisplayItemProps {
+  label: string;
+  value: string | undefined;
+  hasData: boolean;
+}
+
+function PropertyDisplayItem({ label, value, hasData }: PropertyDisplayItemProps) {
+  return (
+    <Group gap="xs">
+      <Text fw={600} size="sm">{label}:</Text>
+      <Text size="sm" c={hasData ? "black" : "dimmed"}>{value ?? "Ei dataa"}</Text>
+    </Group>
+  );
+}
+
+interface DataSourceButtonProps {
+  label: string;
+  url: string;
+}
+
+function DataSourceButton({ label, url }: DataSourceButtonProps) {
+  const theme = useMantineTheme();
+
+  return (
+    <Button
+      size="sm"
+      variant="subtle"
+      color="black"
+      fullWidth
+      rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
+      onClick={() => window.open(url, "_blank")}
+    >
+      {label}
+    </Button>
+  );
+}
+
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: '/' })
@@ -122,22 +159,26 @@ export function DataDisplaySidebar() {
           return { value: id, label: properties.Mittausasema ?? "" };
         })}
       />
-      <Group gap="xs">
-        <Text fw={600} size="sm">Kaupunginosa:</Text>
-        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.kaupunginosa ?? "Ei datta"}</Text>
-      </Group>
-      <Group gap="xs">
-        <Text fw={600} size="sm">Hakemus:</Text>
-        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.hakemustunnus ?? "Ei dataa"}</Text>
-      </Group>
-      <Group gap="xs">
-        <Text fw={600} size="sm">Ajankohta:</Text>
-        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.tyo_alkaa_txt ?? "Ei dataa"}</Text>
-      </Group>
-      <Group gap="xs">
-        <Text fw={600} size="sm">Tila:</Text>
-        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.status ?? "Ei dataa"}</Text>
-      </Group>
+      <PropertyDisplayItem
+        label="Kaupunginosa"
+        value={selectedGroup?.landLeaseProperties?.kaupunginosa}
+        hasData={!!selectedGroup}
+      />
+      <PropertyDisplayItem
+        label="Hakemus"
+        value={selectedGroup?.landLeaseProperties?.hakemustunnus}
+        hasData={!!selectedGroup}
+      />
+      <PropertyDisplayItem
+        label="Ajankohta"
+        value={selectedGroup?.landLeaseProperties?.tyo_alkaa_txt}
+        hasData={!!selectedGroup}
+      />
+      <PropertyDisplayItem
+        label="Tila"
+        value={selectedGroup?.landLeaseProperties?.status}
+        hasData={!!selectedGroup}
+      />
       <Popover width={268} shadow="sm" withinPortal zIndex={1200}>
         <Popover.Target>
           <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
@@ -146,46 +187,22 @@ export function DataDisplaySidebar() {
         </Popover.Target>
         <Popover.Dropdown p={0} py="xs">
           <Stack gap="xs">
-            <Button
-              size="sm"
-              variant="subtle"
-              color="black"
-              fullWidth
-              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
-              onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Kaivuilmoitus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
-            >
-              Kaivuilmoitukset
-            </Button>
-            <Button
-              variant="subtle"
-              color="black"
-              size="sm"
-              fullWidth
-              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
-              onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Aluevuokraus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
-            >
-              Aluevuokraukset
-            </Button>
-            <Button
-              variant="subtle"
-              color="black"
-              size="sm" 
-              fullWidth
-              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
-              onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_nyt&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
-            >
-              Ilmanlaatu nyt
-            </Button>
-            <Button
-              variant="subtle"
-              color="black"
-              size="sm"
-              fullWidth
-              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
-              onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_24h_maksimiarvo&count=10000&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
-            >
-              Ilmanlaatu max 24h
-            </Button>
+            <DataSourceButton
+              label="Kaivuilmoitukset"
+              url="https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Kaivuilmoitus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326"
+            />
+            <DataSourceButton
+              label="Aluevuokraukset"
+              url="https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Aluevuokraus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326"
+            />
+            <DataSourceButton
+              label="Ilmanlaatu nyt"
+              url="https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_nyt&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326"
+            />
+            <DataSourceButton
+              label="Ilmanlaatu max 24h"
+              url="https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_24h_maksimiarvo&count=10000&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326"
+            />
           </Stack>
         </Popover.Dropdown>
       </Popover>
