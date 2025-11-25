@@ -217,7 +217,7 @@ export function AirQualityChart() {
           />
           <YAxis
             domain={yDomain as [number, number]}
-            width={60}
+            width={40}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}

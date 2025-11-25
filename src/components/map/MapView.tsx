@@ -7,7 +7,6 @@ import {
   FeatureGroup,
   GeoJSON,
   useMap,
-  Pane,
 } from "react-leaflet";
 import {
   AirQualityProps,
@@ -24,6 +23,7 @@ import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { useMemo } from "react";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
+import { DisturbanceLayer } from "./DisturbanceLayer";
 
 function FitMapToSelected({
   selectedSegment,
@@ -86,6 +86,17 @@ export function MapView() {
     Boolean(showAirQuality)
   );
 
+  const handleSegmentSelect = (segmentId: string) => {
+    navigate({
+      search: (s) => ({
+        ...s,
+        selectedSegment: segmentId,
+        dataPanelOpen: true,
+      }),
+      replace: true,
+    });
+  };
+
   function InvalidateSizeOnLayoutChange({ panelOpen }: { panelOpen: boolean }) {
     const map = useMap();
     useEffect(() => {
@@ -112,7 +123,7 @@ export function MapView() {
 
 
   return (
-    <Box bg="gray.1" flex={1} h="100%" style={{ minHeight: 0, display: "flex", flexDirection: "column" }}>
+    <Box flex={1} h="100%" style={{ minHeight: 0, display: "flex", flexDirection: "column" }}>
       <div id="map" style={{ flex: 1 }}>
         <MapContainer
           center={[60.1699, 24.9384]}
@@ -206,95 +217,25 @@ export function MapView() {
             )}
 
             {showAreaRentals && areaRentalSegmentsFC.features.length > 0 && (
-              <Pane name="traffic-segments-area" style={{ zIndex: 650 }}>
-                <FeatureGroup>
-                  <GeoJSON
-                    key={`area-rentals-${selectedDate?.toISOString() ?? 'all'}`}
-                    pane="traffic-segments-area"
-                    data={areaRentalSegmentsFC}
-                    style={(
-                      feature?: Feature<Geometry, { segmentId?: string }>
-                    ) => {
-                      const sid = feature?.properties?.segmentId;
-                      const isSelected = sid && sid === selectedSegment;
-                      return {
-                        color: theme.colors.brand[0],
-                        weight: isSelected ? 12 : 6,
-                        opacity: isSelected ? 1 : 0.5,
-                      };
-                    }}
-                    onEachFeature={(
-                      feature: Feature<Geometry, { segmentId?: string }>,
-                      layer
-                    ) => {
-                      layer.on("click", () => {
-                        const segmentId = feature.properties?.segmentId;
-                        if (segmentId) {
-                          navigate({
-                            search: (s) => ({
-                              ...s,
-                              selectedSegment: segmentId,
-                              dataPanelOpen: true,
-                            }),
-                            replace: true,
-                          });
-                        }
-                        layer.bindPopup(`
-                          <div>
-                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
-                          </div>
-                        `);
-                      });
-                    }}
-                  />
-                </FeatureGroup>
-              </Pane>
+              <DisturbanceLayer
+                layerKey={`area-rentals-${selectedDate?.toISOString() ?? "all"}`}
+                paneName="traffic-segments-area"
+                zIndex={650}
+                featureCollection={areaRentalSegmentsFC}
+                selectedSegment={selectedSegment}
+                onSegmentSelect={handleSegmentSelect}
+              />
             )}
 
             {showExcavationNotices && excavationSegmentsFC.features.length > 0 && (
-              <Pane name="traffic-segments-exc" style={{ zIndex: 651 }}>
-                <FeatureGroup>
-                  <GeoJSON
-                    key={`excavation-${selectedDate?.toISOString() ?? 'all'}`}
-                    pane="traffic-segments-exc"
-                    data={excavationSegmentsFC}
-                    style={(
-                      feature?: Feature<Geometry, { segmentId?: string }>
-                    ) => {
-                      const sid = feature?.properties?.segmentId;
-                      const isSelected = sid && sid === selectedSegment;
-                      return {
-                        color: theme.colors.brand[0],
-                        weight: isSelected ? 12 : 6,
-                        opacity: isSelected ? 1 : 0.5,
-                      };
-                    }}
-                    onEachFeature={(
-                      feature: Feature<Geometry, { segmentId?: string }>,
-                      layer
-                    ) => {
-                      layer.on("click", () => {
-                        const segmentId = feature.properties?.segmentId;
-                        if (segmentId) {
-                          navigate({
-                            search: (s) => ({
-                              ...s,
-                              selectedSegment: segmentId,
-                              dataPanelOpen: true,
-                            }),
-                            replace: true,
-                          });
-                        }
-                        layer.bindPopup(`
-                          <div>
-                            ${Object.entries(feature.properties ?? {}).map(([key, value]) => `${key}: ${value}`).join("<br/>")}
-                          </div>
-                        `);
-                      });
-                    }}
-                  />
-                </FeatureGroup>
-              </Pane>
+              <DisturbanceLayer
+                layerKey={`excavation-${selectedDate?.toISOString() ?? "all"}`}
+                paneName="traffic-segments-exc"
+                zIndex={651}
+                featureCollection={excavationSegmentsFC}
+                selectedSegment={selectedSegment}
+                onSegmentSelect={handleSegmentSelect}
+              />
             )}
           </LayersControl>
           <AirQualityIndicator />

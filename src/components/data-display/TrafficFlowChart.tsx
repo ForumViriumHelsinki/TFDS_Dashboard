@@ -230,7 +230,7 @@ export function TrafficFlowChart() {
           <YAxis
             ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
             domain={[0, 10]}
-            width={60}
+            width={40}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
