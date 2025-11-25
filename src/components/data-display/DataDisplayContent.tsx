@@ -1,7 +1,7 @@
 import { Group } from "@mantine/core";
 import { useSearch } from '@tanstack/react-router'
 import { DataDisplaySidebar } from "./DataDisplaySidebar";
-import { DataDisplayGraphs } from "./DataDisplayGraphs";
+import { DataDisplayCharts } from "./DataDisplayCharts";
 
 export function DataDisplayContent() {
   const { dataPanelOpen } = useSearch({ from: '/' })
@@ -15,7 +15,7 @@ export function DataDisplayContent() {
       display={dataPanelOpen ? "flex" : "none"}
     >
       <DataDisplaySidebar />
-      <DataDisplayGraphs />
+      <DataDisplayCharts />
     </Group>
   );
 }

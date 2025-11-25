@@ -1,7 +1,3 @@
-/**
- * Utility functions for chart time axis calculations
- */
-
 export function chooseStepMs(totalRangeMs: number): number {
   const minute = 60 * 1000;
   const hour = 60 * minute;

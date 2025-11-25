@@ -2,7 +2,7 @@ import { Stack, Text } from "@mantine/core";
 import { TrafficFlowChart } from "./TrafficFlowChart";
 import { AirQualityChart } from "./AirQualityChart";
 
-export function DataDisplayGraphs() {
+export function DataDisplayCharts() {
   return (
     <Stack flex={1} p="md" h="100%" gap="xs">
       <Stack gap="xs" flex={1}>
