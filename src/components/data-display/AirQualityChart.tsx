@@ -20,74 +20,20 @@ import {
   parseFinnishAikaToDate,
   type AirQualityProps,
 } from "../../utils/airQuality";
-import { Box, Paper, Text, useMantineTheme } from "@mantine/core";
+import {
+  generateTimeTicks,
+  formatTick,
+} from "../../utils/chartUtils";
+import { Box, Text, useMantineTheme } from "@mantine/core";
+import { ChartTooltip } from "./ChartTooltip";
 
 type TimePoint = { ts: number; index: number };
 
-function chooseStepMs(totalRangeMs: number): number {
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  const candidates = [
-    5 * minute,
-    15 * minute,
-    30 * minute,
-    1 * hour,
-    2 * hour,
-    3 * hour,
-    6 * hour,
-    12 * hour,
-    1 * day,
-    2 * day,
-  ];
-  const maxLabels = 8;
-  for (const step of candidates) {
-    if (totalRangeMs / step <= maxLabels) return step;
-  }
-  return 7 * day;
-}
-
-function alignToStepCeil(ts: number, stepMs: number): number {
-  return Math.ceil(ts / stepMs) * stepMs;
-}
-
-function generateTimeTicks(minTs?: number, maxTs?: number): number[] {
-  if (minTs === undefined || maxTs === undefined || minTs >= maxTs) return [];
-  const step = chooseStepMs(maxTs - minTs);
-  let t = alignToStepCeil(minTs, step);
-  const ticks: number[] = [];
-  while (t <= maxTs) {
-    ticks.push(t);
-    t += step;
-  }
-  return ticks;
-}
-
-function AirQualityTooltip(props: {
-  active?: boolean;
-  payload?: Array<{ value: number; payload: TimePoint }>;
-  label?: number;
-}) {
-  const { active, payload } = props;
-  if (!active || !payload || !payload.length) return null;
-
-  const point = payload[0].payload;
-  const d = new Date(point.ts);
-  const timeLabel = d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+function AirQualityTooltipContent(point: TimePoint) {
   return (
-    <Paper withBorder p="xs">
-      <Text size="xs">{timeLabel}</Text>
-      <Text size="xs">
-        Ilmanlaatuindeksi: <strong>{point.index}</strong>
-      </Text>
-    </Paper>
+    <Text size="xs">
+      Ilmanlaatuindeksi: <strong>{point.index}</strong>
+    </Text>
   );
 }
 
@@ -154,23 +100,6 @@ export function AirQualityChart() {
       ? new Date(selectedDate).getTime()
       : undefined;
 
-  function formatTick(ts: number): string {
-    const d = new Date(ts);
-    if (rangeMs <= 24 * 60 * 60 * 1000) {
-      return d.toLocaleTimeString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
-    if (rangeMs <= 3 * 24 * 60 * 60 * 1000) {
-      return d.toLocaleString(undefined, {
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-      });
-    }
-    return d.toLocaleDateString(undefined, { month: "short", day: "2-digit" });
-  }
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -234,7 +163,7 @@ export function AirQualityChart() {
             ticks={xTicks}
             tick={{ fontSize: 10, fill: theme.black }}
             minTickGap={12}
-            tickFormatter={(value: number) => formatTick(value)}
+            tickFormatter={(value: number) => formatTick(value, rangeMs)}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
@@ -252,7 +181,7 @@ export function AirQualityChart() {
               />
             )}
           <Tooltip
-            content={<AirQualityTooltip />}
+            content={<ChartTooltip renderContent={AirQualityTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
           <Line

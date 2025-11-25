@@ -1,4 +1,5 @@
-import { Box, Paper, Text, useMantineTheme } from "@mantine/core";
+import { Box, Text, useMantineTheme } from "@mantine/core";
+import { ChartTooltip } from "./ChartTooltip";
 import {
   CartesianGrid,
   LineChart,
@@ -14,41 +15,24 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
+import {
+  generateTimeTicks,
+  formatTick,
+} from "../../utils/chartUtils";
 
 type TrafficPoint = { ts: number; fcd: number; status: string };
 
-function TrafficFlowTooltip(props: {
-  active?: boolean;
-  payload?: Array<{ value: number; payload: TrafficPoint }>;
-  label?: number;
-}) {
-  const { active, payload } = props;
-  if (!active || !payload || !payload.length) return null;
-
-  const point = payload[0].payload;
-  const d = new Date(point.ts);
-  const timeLabel = d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+function TrafficFlowTooltipContent(point: TrafficPoint) {
   const statusLabel =
     point.status === "closed" ? "Closed" : point.status === "open" ? "Open" : point.status || "Unknown";
 
   return (
-    <Paper
-      withBorder
-      p="xs"
-    >
-      <Text size="xs">{timeLabel}</Text>
+    <>
       <Text size="xs">
         FCD: <strong>{point.fcd}</strong>
       </Text>
       <Text size="xs">Status: <strong>{statusLabel}</strong></Text>
-    </Paper>  
+    </>
   );
 }
 
@@ -130,59 +114,6 @@ export function TrafficFlowChart() {
   }
   const closedBands = buildStatusBands("closed");
 
-  function chooseStepMs(totalRangeMs: number): number {
-    const minute = 60 * 1000;
-    const hour = 60 * minute;
-    const day = 24 * hour;
-    const candidates = [
-      5 * minute,
-      15 * minute,
-      30 * minute,
-      1 * hour,
-      2 * hour,
-      3 * hour,
-      6 * hour,
-      12 * hour,
-      1 * day,
-      2 * day,
-    ];
-    const maxLabels = 8;
-    for (const step of candidates) {
-      if (totalRangeMs / step <= maxLabels) return step;
-    }
-    return 7 * day;
-  }
-
-  function alignToStepCeil(ts: number, stepMs: number): number {
-    return Math.ceil(ts / stepMs) * stepMs;
-  }
-
-  function generateTimeTicks(minTs?: number, maxTs?: number): number[] {
-    if (minTs === undefined || maxTs === undefined || minTs >= maxTs) return [];
-    const step = chooseStepMs(maxTs - minTs);
-    let t = alignToStepCeil(minTs, step);
-    const ticks: number[] = [];
-    while (t <= maxTs) {
-      ticks.push(t);
-      t += step;
-    }
-    return ticks;
-  }
-
-  function formatTick(ts: number): string {
-    const d = new Date(ts);
-    if (rangeMs <= 24 * 60 * 60 * 1000) {
-      return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
-    }
-    if (rangeMs <= 3 * 24 * 60 * 60 * 1000) {
-      return d.toLocaleString(undefined, {
-        month: "short",
-        day: "2-digit",
-        hour: "2-digit",
-      });
-    }
-    return d.toLocaleDateString(undefined, { month: "short", day: "2-digit" });
-  }
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -252,7 +183,7 @@ export function TrafficFlowChart() {
             ticks={xTicks}
             tick={{ fontSize: 10, fill: theme.black }}
             minTickGap={12}
-            tickFormatter={(value: number) => formatTick(value)}
+            tickFormatter={(value: number) => formatTick(value, rangeMs)}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
@@ -270,7 +201,7 @@ export function TrafficFlowChart() {
               />
             )}
           <Tooltip
-            content={<TrafficFlowTooltip />}
+            content={<ChartTooltip renderContent={TrafficFlowTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
           <Line type="monotone" dataKey="fcd" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
