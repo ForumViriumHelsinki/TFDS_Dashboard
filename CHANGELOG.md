@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.2...tfds-dashboard-v0.3.3) (2025-11-25)
+
+
+### Bug Fixes
+
+* **ci:** update container build tag pattern to match release-please ([#26](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/26)) ([129b91e](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/129b91e2d89c83a748fac615a3e75aad2779d564))
+
 ## [0.3.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.1...tfds-dashboard-v0.3.2) (2025-11-25)
 
 
