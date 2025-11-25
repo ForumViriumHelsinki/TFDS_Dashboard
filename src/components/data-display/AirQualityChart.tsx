@@ -20,11 +20,8 @@ import {
   parseFinnishAikaToDate,
   type AirQualityProps,
 } from "../../utils/airQuality";
-import {
-  generateTimeTicks,
-  formatTick,
-} from "../../utils/chartUtils";
-import { Box, Text, useMantineTheme } from "@mantine/core";
+import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
 import { ChartTooltip } from "./ChartTooltip";
 
 type TimePoint = { timestamp: number; index: number };
@@ -46,7 +43,7 @@ export function AirQualityChart() {
     selectedEndDate,
     selectedDate,
   } = useSearch({ from: "/" });
-  const { data } = useQuery({
+  const { isPending, isError, data, error } = useQuery({
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
@@ -72,8 +69,10 @@ export function AirQualityChart() {
       const date = parseFinnishAikaToDate(airQualityProperties.Aika);
       if (!date) return false;
       const timestamp = date.getTime();
-      if (requestedStartTs !== undefined && timestamp < requestedStartTs) return false;
-      if (requestedEndTs !== undefined && timestamp > requestedEndTs) return false;
+      if (requestedStartTs !== undefined && timestamp < requestedStartTs)
+        return false;
+      if (requestedEndTs !== undefined && timestamp > requestedEndTs)
+        return false;
       return true;
     })
     .map((feature) => {
@@ -85,7 +84,9 @@ export function AirQualityChart() {
     })
     .sort((a, b) => a.timestamp - b.timestamp);
 
-  const seriesMinTs = filteredSeries.length ? filteredSeries[0].timestamp : undefined;
+  const seriesMinTs = filteredSeries.length
+    ? filteredSeries[0].timestamp
+    : undefined;
   const seriesMaxTs = filteredSeries.length
     ? filteredSeries[filteredSeries.length - 1].timestamp
     : undefined;
@@ -99,7 +100,6 @@ export function AirQualityChart() {
     selectedDate && axisMin !== undefined && axisMax !== undefined
       ? new Date(selectedDate).getTime()
       : undefined;
-
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -134,7 +134,7 @@ export function AirQualityChart() {
             }
           }}
         >
-          <CartesianGrid vertical={false} stroke="transparent"/>
+          <CartesianGrid vertical={false} stroke="transparent" />
           <ReferenceArea
             x1={axisMin !== undefined ? (axisMin as number) : undefined}
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
@@ -193,7 +193,7 @@ export function AirQualityChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      {filteredSeries.length === 0 && (
+      {filteredSeries.length === 0 && !isPending && !isError && (
         <Box
           style={{
             position: "absolute",
@@ -205,9 +205,42 @@ export function AirQualityChart() {
           }}
         >
           <Text size="sm" c="dimmed">
-            Ei dataa
+            Ei näytettäviä tietoja.
           </Text>
         </Box>
+      )}
+      {isError && (
+        <Box
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <Text size="sm" c="red">
+            Tietojen haku epäonnistui: {error?.message}.
+          </Text>
+        </Box>
+      )}
+      {isPending && (
+        <Group
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <Text size="sm" c="dimmed">
+            Haetaan tietoja…
+          </Text>
+          <Loader size="sm" />
+        </Group>
       )}
     </Box>
   );

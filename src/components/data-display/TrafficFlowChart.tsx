@@ -1,4 +1,4 @@
-import { Box, Text, useMantineTheme } from "@mantine/core";
+import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
 import { ChartTooltip } from "./ChartTooltip";
 import {
   CartesianGrid,
@@ -41,7 +41,7 @@ export function TrafficFlowChart() {
   const navigate = useNavigate({ from: '/' });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' })
   
-  const query = useQuery(
+  const { isPending, isError, data, error } = useQuery(
     getTrafficFlowQueryOptions({
       start: selectedStartDate ?? new Date(),
       end: selectedEndDate ?? new Date(),
@@ -49,8 +49,8 @@ export function TrafficFlowChart() {
     })
   );
 
-  const trafficSeries: TrafficPoint[] = Array.isArray(query.data)
-    ? (query.data as TrafficFlowRow[]).map((row) => {
+  const trafficSeries: TrafficPoint[] = Array.isArray(data)
+    ? (data as TrafficFlowRow[]).map((row) => {
         const isoString = String((row["_time"] as string | number | boolean | null) ?? "");
         const date = new Date(isoString);
         const timestamp = date.getTime();
@@ -113,7 +113,6 @@ export function TrafficFlowChart() {
     return bands;
   }
   const closedBands = buildStatusBands("closed");
-
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -207,7 +206,7 @@ export function TrafficFlowChart() {
           <Line type="monotone" dataKey="floatingCarData" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
-      {trafficSeries.length === 0 && (
+      {trafficSeries.length === 0 && !isPending && !isError && (
         <Box
           style={{
             position: "absolute",
@@ -218,8 +217,39 @@ export function TrafficFlowChart() {
             pointerEvents: "none",
           }}
         >
-          <Text size="sm" c="dimmed">Ei dataa</Text>
+          <Text size="sm" c="dimmed">
+            Ei näytettäviä tietoja.
+          </Text>
         </Box>
+      )}
+      {isError && (
+        <Box style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}>
+          <Text size="sm" c="red">
+            Tietojen haku epäonnistui: {error?.message}.
+          </Text>
+        </Box>
+      )}
+      {isPending && (
+        <Group style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}>
+          <Text size="sm" c="dimmed">
+            Haetaan tietoja…
+          </Text>
+          <Loader size="sm" />
+        </Group>
       )}
     </Box>
   );

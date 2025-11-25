@@ -28,18 +28,17 @@ export function AirQualityIndicator() {
       right={16}
       style={{ zIndex: 400 }}
     >
-      <Stack h="100%" gap="xs" align="center" justify="space-between">
-        <Text size="xs" color={theme.colors.gray[7]}>
+      <Stack h="100%" gap={0} align="center">
+        <Text size="xs" c={theme.colors.gray[7]}>
           AQI
         </Text>
-        <Center style={{ flex: 1, width: "100%" }}>
+        <Center flex={1} w="100%" h={180} p="xs">
           <Box
-            w={24}
-            h={177}
+            h="100%"
+            w="100%"
             style={{
               borderRadius: 25,
-              background:
-                `linear-gradient(180deg, ${AIR_QUALITY_COLORS["Good air quality"]} 0%, ${AIR_QUALITY_COLORS["Satisfactory air quality"]} 25%, ${AIR_QUALITY_COLORS["Fair air quality"]} 50%, ${AIR_QUALITY_COLORS["Poor air quality"]} 75%, ${AIR_QUALITY_COLORS["Very poor air quality"]} 100%)`,
+              background: `linear-gradient(180deg, ${AIR_QUALITY_COLORS["Good air quality"]} 0%, ${AIR_QUALITY_COLORS["Satisfactory air quality"]} 25%, ${AIR_QUALITY_COLORS["Fair air quality"]} 50%, ${AIR_QUALITY_COLORS["Poor air quality"]} 75%, ${AIR_QUALITY_COLORS["Very poor air quality"]} 100%)`,
             }}
           />
         </Center>
@@ -55,7 +54,6 @@ export function AirQualityIndicator() {
             <ActionIcon
               variant="white"
               radius="xl"
-              size={18}
               aria-label="AQI info"
             >
               <CircleHelp size={18} color={theme.colors.gray[7]} />
@@ -63,12 +61,22 @@ export function AirQualityIndicator() {
           </Popover.Target>
           <Popover.Dropdown>
             <Title order={5}>Ilmanlaadun värikoodit</Title>
-            <Text size="sm" pb="xs">HSY käyttää seuraavia värejä ilmanlaadun indikaattorina:</Text>
+            <Text size="sm" pb="xs">
+              HSY käyttää seuraavia värejä ilmanlaadun indikaattorina:
+            </Text>
             <Text size="sm">Vihreä - Hyvä (Ilmanlaatuindeksi 0 - 50)</Text>
-            <Text size="sm">Keltainen - Tyydyttävä (Ilmanlaatuindeksi 51 - 75)</Text>
-            <Text size="sm">Oranssi - Välttävä (Ilmanlaatuindeksi 76 - 100)</Text>
-            <Text size="sm">Punainen - Huono (Ilmanlaatuindeksi 101 - 150)</Text>
-            <Text size="sm">Violetti - Erittäin huono (Ilmanlaatuindeksi 151 - )</Text>
+            <Text size="sm">
+              Keltainen - Tyydyttävä (Ilmanlaatuindeksi 51 - 75)
+            </Text>
+            <Text size="sm">
+              Oranssi - Välttävä (Ilmanlaatuindeksi 76 - 100)
+            </Text>
+            <Text size="sm">
+              Punainen - Huono (Ilmanlaatuindeksi 101 - 150)
+            </Text>
+            <Text size="sm">
+              Violetti - Erittäin huono (Ilmanlaatuindeksi 151 - )
+            </Text>
           </Popover.Dropdown>
         </Popover>
       </Stack>

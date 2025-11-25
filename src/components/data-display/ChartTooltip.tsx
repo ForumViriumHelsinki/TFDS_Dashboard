@@ -12,7 +12,11 @@ interface ChartTooltipProps<T extends ChartPoint> {
   renderContent: (point: T) => ReactNode;
 }
 
-export function ChartTooltip<T extends ChartPoint>({ active, payload, renderContent }: ChartTooltipProps<T>) {
+export function ChartTooltip<T extends ChartPoint>({
+  active,
+  payload,
+  renderContent,
+}: ChartTooltipProps<T>) {
   if (!active || !payload || !payload.length) return null;
 
   const point = payload[0].payload;

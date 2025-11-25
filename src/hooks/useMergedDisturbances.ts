@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getListLandLeaseQueryOptions, landLeaseTypes } from "../queries/land-leases";
+import {
+  getListLandLeaseQueryOptions,
+  landLeaseTypes,
+} from "../queries/land-leases";
 import { getTrafficDisturbancesQueryOptions } from "../queries/traffic-disturbances";
 import {
   buildDisturbanceMapFromJson,
@@ -16,22 +19,38 @@ type UseMergedDisturbancesReturn = {
   groups: DisturbanceGroup[];
   isLoading: boolean;
   error: unknown;
-  getSelectedGroupBySegment: (segmentId?: string) => DisturbanceGroup | undefined;
+  getSelectedGroupBySegment: (
+    segmentId?: string
+  ) => DisturbanceGroup | undefined;
 };
 
 export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   // Static JSON mounted/served via /data
-  const { isPending: isPendingTraffic, data: trafficJson, error: trafficError } = useQuery(
-    getTrafficDisturbancesQueryOptions(),
-  );
+  const {
+    isPending: isPendingTraffic,
+    data: trafficJson,
+    error: trafficError,
+  } = useQuery(getTrafficDisturbancesQueryOptions());
 
   const { selectedDate, sources } = useSearch({ from: "/" });
 
-  const { isPending: isPendingExc, data: excData, error: excError } = useQuery(
-    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA }),
+  const {
+    isPending: isPendingExc,
+    data: excData,
+    error: excError,
+  } = useQuery(
+    getListLandLeaseQueryOptions({
+      landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA,
+    })
   );
-  const { isPending: isPendingLease, data: leaseData, error: leaseError } = useQuery(
-    getListLandLeaseQueryOptions({ landLeaseType: landLeaseTypes.LAND_LEASE_AREA }),
+  const {
+    isPending: isPendingLease,
+    data: leaseData,
+    error: leaseError,
+  } = useQuery(
+    getListLandLeaseQueryOptions({
+      landLeaseType: landLeaseTypes.LAND_LEASE_AREA,
+    })
   );
 
   const map = useMemo<DisturbanceMap>(() => {
@@ -43,25 +62,42 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   }, [trafficJson, excData, leaseData]);
 
   const filteredMap = useMemo(() => {
-    return Object.entries(map).filter(([ , group ]) => {
-      // 1. Filter by Source
-      if (group.type === 'Aluevuokraus' && !sources?.includes(Sources.AREA_RENTALS)) {
-        return false;
-      }
-      if (group.type === 'Kaivuilmoitus' && !sources?.includes(Sources.EXCAVATION_NOTICES)) {
-        return false;
-      }
+    return Object.entries(map)
+      .filter(([, group]) => {
+        // 1. Filter by Source
+        if (
+          group.type === "Aluevuokraus" &&
+          !sources?.includes(Sources.AREA_RENTALS)
+        ) {
+          return false;
+        }
+        if (
+          group.type === "Kaivuilmoitus" &&
+          !sources?.includes(Sources.EXCAVATION_NOTICES)
+        ) {
+          return false;
+        }
 
-      // 2. Filter by Date (if selected)
-      if (!selectedDate) return true;
-      return new Date(group.start_date) <= selectedDate && new Date(group.end_date) >= selectedDate;
-    }).reduce((accumulator, [ key, group ]) => {
-      accumulator[key] = group;
-      return accumulator;
-    }, {} as Record<string, DisturbanceGroup>);
+        // 2. Filter by Date (if selected)
+        if (!selectedDate) return true;
+        return (
+          new Date(group.start_date) <= selectedDate &&
+          new Date(group.end_date) >= selectedDate
+        );
+      })
+      .reduce(
+        (accumulator, [key, group]) => {
+          accumulator[key] = group;
+          return accumulator;
+        },
+        {} as Record<string, DisturbanceGroup>
+      );
   }, [map, selectedDate, sources]);
 
-  const groups = useMemo<DisturbanceGroup[]>(() => Object.values(filteredMap), [filteredMap]);
+  const groups = useMemo<DisturbanceGroup[]>(
+    () => Object.values(filteredMap),
+    [filteredMap]
+  );
 
   const getSelectedGroupBySegment = (segmentId?: string) => {
     if (!segmentId) return undefined;
@@ -76,5 +112,3 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
     getSelectedGroupBySegment,
   };
 }
-
-

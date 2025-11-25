@@ -75,19 +75,15 @@ export function useFilteredAirQuality(
   }, [historicalQuery.data, selectedDate]);
 
   const data = selectedDate
-    ? filteredHistoricalData ?? nowQuery.data
+    ? (filteredHistoricalData ?? nowQuery.data)
     : nowQuery.data;
 
   const isPending = selectedDate
-    ? historicalQuery.isPending &&
-      !filteredHistoricalData &&
-      !nowQuery.data
+    ? historicalQuery.isPending && !filteredHistoricalData && !nowQuery.data
     : nowQuery.isPending && !nowQuery.data;
 
   const isError = selectedDate
-    ? historicalQuery.isError &&
-      !filteredHistoricalData &&
-      !nowQuery.data
+    ? historicalQuery.isError && !filteredHistoricalData && !nowQuery.data
     : nowQuery.isError;
 
   const error = selectedDate ? historicalQuery.error : nowQuery.error;
@@ -95,12 +91,9 @@ export function useFilteredAirQuality(
   return {
     data,
     isPending,
-    isFetching: selectedDate
-      ? historicalQuery.isFetching
-      : nowQuery.isFetching,
+    isFetching: selectedDate ? historicalQuery.isFetching : nowQuery.isFetching,
     isError,
     error,
     refetch: selectedDate ? historicalQuery.refetch : nowQuery.refetch,
   };
 }
-
