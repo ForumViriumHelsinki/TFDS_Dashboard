@@ -1,4 +1,4 @@
-import { Box, Paper, Text } from "@mantine/core";
+import { Box, Paper, Text, useMantineTheme } from "@mantine/core";
 import {
   CartesianGrid,
   LineChart,
@@ -14,10 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
-import { BORDER_COLOR, BRAND_COLOR, BG_COLOR } from "../../main";
-
-const AXIS_TICK_STYLE = { fontSize: 10, fill: "#000000" as const };
-const CLOSED_BG = "#FFE3E3";
 
 type TrafficPoint = { ts: number; fcd: number; status: string };
 
@@ -57,6 +53,7 @@ function TrafficFlowTooltip(props: {
 }
 
 export function TrafficFlowChart() {
+  const theme = useMantineTheme();
   const navigate = useNavigate({ from: '/' });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' })
   
@@ -67,7 +64,6 @@ export function TrafficFlowChart() {
       segmentId: selectedSegment ?? "",
     })
   );
-  // console.log(query.data);
 
   const trafficSeries: TrafficPoint[] = Array.isArray(query.data)
     ? (query.data as TrafficFlowRow[]).map((row) => {
@@ -215,7 +211,7 @@ export function TrafficFlowChart() {
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
             y1={0}
             y2={10}
-            fill={BG_COLOR}
+            fill={theme.colors.gray[1]}
             fillOpacity={1}
             stroke="none"
           />
@@ -226,7 +222,7 @@ export function TrafficFlowChart() {
               x2={b.x2}
               y1={0}
               y2={10}
-              fill={CLOSED_BG}
+              fill={theme.colors.red[0]}
               fillOpacity={1}
               stroke="none"
             />
@@ -235,8 +231,8 @@ export function TrafficFlowChart() {
             ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
             domain={[0, 10]}
             width={30}
-            tick={AXIS_TICK_STYLE}
-            axisLine={{ stroke: BORDER_COLOR }}
+            tick={{ fontSize: 10, fill: theme.black }}
+            axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
           />
@@ -249,10 +245,10 @@ export function TrafficFlowChart() {
               axisMax !== undefined ? (axisMax as number) : "dataMax",
             ]}
             ticks={xTicks}
-            tick={AXIS_TICK_STYLE}
+            tick={{ fontSize: 10, fill: theme.black }}
             minTickGap={12}
             tickFormatter={(value: number) => formatTick(value)}
-            axisLine={{ stroke: BORDER_COLOR }}
+            axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
           />
@@ -263,16 +259,16 @@ export function TrafficFlowChart() {
             selectedDateTs <= axisMax && (
               <ReferenceLine
                 x={selectedDateTs}
-                stroke={BRAND_COLOR}
+                stroke={theme.colors.brand[0]}
                 strokeWidth={1}
                 strokeDasharray="4 2"
               />
             )}
           <Tooltip
             content={<TrafficFlowTooltip />}
-            cursor={{ stroke: BORDER_COLOR, strokeDasharray: "3 3" }}
+            cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
-          <Line type="monotone" dataKey="fcd" stroke="#1971C2" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="fcd" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
       {trafficSeries.length === 0 && (
@@ -286,7 +282,7 @@ export function TrafficFlowChart() {
             pointerEvents: "none",
           }}
         >
-          <Text size="sm" c="#868e96">No data found</Text>
+          <Text size="sm" c="dimmed">Ei dataa</Text>
         </Box>
       )}
     </Box>

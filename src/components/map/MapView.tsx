@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Box, useMantineTheme } from "@mantine/core";
 import {
   MapContainer,
   TileLayer,
@@ -58,6 +58,7 @@ function FitMapToSelected({
 }
 
 export function MapView() {
+  const theme = useMantineTheme();
   const { selectedSegment, selectedDate } = useSearch({ from: "/" });
   const { dataPanelOpen } = useSearch({ from: "/" });
   const { sources } = useSearch({ from: "/" });
@@ -66,6 +67,7 @@ export function MapView() {
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
   const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
   const { map: disturbanceMap } = useMergedDisturbances();
+  
   const areaRentalSegmentsFC = useMemo(() => {
     const entries = Object.entries(disturbanceMap).filter(
       ([, group]) => group.type === "Aluevuokraus"
@@ -163,7 +165,7 @@ export function MapView() {
                       
                       return L.circleMarker(latlng, {
                         radius: 10,
-                        color: "#000000",
+                        color: theme.black,
                         weight: 1,
                         fillColor: color,
                         fillOpacity: 1,
@@ -216,7 +218,7 @@ export function MapView() {
                       const sid = feature?.properties?.segmentId;
                       const isSelected = sid && sid === selectedSegment;
                       return {
-                        color: "#FF5000",
+                        color: theme.colors.brand[0],
                         weight: isSelected ? 12 : 6,
                         opacity: isSelected ? 1 : 0.5,
                       };
@@ -262,7 +264,7 @@ export function MapView() {
                       const sid = feature?.properties?.segmentId;
                       const isSelected = sid && sid === selectedSegment;
                       return {
-                        color: "#FF5000",
+                        color: theme.colors.brand[0],
                         weight: isSelected ? 12 : 6,
                         opacity: isSelected ? 1 : 0.5,
                       };

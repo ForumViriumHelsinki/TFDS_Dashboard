@@ -6,7 +6,7 @@ import '@mantine/dates/styles.css';
 import "./index.css";
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
-import { createTheme, MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider, Box, Text, Title } from "@mantine/core";
 import { Calendar } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatesProvider } from "@mantine/dates";
@@ -33,10 +33,8 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
-// Brand color constant
-export const BRAND_COLOR = '#FF5000';
-export const BORDER_COLOR = '#F1F3F5';
-export const BG_COLOR = '#F8F9FA';
+// Brand color - kept in theme only
+const BRAND_COLOR = '#FF5000';
 
 const theme = createTheme({
   fontFamily: "Montserrat, sans-serif",
@@ -89,15 +87,15 @@ createRoot(rootEl).render(
         <DatesProvider settings={{ locale: "fi" }}>
           <Sentry.ErrorBoundary
             fallback={({ error }) => (
-              <div style={{ padding: "2rem", textAlign: "center" }}>
-                <h1>Application Error</h1>
-                <p>Sorry, something went wrong.</p>
+              <Box p="2xl" style={{ textAlign: "center" }}>
+                <Title order={1}>Application Error</Title>
+                <Text>Sorry, something went wrong.</Text>
                 <details style={{ marginTop: "1rem" }}>
                   <summary>Error details</summary>
                   <pre style={{ textAlign: "left", marginTop: "1rem" }}>
                     {String(error)}</pre>
                 </details>
-              </div>
+              </Box>
             )}
           >
             <QueryClientProvider client={queryClient}>

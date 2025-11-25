@@ -19,7 +19,7 @@ function App() {
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main h="100%" style={{ overflow: "hidden" }}>
-        <Stack gap={0} h="100%" bg="red">
+        <Stack gap={0} h="100%">
           <MapView />
           <DataDisplayPanel />
         </Stack>

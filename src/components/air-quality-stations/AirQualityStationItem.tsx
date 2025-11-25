@@ -1,6 +1,5 @@
-import { NavLink } from "@mantine/core";
+import { NavLink, useMantineTheme } from "@mantine/core";
 import { Circle } from "lucide-react";
-import { BRAND_COLOR } from "../../main";
 
 interface AirQualityStationItemProps {
   id: string;
@@ -12,6 +11,8 @@ interface AirQualityStationItemProps {
 }
 
 export function AirQualityStationItem({ id, label, description, colorHex, isSelected, onClick }: AirQualityStationItemProps) {
+  const theme = useMantineTheme();
+  const brandColor = theme.colors.brand[0];
   return (
     <NavLink
       href="#required-for-focus"
@@ -23,14 +24,14 @@ export function AirQualityStationItem({ id, label, description, colorHex, isSele
       }
       active={isSelected}
       style={{
-        borderRight: isSelected ? `3px solid ${BRAND_COLOR}` : "none",
+        borderRight: isSelected ? `3px solid ${brandColor}` : "none",
       }}
       styles={{
         label: {
-          color: "black",
+          color: theme.black,
         },
         description: {
-          color: "#5C5F66",
+          color: theme.colors.gray[7],
         },
       }}
       data-id={id}

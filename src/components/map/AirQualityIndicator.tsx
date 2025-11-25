@@ -7,11 +7,13 @@ import {
   Stack,
   Text,
   Title,
+  useMantineTheme,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
 import { AIR_QUALITY_COLORS } from "../../utils/airQuality";
 
 export function AirQualityIndicator() {
+  const theme = useMantineTheme();
   return (
     <Paper
       w={40}
@@ -19,15 +21,15 @@ export function AirQualityIndicator() {
       radius={50}
       shadow="md"
       px={0}
-      py={8}
+      py="xs"
       withBorder={false}
       pos="absolute"
       top={80}
       right={16}
       style={{ zIndex: 400 }}
     >
-      <Stack h="100%" gap={10} align="center" justify="space-between">
-        <Text fz={12} c="#495057">
+      <Stack h="100%" gap="xs" align="center" justify="space-between">
+        <Text size="xs" color={theme.colors.gray[7]}>
           AQI
         </Text>
         <Center style={{ flex: 1, width: "100%" }}>
@@ -56,7 +58,7 @@ export function AirQualityIndicator() {
               size={18}
               aria-label="AQI info"
             >
-              <CircleHelp size={18} color="#273C80" />
+              <CircleHelp size={18} color={theme.colors.gray[7]} />
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown>

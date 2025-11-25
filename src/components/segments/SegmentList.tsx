@@ -1,12 +1,13 @@
 
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { SegmentItem } from "./SegmentItem";
-import { Accordion, Group, Text } from '@mantine/core';
+import { Accordion, Group, Text, useMantineTheme } from '@mantine/core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Fuse from 'fuse.js';
 import { useMergedDisturbances } from '../../hooks/useMergedDisturbances';
 
 export function SegmentList() {
+  const theme = useMantineTheme();
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment, landLeaseSearch } = useSearch({ from: '/' })
   const { groups, isLoading, error, getSelectedGroupBySegment } = useMergedDisturbances();
@@ -99,9 +100,9 @@ export function SegmentList() {
 
   return (
     <>
-      {isLoading && <div style={{ padding: 8 }}>Ladataan…</div>}
+      {isLoading && <div style={{ padding: theme.spacing.xs }}>Ladataan…</div>}
       {error && (
-        <div style={{ padding: 8, color: "#C92A2A" }}>
+        <div style={{ padding: theme.spacing.xs, color: theme.colors.red[7] }}>
           {(() => {
             const err = error;
             const msg = err instanceof Error ? err.message : 'Tuntematon virhe';
@@ -153,7 +154,7 @@ export function SegmentList() {
         })}
       </Accordion>
       {filteredGroups.length === 0 && !isLoading && (
-        <div style={{ padding: 8 }}>Ei osumia hakuehdolla.</div>
+        <div style={{ padding: theme.spacing.xs }}>Ei osumia hakuehdolla.</div>
       )}
     </>
   );

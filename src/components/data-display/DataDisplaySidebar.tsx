@@ -1,4 +1,4 @@
-import { Button, Group, Popover, Select, Stack, Text } from "@mantine/core";
+import { Button, Group, Popover, Select, Stack, Text, useMantineTheme } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from '@tanstack/react-router'
@@ -8,12 +8,12 @@ import { useQuery } from "@tanstack/react-query";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-import { BORDER_COLOR } from "../../main";
 
 const DEFAULT_END_DATE = new Date();
 const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
 
 export function DataDisplaySidebar() {
+  const theme = useMantineTheme();
   const navigate = useNavigate({ from: '/' })
   const { selectedSegment, selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
   const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
@@ -59,7 +59,7 @@ export function DataDisplaySidebar() {
       h="100%"
       gap="xs"
       miw={300}
-      style={{ borderRight: `1px solid ${BORDER_COLOR}` }}
+      style={{ borderRight: `1px solid ${theme.colors.gray[3]}` }}
     >
       <Select
         label="IDEA Segment"
@@ -122,19 +122,19 @@ export function DataDisplaySidebar() {
           return { value: id, label: properties.Mittausasema ?? "" };
         })}
       />
-      <Group gap={4}>
+      <Group gap="xs">
         <Text fw={600} size="sm">Kaupunginosa:</Text>
         <Text size="sm">{selectedGroup?.landLeaseProperties?.kaupunginosa ?? "Unknown"}</Text>
       </Group>
-      <Group gap={4}>
+      <Group gap="xs">
         <Text fw={600} size="sm">Hakemus:</Text>
         <Text size="sm">{selectedGroup?.landLeaseProperties?.hakemustunnus ?? "Unknown"}</Text>
       </Group>
-      <Group gap={4}>
+      <Group gap="xs">
         <Text fw={600} size="sm">Ajankohta:</Text>
         <Text size="sm">{selectedGroup?.landLeaseProperties?.tyo_alkaa_txt ?? "Unknown"} - {selectedGroup?.landLeaseProperties?.tyo_paattyy_txt ?? "Unknown"}</Text>
       </Group>
-      <Group gap={4}>
+      <Group gap="xs">
         <Text fw={600} size="sm">Tila:</Text>
         <Text size="sm">{selectedGroup?.landLeaseProperties?.status ?? "Unknown"}</Text>
       </Group>
@@ -145,13 +145,13 @@ export function DataDisplaySidebar() {
           </Button>
         </Popover.Target>
         <Popover.Dropdown p={0} py="xs">
-          <Stack gap={4}>
+          <Stack gap="xs">
             <Button
               size="sm"
               variant="subtle"
               color="black"
               fullWidth
-              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
               onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Kaivuilmoitus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
             >
               Kaivuilmoitukset
@@ -161,7 +161,7 @@ export function DataDisplaySidebar() {
               color="black"
               size="sm"
               fullWidth
-              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
               onClick={() => window.open("https://kartta.hel.fi/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=Aluevuokraus_alue&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326", "_blank")}
             >
               Aluevuokraukset
@@ -171,7 +171,7 @@ export function DataDisplaySidebar() {
               color="black"
               size="sm" 
               fullWidth
-              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
               onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_nyt&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
             >
               Ilmanlaatu nyt
@@ -181,7 +181,7 @@ export function DataDisplaySidebar() {
               color="black"
               size="sm"
               fullWidth
-              rightSection={<ExternalLink size={14} color="#6C757D" />}
+              rightSection={<ExternalLink size={14} color={theme.colors.gray[6]} />}
               onClick={() => window.open("https://kartta.hsy.fi/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=Ilmanlaatu_24h_maksimiarvo&count=10000&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326", "_blank")}
             >
               Ilmanlaatu max 24h
