@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.4...tfds-dashboard-v0.3.5) (2025-11-25)
+
+
+### Bug Fixes
+
+* replace missing vite.svg favicon with inline data URI ([#31](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/31)) ([2bc9ac7](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/2bc9ac73b364bd075826d972a8d8471d5542a375))
+
 ## [0.3.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.3...tfds-dashboard-v0.3.4) (2025-11-25)
 
 
