@@ -205,7 +205,7 @@ export function AirQualityChart() {
             }
           }}
         >
-          <CartesianGrid vertical={false} stroke="transparent" />
+          <CartesianGrid vertical={false} stroke="transparent"/>
           <ReferenceArea
             x1={axisMin !== undefined ? (axisMin as number) : undefined}
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
@@ -217,7 +217,7 @@ export function AirQualityChart() {
           />
           <YAxis
             domain={yDomain as [number, number]}
-            width={30}
+            width={60}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}

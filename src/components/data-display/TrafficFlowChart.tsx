@@ -230,11 +230,16 @@ export function TrafficFlowChart() {
           <YAxis
             ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
             domain={[0, 10]}
-            width={30}
+            width={60}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
+            tickFormatter={(value: number) => {
+              if (value === 0) return "Pieni (0)";
+              if (value === 10) return "Suuri (10)";
+              return String(value);
+            }}
           />
           <XAxis
             dataKey="ts"
