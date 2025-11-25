@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.1...tfds-dashboard-v0.3.2) (2025-11-25)
+
+
+### Bug Fixes
+
+* regenerate package-lock.json in Linux container ([#24](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/24)) ([924118e](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/924118e35ecbc789a869de356435f10946483a2c))
+
 ## [0.3.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.0...tfds-dashboard-v0.3.1) (2025-11-25)
 
 
