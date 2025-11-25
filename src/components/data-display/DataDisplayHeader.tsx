@@ -22,7 +22,7 @@ export function DataDisplayHeader() {
       py="xs"
       style={{ borderBottom: `1px solid ${theme.colors.gray[3]}` }}
     >
-      <Text>{selectedGroup?.landLeaseProperties?.osoite ?? "Unknown"}</Text>
+      <Text c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.osoite ?? "Valitse IDEA Segment"}</Text>
       <Button
         size="xs"
         variant="white"

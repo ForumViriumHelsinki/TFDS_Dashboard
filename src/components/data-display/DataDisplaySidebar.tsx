@@ -124,19 +124,19 @@ export function DataDisplaySidebar() {
       />
       <Group gap="xs">
         <Text fw={600} size="sm">Kaupunginosa:</Text>
-        <Text size="sm">{selectedGroup?.landLeaseProperties?.kaupunginosa ?? "Unknown"}</Text>
+        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.kaupunginosa ?? "Ei datta"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={600} size="sm">Hakemus:</Text>
-        <Text size="sm">{selectedGroup?.landLeaseProperties?.hakemustunnus ?? "Unknown"}</Text>
+        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.hakemustunnus ?? "Ei dataa"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={600} size="sm">Ajankohta:</Text>
-        <Text size="sm">{selectedGroup?.landLeaseProperties?.tyo_alkaa_txt ?? "Unknown"} - {selectedGroup?.landLeaseProperties?.tyo_paattyy_txt ?? "Unknown"}</Text>
+        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.tyo_alkaa_txt ?? "Ei dataa"}</Text>
       </Group>
       <Group gap="xs">
         <Text fw={600} size="sm">Tila:</Text>
-        <Text size="sm">{selectedGroup?.landLeaseProperties?.status ?? "Unknown"}</Text>
+        <Text size="sm" c={selectedGroup ? "black" : "dimmed"}>{selectedGroup?.landLeaseProperties?.status ?? "Ei dataa"}</Text>
       </Group>
       <Popover width={268} shadow="sm" withinPortal zIndex={1200}>
         <Popover.Target>
