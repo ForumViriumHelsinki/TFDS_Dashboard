@@ -8,6 +8,8 @@ import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
 import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DatesProvider } from "@mantine/dates";
+import 'dayjs/locale/fi';
 
 const queryClient = new QueryClient();
 
@@ -56,23 +58,25 @@ const rootEl = document.getElementById("root")!;
 createRoot(rootEl).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="light" theme={theme}>
-      <Sentry.ErrorBoundary
-        fallback={({ error }) => (
-          <div style={{ padding: "2rem", textAlign: "center" }}>
-            <h1>Application Error</h1>
-            <p>Sorry, something went wrong.</p>
-            <details style={{ marginTop: "1rem" }}>
-              <summary>Error details</summary>
-              <pre style={{ textAlign: "left", marginTop: "1rem" }}>
-                {String(error)}</pre>
-            </details>
-          </div>
-        )}
-      >
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </Sentry.ErrorBoundary>
+        <DatesProvider settings={{ locale: "fi" }}>
+          <Sentry.ErrorBoundary
+            fallback={({ error }) => (
+              <div style={{ padding: "2rem", textAlign: "center" }}>
+                <h1>Application Error</h1>
+                <p>Sorry, something went wrong.</p>
+                <details style={{ marginTop: "1rem" }}>
+                  <summary>Error details</summary>
+                  <pre style={{ textAlign: "left", marginTop: "1rem" }}>
+                    {String(error)}</pre>
+                </details>
+              </div>
+            )}
+          >
+            <QueryClientProvider client={queryClient}>
+              <RouterProvider router={router} />
+            </QueryClientProvider>
+          </Sentry.ErrorBoundary>
+      </DatesProvider>
     </MantineProvider>
   </StrictMode>,
 );
