@@ -23,13 +23,13 @@ ingress:
   enabled: true
   className: nginx
   hosts:
-  - host: tfds-dashboard.dataportal.fi
+  - host: dashboard.helsinki.trafficflowdataspace.eu
     paths:
     - path: /
       pathType: ImplementationSpecific
   tls:
   - hosts:
-    - tfds-dashboard.dataportal.fi
+    - dashboard.helsinki.trafficflowdataspace.eu
     secretName: tfds-dashboard-tls # pragma: allowlist secret
 env:
   SENTRY_DSN:
