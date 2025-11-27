@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.0...tfds-dashboard-v0.4.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* **build:** regenerate package-lock.json for multi-platform Docker builds ([#38](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/38)) ([c1ccb56](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/c1ccb5697f09d185ed59f88c34d8c4f180773683))
+
 ## [0.4.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.5...tfds-dashboard-v0.4.0) (2025-11-27)
 
 
