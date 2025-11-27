@@ -7,7 +7,7 @@ export function DataDisplayPanel() {
   const { dataPanelOpen } = useSearch({ from: '/' })
 
   return (
-    <Box bg="white" flex={dataPanelOpen ? 1 : 0}>
+    <Box flex={dataPanelOpen ? 1 : 0} mah="600px">
       <DataDisplayHeader />
       <DataDisplayContent />
     </Box>

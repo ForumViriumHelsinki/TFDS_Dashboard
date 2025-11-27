@@ -1,5 +1,6 @@
-import { NavLink } from "@mantine/core";
 import { ChartLine } from "lucide-react";
+import { useMantineTheme } from "@mantine/core";
+import { SelectableNavItem } from "../shared/SelectableNavItem";
 
 interface SegmentItemProps {
   segmentId: string;
@@ -8,31 +9,27 @@ interface SegmentItemProps {
   onClick: () => void;
 }
 
-export function SegmentItem({ segmentId, segmentLabel, isSelected, onClick }: SegmentItemProps) {
+export function SegmentItem({
+  segmentId,
+  segmentLabel,
+  isSelected,
+  onClick,
+}: SegmentItemProps) {
+  const theme = useMantineTheme();
+  const brandColor = theme.colors.brand[0];
+
   return (
-    <NavLink
-      href="#"
-      onClick={onClick}
+    <SelectableNavItem
       label={segmentLabel}
       description={segmentId}
+      onClick={onClick}
       leftSection={
         <ChartLine
           size={16}
-          color={isSelected ? "#F37438" : "#000"}
+          color={isSelected ? brandColor : theme.black}
         />
       }
-      active={isSelected}
-      style={{
-        borderRight: isSelected ? "3px solid #F37438" : "none",
-      }}
-      styles={{
-        label: {
-          color: "black",
-        },
-        description: {
-          color: "#5C5F66",
-        },
-      }}
+      isSelected={isSelected}
     />
   );
 }

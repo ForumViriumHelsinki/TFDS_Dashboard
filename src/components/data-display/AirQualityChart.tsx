@@ -1,0 +1,247 @@
+import {
+  ResponsiveContainer,
+  LineChart,
+  CartesianGrid,
+  ReferenceArea,
+  ReferenceLine,
+  YAxis,
+  XAxis,
+  Line,
+  Tooltip,
+} from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import {
+  AirQualityTypes,
+  getListAirQualityQueryOptions,
+} from "../../queries/air-quality";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import type { FeatureCollection, Geometry } from "geojson";
+import {
+  parseFinnishAikaToDate,
+  type AirQualityProps,
+} from "../../utils/airQuality";
+import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { ChartTooltip } from "./ChartTooltip";
+
+type TimePoint = { timestamp: number; index: number };
+
+function AirQualityTooltipContent(point: TimePoint) {
+  return (
+    <Text size="xs">
+      Ilmanlaatuindeksi: <strong>{point.index}</strong>
+    </Text>
+  );
+}
+
+export function AirQualityChart() {
+  const theme = useMantineTheme();
+  const navigate = useNavigate({ from: "/" });
+  const {
+    selectedAirQualityStation,
+    selectedStartDate,
+    selectedEndDate,
+    selectedDate,
+  } = useSearch({ from: "/" });
+  const { isPending, isError, data, error } = useQuery({
+    ...getListAirQualityQueryOptions({
+      airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
+    }),
+  });
+
+  const requestedStartTs = selectedStartDate
+    ? new Date(selectedStartDate).getTime()
+    : undefined;
+  const requestedEndTs = selectedEndDate
+    ? new Date(selectedEndDate).getTime()
+    : undefined;
+
+  const features =
+    (data as FeatureCollection<Geometry, AirQualityProps> | undefined)
+      ?.features ?? [];
+
+  const filteredSeries: TimePoint[] = features
+    .filter((feature) => {
+      const airQualityProperties = feature.properties ?? {};
+      const stationId = String(airQualityProperties.Mittausaseman_numero ?? "");
+      if (!selectedAirQualityStation) return false;
+      if (stationId !== String(selectedAirQualityStation)) return false;
+      const date = parseFinnishAikaToDate(airQualityProperties.Aika);
+      if (!date) return false;
+      const timestamp = date.getTime();
+      if (requestedStartTs !== undefined && timestamp < requestedStartTs)
+        return false;
+      if (requestedEndTs !== undefined && timestamp > requestedEndTs)
+        return false;
+      return true;
+    })
+    .map((feature) => {
+      const airQualityProperties = feature.properties ?? {};
+      const date = parseFinnishAikaToDate(airQualityProperties.Aika);
+      const timestamp = date ? date.getTime() : 0;
+      const indexVal = Number(airQualityProperties.Ilmanlaatuindeksi ?? 0);
+      return { timestamp, index: Number.isFinite(indexVal) ? indexVal : 0 };
+    })
+    .sort((a, b) => a.timestamp - b.timestamp);
+
+  const seriesMinTs = filteredSeries.length
+    ? filteredSeries[0].timestamp
+    : undefined;
+  const seriesMaxTs = filteredSeries.length
+    ? filteredSeries[filteredSeries.length - 1].timestamp
+    : undefined;
+  // Prefer requested range when available so charts line up on the same ticks
+  const axisMin = requestedStartTs ?? seriesMinTs;
+  const axisMax = requestedEndTs ?? seriesMaxTs;
+  const rangeMs =
+    axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
+
+  const selectedDateTs =
+    selectedDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(selectedDate).getTime()
+      : undefined;
+
+  const xTicks = generateTimeTicks(axisMin, axisMax);
+
+  const yValues = filteredSeries.map((point) => point.index);
+  const yMin = yValues.length ? Math.min(...yValues) : 0;
+  const yMax = yValues.length ? Math.max(...yValues) : 1;
+  const yDomain =
+    yValues.length && yMin !== yMax
+      ? [yMin, yMax]
+      : [Math.max(0, yMin - 1), yMax + 1];
+
+  return (
+    <Box pos="relative" h="100%" w="100%">
+      <ResponsiveContainer>
+        <LineChart
+          data={filteredSeries}
+          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          onClick={(state) => {
+            if (
+              state &&
+              state.activePayload &&
+              state.activePayload.length > 0
+            ) {
+              const point = state.activePayload[0].payload as TimePoint;
+              navigate({
+                search: (prev) => ({
+                  ...prev,
+                  selectedDate: new Date(point.timestamp),
+                }),
+                replace: true,
+              });
+            }
+          }}
+        >
+          <CartesianGrid vertical={false} stroke="transparent" />
+          <ReferenceArea
+            x1={axisMin !== undefined ? (axisMin as number) : undefined}
+            x2={axisMax !== undefined ? (axisMax as number) : undefined}
+            y1={yDomain[0]}
+            y2={yDomain[1]}
+            fill={theme.colors.gray[1]}
+            fillOpacity={1}
+            stroke="none"
+          />
+          <YAxis
+            domain={yDomain as [number, number]}
+            width={40}
+            tick={{ fontSize: 10, fill: theme.black }}
+            axisLine={{ stroke: theme.colors.gray[3] }}
+            tickLine={false}
+            tickMargin={6}
+          />
+          <XAxis
+            dataKey="timestamp"
+            type="number"
+            scale="time"
+            domain={[
+              axisMin !== undefined ? (axisMin as number) : "dataMin",
+              axisMax !== undefined ? (axisMax as number) : "dataMax",
+            ]}
+            ticks={xTicks}
+            tick={{ fontSize: 10, fill: theme.black }}
+            minTickGap={12}
+            tickFormatter={(value: number) => formatTick(value, rangeMs)}
+            axisLine={{ stroke: theme.colors.gray[3] }}
+            tickLine={false}
+            tickMargin={6}
+          />
+          {selectedDateTs !== undefined &&
+            axisMin !== undefined &&
+            axisMax !== undefined &&
+            selectedDateTs >= axisMin &&
+            selectedDateTs <= axisMax && (
+              <ReferenceLine
+                x={selectedDateTs}
+                stroke={theme.colors.brand[0]}
+                strokeWidth={1}
+                strokeDasharray="4 2"
+              />
+            )}
+          <Tooltip
+            content={<ChartTooltip renderContent={AirQualityTooltipContent} />}
+            cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
+          />
+          <Line
+            type="monotone"
+            dataKey="index"
+            stroke={theme.colors.blue[6]}
+            strokeWidth={2}
+            dot={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+      {filteredSeries.length === 0 && !isPending && !isError && (
+        <Box
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <Text size="sm" c="dimmed">
+            Ei näytettäviä tietoja.
+          </Text>
+        </Box>
+      )}
+      {isError && (
+        <Box
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <Text size="sm" c="red">
+            Tietojen haku epäonnistui: {error?.message}.
+          </Text>
+        </Box>
+      )}
+      {isPending && (
+        <Group
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <Text size="sm" c="dimmed">
+            Haetaan tietoja…
+          </Text>
+          <Loader size="sm" />
+        </Group>
+      )}
+    </Box>
+  );
+}
