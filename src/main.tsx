@@ -6,8 +6,11 @@ import '@mantine/dates/styles.css';
 import "./index.css";
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
-import { createTheme, MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider, Box, Text, Title } from "@mantine/core";
+import { Calendar } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DatesProvider } from "@mantine/dates";
+import 'dayjs/locale/fi';
 
 const queryClient = new QueryClient();
 
@@ -30,9 +33,26 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+// Brand color - kept in theme only
+const BRAND_COLOR = '#FF5000';
+
 const theme = createTheme({
   fontFamily: "Montserrat, sans-serif",
-  primaryColor: "orange",
+  primaryColor: "brand",
+  colors: {
+    brand: [
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+      BRAND_COLOR,
+    ],
+  },
   components: {
     Tabs: {
       styles: {
@@ -42,6 +62,21 @@ const theme = createTheme({
         },
       },
     },
+    Accordion: {
+      styles: {
+        chevron: {
+          color: BRAND_COLOR,
+        },
+      },
+    },
+    DateTimePicker: {
+      defaultProps: {
+        clearable: true,
+        valueFormat: "DD.MM.YYYY HH:mm",
+        leftSection: <Calendar size={16} />,
+        popoverProps: { withinPortal: true, zIndex: 1200 },
+      },
+    },
   },
 });
 
@@ -49,23 +84,24 @@ const rootEl = document.getElementById("root")!;
 createRoot(rootEl).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="light" theme={theme}>
-      <Sentry.ErrorBoundary
-        fallback={({ error }) => (
-          <div style={{ padding: "2rem", textAlign: "center" }}>
-            <h1>Application Error</h1>
-            <p>Sorry, something went wrong.</p>
-            <details style={{ marginTop: "1rem" }}>
-              <summary>Error details</summary>
-              <pre style={{ textAlign: "left", marginTop: "1rem" }}>
-                {String(error)}</pre>
-            </details>
-          </div>
-        )}
-      >
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </Sentry.ErrorBoundary>
+        <DatesProvider settings={{ locale: "fi" }}>
+          <Sentry.ErrorBoundary
+            fallback={({ error }) => (
+              <Box p="2xl" style={{ textAlign: "center" }}>
+                <Title order={1}>Virhe</Title>
+                <Text>Pahoittelut, jotain meni pieleen.</Text>
+                <details style={{ marginTop: "1rem" }}>
+                  <summary>Virheen yksityiskohdat</summary>
+                  <Text>{String(error)}</Text>
+                </details>
+              </Box>
+            )}
+          >
+            <QueryClientProvider client={queryClient}>
+              <RouterProvider router={router} />
+            </QueryClientProvider>
+          </Sentry.ErrorBoundary>
+      </DatesProvider>
     </MantineProvider>
   </StrictMode>,
 );

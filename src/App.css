@@ -35,3 +35,7 @@
   margin-right: 16px !important;
   margin-top: 16px !important;
 }
+
+.recharts-surface {
+  overflow: visible !important; /* This is needed for the tick labels to not cut off. */
+}

@@ -24,6 +24,12 @@ export default defineConfig({
         secure: true,
         rewrite: (path) => path.replace(/^\/hsy-wfs/, ''),
       },
+      '/hel-wfs': {
+        target: 'https://kartta.hel.fi',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/hel-wfs/, ''),
+      },
     },
   },
   build: {
