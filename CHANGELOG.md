@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.5...tfds-dashboard-v0.4.0) (2025-11-27)
+
+
+### Features
+
+* add deploy/values.yaml for ArgoCD deployment config ([#33](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/33)) ([70d540f](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/70d540f55af70764d72b14248b07ee3097448f74))
+
 ## [0.3.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.3.4...tfds-dashboard-v0.3.5) (2025-11-25)
 
 
