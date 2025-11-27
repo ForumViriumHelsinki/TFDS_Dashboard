@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
     tags:
-      - "containers-tfds-dashboard-v*.*.*"
+      - "tfds-dashboard-v*.*.*"
 
 env:
   REGISTRY: ghcr.io

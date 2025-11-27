@@ -1,0 +1,150 @@
+image:
+  repository: ghcr.io/forumviriumhelsinki/tfds-dashboard
+  tag: "0.3.1"
+imagePullSecrets:
+- name: ghcr-login-secret
+# Use shared service account with Workload Identity for GCS access
+serviceAccount:
+  create: false
+  name: idea-helsinki-shared
+# GCS-FUSE sidecar configuration
+podAnnotations:
+  gke-gcsfuse/volumes: "true"
+  gke-gcsfuse/cpu-limit: "250m"
+  gke-gcsfuse/memory-limit: "256Mi"
+  gke-gcsfuse/ephemeral-storage-limit: "1Gi"
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # Basic authentication
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth  # pragma: allowlist secret
+    nginx.ingress.kubernetes.io/auth-realm: 'TFDS Dashboard - Authentication Required'
+  enabled: true
+  className: nginx
+  hosts:
+  - host: dashboard.helsinki.trafficflowdataspace.eu
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - dashboard.helsinki.trafficflowdataspace.eu
+    secretName: tfds-dashboard-tls # pragma: allowlist secret
+env:
+  SENTRY_DSN:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: SENTRY_DSN
+  INFLUX_DB_URL:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_URL
+  INFLUX_DB_ORG:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_ORG
+  INFLUX_DB_FCD_BUCKET:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_FCD_BUCKET
+  INFLUX_DB_VALIDATION_BUCKET:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_VALIDATION_BUCKET
+  INFLUX_DB_TFDS_TOKEN:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_TFDS_TOKEN
+replicaCount: 1
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 101  # nginx user
+  capabilities:
+    drop:
+    - ALL
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+externalSecret:
+  enabled: true
+  name: tfds-dashboard-secrets
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: gcp-store
+  target:
+    name: tfds-dashboard-secrets
+    creationPolicy: Owner
+  data:
+  - secretKey: SENTRY_DSN # pragma: allowlist secret
+    remoteRef:
+      key: sentry_dsn_tfds_dashboard
+  - secretKey: INFLUX_DB_URL # pragma: allowlist secret
+    remoteRef:
+      key: idea-helsinki-influxdb-url
+  - secretKey: INFLUX_DB_ORG # pragma: allowlist secret
+    remoteRef:
+      key: idea-helsinki-influxdb-org
+  - secretKey: INFLUX_DB_FCD_BUCKET # pragma: allowlist secret
+    remoteRef:
+      key: idea-helsinki-influx-fcd-bucket
+  - secretKey: INFLUX_DB_VALIDATION_BUCKET # pragma: allowlist secret
+    remoteRef:
+      key: idea-helsinki-influx-validation-bucket
+  - secretKey: INFLUX_DB_TFDS_TOKEN # pragma: allowlist secret
+    remoteRef:
+      key: idea-helsinki-influx-tfds-token
+# Volumes for writable directories (required with readOnlyRootFilesystem)
+volumes:
+- name: nginx-cache
+  emptyDir: {}
+- name: nginx-run
+  emptyDir: {}
+- name: nginx-tmp
+  emptyDir: {}
+- name: nginx-conf
+  emptyDir: {}
+# GCS-FUSE volume for shared data (idea-helsinki bucket)
+- name: shared-data
+  persistentVolumeClaim:
+    claimName: idea-helsinki-shared-pvc
+volumeMounts:
+- name: nginx-cache
+  mountPath: /var/cache/nginx
+- name: nginx-run
+  mountPath: /var/run
+- name: nginx-tmp
+  mountPath: /tmp
+- name: nginx-conf
+  mountPath: /etc/nginx/conf.d
+# Mount GCS bucket path idea-helsinki/data to public/data
+- name: shared-data
+  mountPath: /usr/share/nginx/html/public/data
+  subPath: data
+  readOnly: true
+keda:
+  enabled: true
+  minReplicaCount: 0
+  maxReplicaCount: 2
+  pollingInterval: 30
+  cooldownPeriod: 300
+  triggers:
+  - type: cron
+    metadata:
+      timezone: Europe/Helsinki
+      start: 0 7 * * 1-5
+      end: 0 22 * * 1-5
+      desiredReplicas: "1"

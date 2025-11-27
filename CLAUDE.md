@@ -57,7 +57,7 @@ curl http://localhost:8080/health
 
 ### Multi-Stage Container Build
 
-- **Build stage**: Node.js 23 Alpine compiles React app with Vite, embeds `VITE_` environment variables at build time
+- **Build stage**: Node.js 22 Alpine (LTS) compiles React app with Vite, embeds `VITE_` environment variables at build time
 - **Production stage**: NGINX 1.27 Alpine serves static files from `/usr/share/nginx/html`
 - **Port configuration**: Container listens on port 80 internally; mapped to host port 8080 in development
 
