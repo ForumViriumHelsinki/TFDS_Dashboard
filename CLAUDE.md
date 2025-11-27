@@ -37,6 +37,21 @@ npm run format
 pre-commit run --all-files
 ```
 
+## Updating Dependencies
+
+Always update dependencies using Docker to ensure cross-platform compatibility. This prevents build failures from missing platform-specific optional dependencies (e.g., `@rollup/rollup-linux-x64-musl`).
+
+```bash
+# Recommended: use Makefile target
+make deps-update
+
+# Or manually:
+rm -rf node_modules package-lock.json
+docker run --rm --platform=linux/amd64 -v "$(pwd)":/app -w /app node:22-alpine npm install
+```
+
+**Why?** npm's optional dependencies are platform-specific. Running `npm install` on macOS may not include Linux binaries needed for multi-platform Docker builds.
+
 ## Docker Development
 
 ```bash
@@ -159,6 +174,7 @@ npm test -- tests/App.test.jsx
 
 ## Key Configuration Files
 
+- **`Makefile`**: Common development tasks including cross-platform dependency updates
 - **`package.json`**: Dependencies, scripts, version (updated by release-please)
 - **`vite.config.js`**: Vite build configuration with Sentry plugin for source map uploads
 - **`Dockerfile`**: Multi-stage build definition with Sentry build args
