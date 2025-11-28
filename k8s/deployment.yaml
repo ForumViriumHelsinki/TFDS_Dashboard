@@ -20,13 +20,6 @@ spec:
           image: tfds-dashboard
           ports:
             - containerPort: 80
-          env:
-            - name: VITE_INFLUXDB_URL
-              value: "https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/"
-            - name: VITE_INFLUXDB_ORG
-              value: "idea-helsinki"
-            - name: VITE_INFLUXDB_BUCKET
-              value: "idea-fcd-bucket"
           readinessProbe:
             httpGet:
               path: /health
