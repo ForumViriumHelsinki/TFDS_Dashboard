@@ -72,22 +72,29 @@ See [TFDS_DASHBOARD_DEVELOPER_GUIDE.md](docs/TFDS_DASHBOARD_DEVELOPER_GUIDE.md) 
 
 ```
 tfds-dashboard/
-├── src/                 # Application source code
-│   ├── main.jsx        # Entry point with Sentry initialization
-│   ├── App.jsx         # Main application component
-│   └── App.css         # Application styles
-├── public/              # Static assets
-├── tests/               # Test files
-│   ├── setup.js        # Test configuration
-│   └── App.test.jsx    # Component tests
-├── nginx/               # NGINX configuration
-│   └── default.conf.template
-├── .github/workflows/   # CI/CD pipelines
-│   ├── container-build.yaml
-│   └── release-please.yaml
-├── Dockerfile           # Container image definition
-├── vite.config.js       # Vite configuration with Sentry plugin
-└── package.json         # Dependencies and scripts
+├── src/                      # React app (Vite + TypeScript + Mantine)
+│   ├── main.tsx              # App bootstrap (theme, providers, Sentry)
+│   ├── App.tsx               # Application shell
+│   ├── router.ts             # @tanstack/react-router config
+│   ├── components/           # UI modules (map, tabs, layout, data display)
+│   ├── hooks/                # Reusable hooks
+│   ├── queries/              # Tanstack query option builders
+│   ├── services/             # API clients (InfluxDB client)
+│   ├── utils/                # Formatting helpers and constants
+│   └── App.css, index.css    # Global styles
+├── public/                   # Static assets served by Vite
+├── tests/                    # Vitest + Testing Library setup and specs
+├── docs/                     # Developer and deployment docs
+├── nginx/                    # NGINX config used in the container image
+├── deploy/                   # Helm values for TFDS deployment
+├── k8s/                      # Kubernetes manifests (deployment/service/namespace)
+├── .github/workflows/        # CI pipelines (container build, release-please)
+├── Dockerfile, skaffold.yaml # Container build + local dev tooling
+├── Makefile                  # Helper commands for dev/CI
+├── vite.config.js            # Vite bundler config (Sentry plugin, dev proxies)
+├── tsconfig.json             # TypeScript compiler options
+├── eslint.config.js          # Linting rules shared across app
+└── package.json              # Dependencies and npm scripts
 ```
 
 ## Development Pipeline
