@@ -17,6 +17,12 @@ export const getTrafficFlowQueryOptions = (params: TrafficFlowRequest) =>
   queryOptions({
     queryKey: ["traffic-flow", params],
     queryFn: async () => {
+      if (!influxdbQueryApi) {
+        throw new Error(
+          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable."
+        );
+      }
+
       const start = toFluxTime(params.start);
       const end = toFluxTime(params.end);
       const segmentId = params.segmentId.replace(/"/g, '\\"');
