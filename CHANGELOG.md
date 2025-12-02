@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.1...tfds-dashboard-v0.4.2) (2025-12-02)
+
+
+### Bug Fixes
+
+* **build:** prevent lockfile platform compatibility issues ([#41](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/41)) ([f38c501](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/f38c501112fccf8bc63e249724c37908b68a8415))
+
 ## [0.4.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.0...tfds-dashboard-v0.4.1) (2025-11-27)
 
 
