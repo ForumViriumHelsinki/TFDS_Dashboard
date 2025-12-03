@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/forumviriumhelsinki/tfds-dashboard
-  tag: "0.4.1"
+  tag: "0.4.2"
 imagePullSecrets:
 - name: ghcr-login-secret
 # Use shared service account with Workload Identity for GCS access
@@ -18,7 +18,7 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # Basic authentication
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth  # pragma: allowlist secret
+    nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth # pragma: allowlist secret
     nginx.ingress.kubernetes.io/auth-realm: 'TFDS Dashboard - Authentication Required'
   enabled: true
   className: nginx
@@ -67,7 +67,7 @@ securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 101  # nginx user
+  runAsUser: 101 # nginx user
   capabilities:
     drop:
     - ALL
