@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.2...tfds-dashboard-v0.4.3) (2025-12-11)
+
+
+### Bug Fixes
+
+* handle missing InfluxDB URL configuration gracefully ([#47](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/47)) ([8fe0ce8](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/8fe0ce8c01a711be32ca499c553afade5dfbb530))
+
 ## [0.4.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.1...tfds-dashboard-v0.4.2) (2025-12-02)
 
 
