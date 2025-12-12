@@ -3,15 +3,8 @@ import { AirQualityStationList } from "../air-quality-stations/AirQualityStation
 
 export function AirQualityTab() {
   return (
-    <AppShell.Section
-      grow
-      component={ScrollArea}
-      mx="-md"
-      px="md"
-      type="never"
-    >
+    <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
       <AirQualityStationList />
     </AppShell.Section>
   );
 }
-

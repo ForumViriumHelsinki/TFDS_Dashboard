@@ -27,13 +27,13 @@ export interface ListLandLeaseRequest {
 }
 
 export const getListLandLeaseQueryOptions = (
-  requestParams: ListLandLeaseRequest
+  requestParams: ListLandLeaseRequest,
 ) =>
   queryOptions({
     queryKey: ["land-leases", requestParams],
     queryFn: async () => {
       const response = await fetch(
-        `/hel-wfs/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=${requestParams.landLeaseType}&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326`
+        `/hel-wfs/ws/geoserver/avoindata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=${requestParams.landLeaseType}&outputFormat=application/json&SRSNAME=urn:ogc:def:crs:EPSG:4326`,
       );
       const data = await response.json();
       return data as FeatureCollection<MultiPolygon, LandLeaseProps>;

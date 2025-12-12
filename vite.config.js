@@ -18,17 +18,45 @@ export default defineConfig({
   ].filter(Boolean),
   server: {
     proxy: {
-      '/hsy-wfs': {
-        target: 'https://kartta.hsy.fi',
+      "/hsy-wfs": {
+        target: "https://kartta.hsy.fi",
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/hsy-wfs/, ''),
+        rewrite: (path) => path.replace(/^\/hsy-wfs/, ""),
       },
-      '/hel-wfs': {
-        target: 'https://kartta.hel.fi',
+      "/hel-wfs": {
+        target: "https://kartta.hel.fi",
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/hel-wfs/, ''),
+        rewrite: (path) => path.replace(/^\/hel-wfs/, ""),
+      },
+      "/influxdb-api": {
+        target: (() => {
+          const host =
+            process.env.VITE_INFLUXDB_HOST ||
+            "idea-helsinki-influxdb-helm-webapp.dataportal.fi";
+          const protocol =
+            host.startsWith("localhost:") || !host.includes(".")
+              ? "http"
+              : "https";
+          return `${protocol}://${host}`;
+        })(),
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/influxdb-api/, ""),
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            // Add InfluxDB token to all proxied requests
+            const token = process.env.INFLUXDB_TOKEN;
+            if (token) {
+              proxyReq.setHeader("Authorization", `Token ${token}`);
+            } else {
+              console.warn(
+                "⚠️  INFLUXDB_TOKEN not set - InfluxDB API calls will fail",
+              );
+            }
+          });
+        },
       },
     },
   },

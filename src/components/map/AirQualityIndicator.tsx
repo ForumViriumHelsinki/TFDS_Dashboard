@@ -51,11 +51,7 @@ export function AirQualityIndicator() {
           zIndex={2000}
         >
           <Popover.Target>
-            <ActionIcon
-              variant="white"
-              radius="xl"
-              aria-label="AQI info"
-            >
+            <ActionIcon variant="white" radius="xl" aria-label="AQI info">
               <CircleHelp size={18} color={theme.colors.gray[7]} />
             </ActionIcon>
           </Popover.Target>

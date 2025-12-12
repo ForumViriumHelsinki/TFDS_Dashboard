@@ -53,7 +53,7 @@ function FitMapToSelected({
     ];
     const matched =
       allFeatures.find(
-        (feature) => feature?.properties?.segmentId === selectedSegment
+        (feature) => feature?.properties?.segmentId === selectedSegment,
       ) ?? null;
     if (!matched) return;
     const bounds = L.geoJSON(matched as unknown as GeoJsonObject).getBounds();
@@ -80,20 +80,20 @@ export function MapView() {
 
   const areaRentalSegmentsFeatureCollection = useMemo(() => {
     const entries = Object.entries(disturbanceMap).filter(
-      ([, group]) => group.type === "Aluevuokraus"
+      ([, group]) => group.type === "Aluevuokraus",
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
   const excavationSegmentsFeatureCollection = useMemo(() => {
     const entries = Object.entries(disturbanceMap).filter(
-      ([, group]) => group.type === "Kaivuilmoitus"
+      ([, group]) => group.type === "Kaivuilmoitus",
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
 
   const { data: filteredAirQualityData } = useFilteredAirQuality(
     selectedDate,
-    Boolean(showAirQuality)
+    Boolean(showAirQuality),
   );
 
   const handleSegmentSelect = (segmentId: string) => {
@@ -176,10 +176,10 @@ export function MapView() {
                   data={filteredAirQualityData}
                   pointToLayer={(
                     feature: Feature<Geometry, AirQualityProps>,
-                    latlng
+                    latlng,
                   ) => {
                     const color = getAirQualityColor(
-                      feature?.properties?.Ilmanlaatuindeksi
+                      feature?.properties?.Ilmanlaatuindeksi,
                     );
 
                     return L.circleMarker(latlng, {
@@ -194,7 +194,7 @@ export function MapView() {
                   }}
                   onEachFeature={(
                     feature: Feature<Geometry, AirQualityProps>,
-                    layer
+                    layer,
                   ) => {
                     const properties: AirQualityProps =
                       feature.properties ?? {};

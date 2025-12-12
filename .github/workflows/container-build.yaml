@@ -60,10 +60,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VITE_INFLUXDB_URL=${{ secrets.VITE_INFLUXDB_URL }}
             VITE_INFLUXDB_ORG=${{ secrets.VITE_INFLUXDB_ORG }}
             VITE_INFLUXDB_BUCKET=${{ secrets.VITE_INFLUXDB_BUCKET }}
-            VITE_INFLUXDB_TOKEN=${{ secrets.VITE_INFLUXDB_TOKEN }}
             VITE_APP_VERSION=${{ steps.meta.outputs.version }}
             VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}

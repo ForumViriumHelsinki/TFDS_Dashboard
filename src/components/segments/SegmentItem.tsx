@@ -24,13 +24,9 @@ export function SegmentItem({
       description={segmentId}
       onClick={onClick}
       leftSection={
-        <ChartLine
-          size={16}
-          color={isSelected ? brandColor : theme.black}
-        />
+        <ChartLine size={16} color={isSelected ? brandColor : theme.black} />
       }
       isSelected={isSelected}
     />
   );
 }
-

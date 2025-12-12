@@ -12,7 +12,7 @@ export function SegmentList() {
   const { groups, isLoading, error, getSelectedGroupBySegment } =
     useMergedDisturbances();
   const [accordionManualValues, setAccordionManualValues] = useState<string[]>(
-    []
+    [],
   );
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -58,7 +58,7 @@ export function SegmentList() {
   const ensureElementVisibleWithinContainer = useCallback(
     (target: HTMLElement) => {
       const getNearestScrollableAncestor = (
-        element: HTMLElement | null
+        element: HTMLElement | null,
       ): HTMLElement | null => {
         let node: HTMLElement | null = element?.parentElement ?? null;
         while (node) {
@@ -94,11 +94,11 @@ export function SegmentList() {
         targetRect.height / 2;
       const desiredTop = Math.max(
         0,
-        container.scrollTop + targetCenterOffset - margin
+        container.scrollTop + targetCenterOffset - margin,
       );
       container.scrollTo({ top: desiredTop, behavior: "smooth" });
     },
-    []
+    [],
   );
 
   // Scroll the selected segment into view when it changes (after accordion opens/animates)
@@ -121,7 +121,7 @@ export function SegmentList() {
     };
     // First attempt next frame, then retry after small delays
     const requestAnimationFrameId = requestAnimationFrame(() =>
-      ensureElementVisibleWithinContainer(element)
+      ensureElementVisibleWithinContainer(element),
     );
     const cancelTimeout = scheduleTry(80);
     return () => {

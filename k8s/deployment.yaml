@@ -20,6 +20,19 @@ spec:
           image: tfds-dashboard
           ports:
             - containerPort: 80
+          env:
+            # InfluxDB proxy configuration for local development
+            # In production, these come from Kubernetes Secrets via ArgoCD
+            - name: INFLUXDB_HOST
+              value: "idea-helsinki-influxdb-helm-webapp.dataportal.fi"
+            - name: INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tfds-dashboard-secrets
+                  key: INFLUXDB_TOKEN
+                  optional: true # Allow deployment without secret for initial setup
+            - name: NGINX_DNS_RESOLVER
+              value: "8.8.8.8" # Google DNS for local development
           readinessProbe:
             httpGet:
               path: /health

@@ -1,19 +1,19 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
 
 export function Header() {
-  const navigate = useNavigate({ from: '/' })
-  const queryClient = useQueryClient()
-  const { sources, selectedDate } = useSearch({ from: '/' })
-  const fallbackDate = useMemo(() => new Date(), [])
-  const [showFallback, setShowFallback] = useState(true)
-  const displayDate = selectedDate ?? (showFallback ? fallbackDate : null)
+  const navigate = useNavigate({ from: "/" });
+  const queryClient = useQueryClient();
+  const { sources, selectedDate } = useSearch({ from: "/" });
+  const fallbackDate = useMemo(() => new Date(), []);
+  const [showFallback, setShowFallback] = useState(true);
+  const displayDate = selectedDate ?? (showFallback ? fallbackDate : null);
   const setSources = (next: string[]) =>
-    navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true })
+    navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true });
 
   return (
     <Group justify="space-between">
@@ -23,11 +23,7 @@ export function Header() {
           alt="Forum Virium Helsinki"
           w={74}
         />
-        <Image
-          src="/images/logos/helsinki-black.svg"
-          alt="Helsinki"
-          w={66}
-        />
+        <Image src="/images/logos/helsinki-black.svg" alt="Helsinki" w={66} />
         <Image
           src="/images/logos/TFDS.svg"
           alt="Traffic and Floating Data Space"
@@ -36,7 +32,9 @@ export function Header() {
       </Group>
       <Checkbox.Group value={sources} onChange={setSources}>
         <Group>
-          <Text size="sm" fw={600}>Ajankohta</Text>
+          <Text size="sm" fw={600}>
+            Ajankohta
+          </Text>
           <DateTimePicker
             clearable
             value={displayDate}
@@ -81,4 +79,3 @@ export function Header() {
     </Group>
   );
 }
-

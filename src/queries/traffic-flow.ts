@@ -19,7 +19,7 @@ export const getTrafficFlowQueryOptions = (params: TrafficFlowRequest) =>
     queryFn: async () => {
       if (!influxdbQueryApi) {
         throw new Error(
-          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable."
+          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
         );
       }
 

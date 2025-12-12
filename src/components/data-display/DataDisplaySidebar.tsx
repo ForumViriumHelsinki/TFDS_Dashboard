@@ -1,16 +1,29 @@
-import { Button, Group, Popover, Select, Stack, Text, useMantineTheme } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Popover,
+  Select,
+  Stack,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
-import { useNavigate, useSearch } from '@tanstack/react-router'
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { getAirQualityStationId } from "../../utils/airQuality";
-import { AirQualityTypes, getListAirQualityQueryOptions } from "../../queries/air-quality";
+import {
+  AirQualityTypes,
+  getListAirQualityQueryOptions,
+} from "../../queries/air-quality";
 import { useQuery } from "@tanstack/react-query";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
 const DEFAULT_END_DATE = new Date();
-const DEFAULT_START_DATE = new Date(DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000);
+const DEFAULT_START_DATE = new Date(
+  DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000,
+);
 
 interface PropertyDisplayItemProps {
   label: string;
@@ -18,11 +31,19 @@ interface PropertyDisplayItemProps {
   hasData: boolean;
 }
 
-function PropertyDisplayItem({ label, value, hasData }: PropertyDisplayItemProps) {
+function PropertyDisplayItem({
+  label,
+  value,
+  hasData,
+}: PropertyDisplayItemProps) {
   return (
     <Group gap="xs">
-      <Text fw={600} size="sm">{label}:</Text>
-      <Text size="sm" c={hasData ? "black" : "dimmed"}>{value ?? "Ei dataa"}</Text>
+      <Text fw={600} size="sm">
+        {label}:
+      </Text>
+      <Text size="sm" c={hasData ? "black" : "dimmed"}>
+        {value ?? "Ei dataa"}
+      </Text>
     </Group>
   );
 }
@@ -51,30 +72,40 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
-  const navigate = useNavigate({ from: '/' })
-  const { selectedSegment, selectedAirQualityStation, selectedStartDate, selectedEndDate } = useSearch({ from: '/' })
+  const navigate = useNavigate({ from: "/" });
+  const {
+    selectedSegment,
+    selectedAirQualityStation,
+    selectedStartDate,
+    selectedEndDate,
+  } = useSearch({ from: "/" });
   const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
-    getListAirQualityQueryOptions({ airQualityType: AirQualityTypes.AIR_QUALITY_NOW }),
+    getListAirQualityQueryOptions({
+      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
+    }),
   );
-  
+
   const { map, getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
   const trafficSegmentsFC = useMemo(() => {
     return buildSegmentsFeatureCollection(map);
   }, [map]);
-  
+
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
-    [getSelectedGroupBySegment, selectedSegment]
+    [getSelectedGroupBySegment, selectedSegment],
   );
 
   // If selected segment is not found (e.g. filtered out), clear it
   useEffect(() => {
     if (!isLoading && selectedSegment && !selectedGroup) {
-      navigate({ search: (prev) => ({ ...prev, selectedSegment: undefined }), replace: true })
+      navigate({
+        search: (prev) => ({ ...prev, selectedSegment: undefined }),
+        replace: true,
+      });
     }
   }, [isLoading, selectedSegment, selectedGroup, navigate]);
- 
+
   // Initialize URL search params with defaults on first load if missing
   useEffect(() => {
     if (!selectedStartDate || !selectedEndDate) {
@@ -85,7 +116,7 @@ export function DataDisplaySidebar() {
           selectedEndDate: selectedEndDate ?? DEFAULT_END_DATE,
         }),
         replace: true,
-      })
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -104,12 +135,25 @@ export function DataDisplaySidebar() {
         value={selectedSegment}
         size="sm"
         variant="filled"
-        onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedSegment: value }), replace: true })}
+        onChange={(value) =>
+          navigate({
+            search: (prev) => ({ ...prev, selectedSegment: value }),
+            replace: true,
+          })
+        }
         data={(trafficSegmentsFC.features ?? []).map((feature) => {
-          return { value: feature.properties?.segmentId ?? "", label: feature.properties?.segmentId ?? "" };
+          return {
+            value: feature.properties?.segmentId ?? "",
+            label: feature.properties?.segmentId ?? "",
+          };
         })}
         clearable
-        onClear={() => navigate({ search: (prev) => ({ ...prev, selectedSegment: "" }), replace: true })}
+        onClear={() =>
+          navigate({
+            search: (prev) => ({ ...prev, selectedSegment: "" }),
+            replace: true,
+          })
+        }
       />
       <DateTimePicker
         label="Mittausaikaväli alkaen"
@@ -152,9 +196,17 @@ export function DataDisplaySidebar() {
         value={selectedAirQualityStation ?? null}
         size="sm"
         variant="filled"
-        onChange={(value) => navigate({ search: (prev) => ({ ...prev, selectedAirQualityStation: value ?? undefined }), replace: true })}
+        onChange={(value) =>
+          navigate({
+            search: (prev) => ({
+              ...prev,
+              selectedAirQualityStation: value ?? undefined,
+            }),
+            replace: true,
+          })
+        }
         data={(airQualityData?.features ?? []).map((feature) => {
-          const properties = (feature.properties ?? {});
+          const properties = feature.properties ?? {};
           const id = getAirQualityStationId(feature);
           return { value: id, label: properties.Mittausasema ?? "" };
         })}
@@ -181,7 +233,12 @@ export function DataDisplaySidebar() {
       />
       <Popover width={268} shadow="sm" withinPortal zIndex={1200}>
         <Popover.Target>
-          <Button variant="outline" color="black" size="sm" rightSection={<ExternalLink size={12} />}>
+          <Button
+            variant="outline"
+            color="black"
+            size="sm"
+            rightSection={<ExternalLink size={12} />}
+          >
             Alkuperäisdata
           </Button>
         </Popover.Target>
@@ -209,4 +266,3 @@ export function DataDisplaySidebar() {
     </Stack>
   );
 }
-

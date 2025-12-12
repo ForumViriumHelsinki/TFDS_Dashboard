@@ -90,7 +90,7 @@ curl http://localhost:8080/health
 
 - URL: `https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/`
 - Organization: `idea-helsinki`
-- Bucket: `idea-fcd-bucket`
+- Bucket: `idea-validation-bucket`
 - Client: `@influxdata/influxdb-client`
 - Query language: Flux
 - Pattern: Use `getQueryApi()` for reads, `getWriteApi()` for writes
@@ -130,7 +130,7 @@ curl http://localhost:8080/health
 
 ### Production Deployment
 
-- **URL**: https://tfds-dashboard.dataportal.fi
+- **URL**: https://dashboard.helsinki.trafficflowdataspace.eu
 - **ArgoCD App**: https://argocd.dataportal.fi/applications/tfds-dashboard
 - **Namespace**: `tfds-dashboard`
 - **Helm Chart**: Uses shared `helm-webapp` chart (ghcr.io/forumviriumhelsinki/helm-webapp)
@@ -153,10 +153,42 @@ kubectl describe deployment -n tfds-dashboard tfds-dashboard
 Using Skaffold for local K8s development:
 
 ```bash
+# First-time setup: copy .env.example to .env and set your InfluxDB token
+cp .env.example .env
+# Edit .env and set INFLUXDB_TOKEN=<your-token>
+
 # Start development loop (builds, deploys, watches for changes)
+# dotenvx automatically loads .env and generates k8s/secret.yaml from template
 skaffold dev
 
 # Port forwarding to service automatically configured on localhost:8080
+```
+
+**How it works:**
+
+1. Skaffold pre-build hook runs `dotenvx run -- sh scripts/generate-secrets.sh`
+2. Script uses `envsubst` to generate `k8s/secret.yaml` from `k8s/secret.yaml.tmpl`
+3. Environment variables are loaded from `.env` by dotenvx
+4. Generated `k8s/secret.yaml` is git-ignored and deployed to Kubernetes
+
+**Note**: Local Skaffold deployment uses:
+
+- NGINX proxy for InfluxDB at `/influxdb-api`
+- Token loaded from `k8s/secret.yaml` (auto-generated from `.env`)
+- External InfluxDB host (`idea-helsinki-influxdb-helm-webapp.dataportal.fi`)
+- Google DNS resolver (`8.8.8.8`) for external services
+
+For troubleshooting NGINX issues:
+
+```bash
+# Check pod logs
+kubectl logs -n tfds-dashboard deployment/tfds-dashboard
+
+# Check NGINX config was generated correctly
+kubectl exec -n tfds-dashboard deployment/tfds-dashboard -- cat /etc/nginx/conf.d/default.conf
+
+# Manually regenerate secret if needed
+dotenvx run -- sh scripts/generate-secrets.sh
 ```
 
 ## Testing Strategy
@@ -207,7 +239,7 @@ npm test -- tests/App.test.jsx
 | -------------------------------- | --------------------------------- | ----------------------------------------------------------- |
 | `VITE_INFLUXDB_URL`              | InfluxDB server URL               | `https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/` |
 | `VITE_INFLUXDB_ORG`              | InfluxDB organization             | `idea-helsinki`                                             |
-| `VITE_INFLUXDB_BUCKET`           | InfluxDB bucket name              | `idea-fcd-bucket`                                           |
+| `VITE_INFLUXDB_BUCKET`           | InfluxDB bucket name              | `idea-validation-bucket`                                    |
 | `VITE_INFLUXDB_TOKEN`            | InfluxDB access token             | Set in .env for development (read-only token)               |
 | `VITE_SENTRY_DSN` (optional)     | Sentry error tracking DSN         | Set via GitHub Secrets / ArgoCD                             |
 | `SENTRY_AUTH_TOKEN` (build-time) | Sentry auth token for source maps | GitHub Secret only, never in code                           |

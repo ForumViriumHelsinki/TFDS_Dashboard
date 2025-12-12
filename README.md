@@ -128,26 +128,35 @@ Releases are automated using [release-please](https://github.com/googleapis/rele
 
 Deployed to Kubernetes via ArgoCD:
 
-- **Production**: https://tfds-dashboard.dataportal.fi
+- **Production**: https://dashboard.helsinki.trafficflowdataspace.eu
 - **Namespace**: `tfds-dashboard`
 - **ArgoCD App**: https://argocd.dataportal.fi/applications/tfds-dashboard
 
 ## Environment Variables
 
-Required environment variables:
+### Client-Side (Public, embedded in bundle)
 
-| Variable                         | Description                     | Example                                                     |
-| -------------------------------- | ------------------------------- | ----------------------------------------------------------- |
-| `VITE_INFLUXDB_URL`              | InfluxDB server URL             | `https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/` |
-| `VITE_INFLUXDB_ORG`              | InfluxDB organization           | `idea-helsinki`                                             |
-| `VITE_INFLUXDB_BUCKET`           | InfluxDB bucket name            | `idea-fcd-bucket`                                           |
-| `VITE_INFLUXDB_TOKEN`            | InfluxDB access token           | (Set in .env for development only)                          |
-| `VITE_SENTRY_DSN` (optional)     | Sentry error tracking DSN       | `https://...@sentry.io/...`                                 |
-| `SENTRY_AUTH_TOKEN` (build-time) | Sentry auth token (source maps) | (GitHub Secret / CI environment)                            |
+| Variable               | Description           | Example                  |
+| ---------------------- | --------------------- | ------------------------ |
+| `VITE_INFLUXDB_ORG`    | InfluxDB organization | `idea-helsinki`          |
+| `VITE_INFLUXDB_BUCKET` | InfluxDB bucket name  | `idea-validation-bucket` |
+| `VITE_SENTRY_DSN`      | Sentry error tracking | (Set via build args)     |
+
+### Server-Side (Private, never exposed)
+
+| Variable                         | Description                   | Used By                     |
+| -------------------------------- | ----------------------------- | --------------------------- |
+| `INFLUXDB_TOKEN`                 | InfluxDB access token         | Vite proxy (dev) / NGINX    |
+| `VITE_INFLUXDB_HOST`             | InfluxDB server host          | Vite proxy (dev)            |
+| `INFLUXDB_HOST`                  | InfluxDB server host          | NGINX (production)          |
+| `NGINX_DNS_RESOLVER`             | DNS resolver for NGINX        | NGINX (production)          |
+| `SENTRY_AUTH_TOKEN` (build-time) | Sentry auth token for uploads | GitHub Actions / build only |
 
 See `.env.example` for full list.
 
-**Important**: `VITE_` prefixed variables are embedded into the client bundle at build time and become publicly visible. The InfluxDB token should be read-only and scoped to specific buckets for security.
+**Security Improvement**: The app now uses a proxy approach where InfluxDB requests go through `/influxdb-api`. The token is added server-side by Vite (development) or NGINX (production), keeping it secure and never exposing it to the client.
+
+**Development Setup**: Environment variables are managed with [dotenvx](https://dotenvx.com/). Kubernetes secrets are auto-generated from `k8s/secret.yaml.tmpl` using your `.env` file via the Skaffold pre-build hook.
 
 ## Monitoring with Sentry
 
