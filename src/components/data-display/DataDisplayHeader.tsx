@@ -12,7 +12,7 @@ export function DataDisplayHeader() {
   const { isLoading, getSelectedGroupBySegment } = useMergedDisturbances();
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
-    [getSelectedGroupBySegment, selectedSegment]
+    [getSelectedGroupBySegment, selectedSegment],
   );
 
   return (

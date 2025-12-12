@@ -141,4 +141,7 @@ vite.config.ts.timestamp-*
 # Sentry configuration (contains auth token)
 .sentryclirc
 
+# Kubernetes secrets for local development
+k8s/secret.yaml
+
 /.DS_Store

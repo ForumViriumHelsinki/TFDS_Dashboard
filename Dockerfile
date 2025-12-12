@@ -1,19 +1,19 @@
 FROM node:22-alpine AS build
 
 # Build arguments for Vite environment variables and Sentry
-ARG VITE_INFLUXDB_URL
-ARG VITE_INFLUXDB_ORG
-ARG VITE_INFLUXDB_BUCKET
-ARG VITE_INFLUXDB_TOKEN
-ARG VITE_APP_VERSION
-ARG VITE_SENTRY_DSN
-ARG SENTRY_AUTH_TOKEN
+# Note: VITE_INFLUXDB_URL and VITE_INFLUXDB_TOKEN are NOT included here
+# The app uses /influxdb-api proxy endpoint instead of direct connection
+ARG VITE_INFLUXDB_ORG=idea-helsinki
+ARG VITE_INFLUXDB_BUCKET=idea-validation-bucket
+ARG VITE_APP_VERSION=dev
+ARG VITE_SENTRY_DSN=""
+ARG SENTRY_AUTH_TOKEN=""
 
 # Set environment variables for the build
-ENV VITE_INFLUXDB_URL=${VITE_INFLUXDB_URL}
+# Defaults are set above for local development with Skaffold
+# GitHub Actions overrides these with secrets for production builds
 ENV VITE_INFLUXDB_ORG=${VITE_INFLUXDB_ORG}
 ENV VITE_INFLUXDB_BUCKET=${VITE_INFLUXDB_BUCKET}
-ENV VITE_INFLUXDB_TOKEN=${VITE_INFLUXDB_TOKEN}
 ENV VITE_APP_VERSION=${VITE_APP_VERSION}
 ENV VITE_SENTRY_DSN=${VITE_SENTRY_DSN}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
@@ -35,6 +35,12 @@ RUN npm run build
 
 # Production stage
 FROM nginx:1.27-alpine
+
+# Set default environment variables for NGINX template substitution
+# These can be overridden at runtime via Kubernetes ConfigMap/Secrets
+ENV NGINX_DNS_RESOLVER=8.8.8.8 \
+    INFLUXDB_HOST=idea-helsinki-influxdb-helm-webapp.dataportal.fi \
+    INFLUXDB_TOKEN=""
 
 # Copy built application
 COPY --from=build /app/dist /usr/share/nginx/html

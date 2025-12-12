@@ -1,4 +1,9 @@
-import type { Feature, FeatureCollection, LineString, MultiPolygon } from "geojson";
+import type {
+  Feature,
+  FeatureCollection,
+  LineString,
+  MultiPolygon,
+} from "geojson";
 import type { LandLeaseProps } from "../queries/land-leases";
 
 export type DisturbanceType = "Kaivuilmoitus" | "Aluevuokraus";
@@ -38,7 +43,9 @@ export type SegmentsMappingJson = {
   segmentId: Record<string, { geometry: LineString }>;
 };
 
-export function buildDisturbanceMapFromJson(source: TrafficJson): DisturbanceMap {
+export function buildDisturbanceMapFromJson(
+  source: TrafficJson,
+): DisturbanceMap {
   const inverted: DisturbanceMap = {};
   for (const [segmentId, segment] of Object.entries(source.segmentId ?? {})) {
     for (const detailedCollision of segment.detailedCollisions ?? []) {
@@ -67,7 +74,7 @@ export function buildDisturbanceMapFromJson(source: TrafficJson): DisturbanceMap
 export function mergeLandLeaseFeaturesIntoMap(
   map: DisturbanceMap,
   landLeaseFC?: FeatureCollection<MultiPolygon, LandLeaseProps>,
-  disturbanceType?: DisturbanceType
+  disturbanceType?: DisturbanceType,
 ): DisturbanceMap {
   if (!landLeaseFC?.features?.length) return map;
   const typesToCheck: DisturbanceType[] = disturbanceType
@@ -90,7 +97,9 @@ export function mergeLandLeaseFeaturesIntoMap(
   return map;
 }
 
-export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureCollection<LineString, { segmentId: string }> {
+export function buildSegmentsFeatureCollection(
+  map: DisturbanceMap,
+): FeatureCollection<LineString, { segmentId: string }> {
   const seen: Record<string, true> = {};
   const features: Array<Feature<LineString, { segmentId: string }>> = [];
   for (const group of Object.values(map)) {
@@ -104,12 +113,15 @@ export function buildSegmentsFeatureCollection(map: DisturbanceMap): FeatureColl
       });
     }
   }
-  return { type: "FeatureCollection", features } as FeatureCollection<LineString, { segmentId: string }>;
+  return { type: "FeatureCollection", features } as FeatureCollection<
+    LineString,
+    { segmentId: string }
+  >;
 }
 
 export const getTrafficSegmentsFC = (
   mapping: SegmentsMappingJson,
-  disturbance: { segmentId: Record<string, unknown> }
+  disturbance: { segmentId: Record<string, unknown> },
 ): FeatureCollection<LineString, { segmentId: string }> => {
   const allowedSegmentIds = new Set(Object.keys(disturbance.segmentId ?? {}));
   const features: Array<Feature<LineString, { segmentId: string }>> = [];
@@ -122,6 +134,8 @@ export const getTrafficSegmentsFC = (
       properties: { segmentId },
     });
   }
-  return { type: "FeatureCollection", features } as FeatureCollection<LineString, { segmentId: string }>;
+  return { type: "FeatureCollection", features } as FeatureCollection<
+    LineString,
+    { segmentId: string }
+  >;
 };
- 

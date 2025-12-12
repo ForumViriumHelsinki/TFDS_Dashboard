@@ -3,7 +3,13 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createMemoryHistory, createRouter, createRootRoute, createRoute } from "@tanstack/react-router";
+import {
+  RouterProvider,
+  createMemoryHistory,
+  createRouter,
+  createRootRoute,
+  createRoute,
+} from "@tanstack/react-router";
 import { DatesProvider } from "@mantine/dates";
 import App from "../src/App";
 
@@ -97,7 +103,7 @@ function renderApp() {
           <RouterProvider router={testRouter} />
         </QueryClientProvider>
       </DatesProvider>
-    </MantineProvider>
+    </MantineProvider>,
   );
 }
 
@@ -110,14 +116,18 @@ describe("App Component", () => {
 
   it("renders the TFDS logo", async () => {
     renderApp();
-    const tfdsLogo = await screen.findByAltText("Traffic and Floating Data Space");
+    const tfdsLogo = await screen.findByAltText(
+      "Traffic and Floating Data Space",
+    );
     expect(tfdsLogo).toBeInTheDocument();
   });
 
   it("displays sidebar tabs", async () => {
     renderApp();
     const disruptionsTab = await screen.findByRole("tab", { name: /häiriöt/i });
-    const airQualityTab = await screen.findByRole("tab", { name: /ilmanlaatu/i });
+    const airQualityTab = await screen.findByRole("tab", {
+      name: /ilmanlaatu/i,
+    });
     expect(disruptionsTab).toBeInTheDocument();
     expect(airQualityTab).toBeInTheDocument();
   });
@@ -131,10 +141,16 @@ describe("App Component", () => {
   it("displays data source checkboxes", async () => {
     renderApp();
     await waitFor(() => {
-      expect(screen.getByRole("checkbox", { name: "Aluevuokraukset" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("checkbox", { name: "Aluevuokraukset" }),
+      ).toBeInTheDocument();
     });
-    expect(screen.getByRole("checkbox", { name: "Kaivuilmoitukset" })).toBeInTheDocument();
-    expect(screen.getByRole("checkbox", { name: "Ilmanlaatu" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Kaivuilmoitukset" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Ilmanlaatu" }),
+    ).toBeInTheDocument();
   });
 
   it("renders the map container", async () => {

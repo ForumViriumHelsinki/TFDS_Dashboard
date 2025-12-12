@@ -17,15 +17,15 @@ The dashboard requires several environment variables, which are injected at buil
 
 **Key variables:**
 
-| Variable                | Description                                    | Example                                                    |
-|-------------------------|------------------------------------------------|------------------------------------------------------------|
-| VITE_INFLUXDB_URL       | InfluxDB server URL                            | https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/  |
-| VITE_INFLUXDB_ORG       | InfluxDB organization                          | idea-helsinki                                              |
-| VITE_INFLUXDB_BUCKET    | InfluxDB bucket name                           | idea-fcd-bucket                                            |
-| VITE_INFLUXDB_TOKEN     | InfluxDB access token (read-only)              | ********                                                   |
-| VITE_APP_VERSION        | App version (optional)                         | 1.2.3                                                      |
-| VITE_SENTRY_DSN         | Sentry DSN (optional)                          | https://...@sentry.io/...                                  |
-| SENTRY_AUTH_TOKEN       | Sentry auth token (optional, build-time only)  | (secret, for source maps)                                  |
+| Variable             | Description                                   | Example                                                   |
+| -------------------- | --------------------------------------------- | --------------------------------------------------------- |
+| VITE_INFLUXDB_URL    | InfluxDB server URL                           | https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/ |
+| VITE_INFLUXDB_ORG    | InfluxDB organization                         | idea-helsinki                                             |
+| VITE_INFLUXDB_BUCKET | InfluxDB bucket name                          | idea-validation-bucket                                    |
+| VITE_INFLUXDB_TOKEN  | InfluxDB access token (read-only)             | **\*\*\*\***                                              |
+| VITE_APP_VERSION     | App version (optional)                        | 1.2.3                                                     |
+| VITE_SENTRY_DSN      | Sentry DSN (optional)                         | https://...@sentry.io/...                                 |
+| SENTRY_AUTH_TOKEN    | Sentry auth token (optional, build-time only) | (secret, for source maps)                                 |
 
 - All `VITE_` variables are embedded at build time and are public in the client bundle.
 - Never expose sensitive tokens in `VITE_` variables for production; use read-only, scoped tokens.
@@ -51,6 +51,7 @@ docker build \
 ```
 
 ### CI/CD Build
+
 - check example workflow for building new container image and pushing it to GHCR [here](../.github/workflows/container-build.yaml)
 
 ---
@@ -60,6 +61,7 @@ docker build \
 ```bash
 docker run -p 8080:80 tfds-dashboard:latest
 ```
+
 - The app will be available at http://localhost:8080
 - NGINX serves the static frontend on port 80 inside the container
 - Health endpoint: http://localhost:8080/health

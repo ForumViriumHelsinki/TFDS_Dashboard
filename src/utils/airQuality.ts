@@ -8,7 +8,9 @@ export type AirQualityProps = {
   Mittausaseman_numero?: number;
 };
 
-export function getAirQualityStationId(feature: Feature<Geometry, AirQualityProps>): string {
+export function getAirQualityStationId(
+  feature: Feature<Geometry, AirQualityProps>,
+): string {
   return String(feature.properties?.Mittausaseman_numero ?? "");
 }
 
@@ -23,7 +25,8 @@ export const AIR_QUALITY_COLORS = {
 export function parseFinnishAikaToDate(aika?: string): Date | null {
   if (!aika) return null;
   // Supports formats like "8.11.2025 klo 3" or "08.11.2025 klo 03:30"
-  const regexPattern = /(\d{1,2})\.(\d{1,2})\.(\d{4})\s*klo\s*(\d{1,2})(?::(\d{2}))?/i;
+  const regexPattern =
+    /(\d{1,2})\.(\d{1,2})\.(\d{4})\s*klo\s*(\d{1,2})(?::(\d{2}))?/i;
   const match = regexPattern.exec(aika.trim());
   if (!match) return null;
   const day = Number(match[1]);

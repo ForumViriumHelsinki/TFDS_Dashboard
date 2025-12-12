@@ -2,7 +2,7 @@ image:
   repository: ghcr.io/forumviriumhelsinki/tfds-dashboard
   tag: "0.4.3"
 imagePullSecrets:
-- name: ghcr-login-secret
+  - name: ghcr-login-secret
 # Use shared service account with Workload Identity for GCS access
 serviceAccount:
   create: false
@@ -19,24 +19,39 @@ ingress:
     # Basic authentication
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth # pragma: allowlist secret
-    nginx.ingress.kubernetes.io/auth-realm: 'TFDS Dashboard - Authentication Required'
+    nginx.ingress.kubernetes.io/auth-realm: "TFDS Dashboard - Authentication Required"
   enabled: true
   className: nginx
   hosts:
-  - host: dashboard.helsinki.trafficflowdataspace.eu
-    paths:
-    - path: /
-      pathType: ImplementationSpecific
+    - host: dashboard.helsinki.trafficflowdataspace.eu
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
   tls:
-  - hosts:
-    - dashboard.helsinki.trafficflowdataspace.eu
-    secretName: tfds-dashboard-tls # pragma: allowlist secret
+    - hosts:
+        - dashboard.helsinki.trafficflowdataspace.eu
+      secretName: tfds-dashboard-tls # pragma: allowlist secret
 env:
   SENTRY_DSN:
     valueFrom:
       secretKeyRef:
         name: tfds-dashboard-secrets
         key: SENTRY_DSN
+  # NGINX proxy configuration for InfluxDB
+  # These are used by NGINX to proxy /influxdb-api requests
+  # Using internal Kubernetes service for better performance and security
+  INFLUXDB_HOST:
+    value: "idea-helsinki-influxdb-helm-webapp:8086"
+  INFLUXDB_TOKEN:
+    valueFrom:
+      secretKeyRef:
+        name: tfds-dashboard-secrets
+        key: INFLUX_DB_TFDS_TOKEN
+  # DNS resolver for NGINX (Kubernetes DNS)
+  NGINX_DNS_RESOLVER:
+    value: "10.96.0.10"
+  # Legacy variables - keeping for backwards compatibility during transition
+  # These can be removed once we verify the proxy approach works
   INFLUX_DB_URL:
     valueFrom:
       secretKeyRef:
@@ -70,7 +85,7 @@ securityContext:
   runAsUser: 101 # nginx user
   capabilities:
     drop:
-    - ALL
+      - ALL
 resources:
   limits:
     cpu: 500m
@@ -89,52 +104,52 @@ externalSecret:
     name: tfds-dashboard-secrets
     creationPolicy: Owner
   data:
-  - secretKey: SENTRY_DSN # pragma: allowlist secret
-    remoteRef:
-      key: sentry_dsn_tfds_dashboard
-  - secretKey: INFLUX_DB_URL # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influxdb-url
-  - secretKey: INFLUX_DB_ORG # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influxdb-org
-  - secretKey: INFLUX_DB_FCD_BUCKET # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-fcd-bucket
-  - secretKey: INFLUX_DB_VALIDATION_BUCKET # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-validation-bucket
-  - secretKey: INFLUX_DB_TFDS_TOKEN # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-tfds-token
+    - secretKey: SENTRY_DSN # pragma: allowlist secret
+      remoteRef:
+        key: sentry_dsn_tfds_dashboard
+    - secretKey: INFLUX_DB_URL # pragma: allowlist secret
+      remoteRef:
+        key: idea-helsinki-influxdb-url
+    - secretKey: INFLUX_DB_ORG # pragma: allowlist secret
+      remoteRef:
+        key: idea-helsinki-influxdb-org
+    - secretKey: INFLUX_DB_FCD_BUCKET # pragma: allowlist secret
+      remoteRef:
+        key: idea-helsinki-influx-fcd-bucket
+    - secretKey: INFLUX_DB_VALIDATION_BUCKET # pragma: allowlist secret
+      remoteRef:
+        key: idea-helsinki-influx-validation-bucket
+    - secretKey: INFLUX_DB_TFDS_TOKEN # pragma: allowlist secret
+      remoteRef:
+        key: idea-helsinki-influx-tfds-token
 # Volumes for writable directories (required with readOnlyRootFilesystem)
 volumes:
-- name: nginx-cache
-  emptyDir: {}
-- name: nginx-run
-  emptyDir: {}
-- name: nginx-tmp
-  emptyDir: {}
-- name: nginx-conf
-  emptyDir: {}
-# GCS-FUSE volume for shared data (idea-helsinki bucket)
-- name: shared-data
-  persistentVolumeClaim:
-    claimName: idea-helsinki-shared-pvc
+  - name: nginx-cache
+    emptyDir: {}
+  - name: nginx-run
+    emptyDir: {}
+  - name: nginx-tmp
+    emptyDir: {}
+  - name: nginx-conf
+    emptyDir: {}
+  # GCS-FUSE volume for shared data (idea-helsinki bucket)
+  - name: shared-data
+    persistentVolumeClaim:
+      claimName: idea-helsinki-shared-pvc
 volumeMounts:
-- name: nginx-cache
-  mountPath: /var/cache/nginx
-- name: nginx-run
-  mountPath: /var/run
-- name: nginx-tmp
-  mountPath: /tmp
-- name: nginx-conf
-  mountPath: /etc/nginx/conf.d
-# Mount GCS bucket path idea-helsinki/data to public/data
-- name: shared-data
-  mountPath: /usr/share/nginx/html/public/data
-  subPath: data
-  readOnly: true
+  - name: nginx-cache
+    mountPath: /var/cache/nginx
+  - name: nginx-run
+    mountPath: /var/run
+  - name: nginx-tmp
+    mountPath: /tmp
+  - name: nginx-conf
+    mountPath: /etc/nginx/conf.d
+  # Mount GCS bucket path idea-helsinki/data to public/data
+  - name: shared-data
+    mountPath: /usr/share/nginx/html/public/data
+    subPath: data
+    readOnly: true
 keda:
   enabled: true
   minReplicaCount: 0
@@ -142,9 +157,9 @@ keda:
   pollingInterval: 30
   cooldownPeriod: 300
   triggers:
-  - type: cron
-    metadata:
-      timezone: Europe/Helsinki
-      start: 0 7 * * 1-5
-      end: 0 22 * * 1-5
-      desiredReplicas: "1"
+    - type: cron
+      metadata:
+        timezone: Europe/Helsinki
+        start: 0 7 * * 1-5
+        end: 0 22 * * 1-5
+        desiredReplicas: "1"

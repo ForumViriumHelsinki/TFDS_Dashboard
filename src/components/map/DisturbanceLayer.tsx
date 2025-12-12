@@ -40,7 +40,7 @@ export function DisturbanceLayer({
           style={(feature?: Feature<Geometry, SegmentFeatureProps>) => {
             const segmentId = feature?.properties?.segmentId;
             const isSelected = Boolean(
-              segmentId && segmentId === selectedSegment
+              segmentId && segmentId === selectedSegment,
             );
             return {
               color: theme.colors.brand[0],
@@ -50,7 +50,7 @@ export function DisturbanceLayer({
           }}
           onEachFeature={(
             feature: Feature<Geometry, SegmentFeatureProps>,
-            layer
+            layer,
           ) => {
             layer.on("click", () => {
               const segmentId = feature.properties?.segmentId;

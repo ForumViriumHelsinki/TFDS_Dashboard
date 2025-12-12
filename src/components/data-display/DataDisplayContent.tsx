@@ -1,10 +1,10 @@
 import { Group } from "@mantine/core";
-import { useSearch } from '@tanstack/react-router'
+import { useSearch } from "@tanstack/react-router";
 import { DataDisplaySidebar } from "./DataDisplaySidebar";
 import { DataDisplayCharts } from "./DataDisplayCharts";
 
 export function DataDisplayContent() {
-  const { dataPanelOpen } = useSearch({ from: '/' })
+  const { dataPanelOpen } = useSearch({ from: "/" });
 
   return (
     <Group
@@ -19,4 +19,3 @@ export function DataDisplayContent() {
     </Group>
   );
 }
-

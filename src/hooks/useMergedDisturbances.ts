@@ -20,7 +20,7 @@ type UseMergedDisturbancesReturn = {
   isLoading: boolean;
   error: unknown;
   getSelectedGroupBySegment: (
-    segmentId?: string
+    segmentId?: string,
   ) => DisturbanceGroup | undefined;
 };
 
@@ -41,7 +41,7 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   } = useQuery(
     getListLandLeaseQueryOptions({
       landLeaseType: landLeaseTypes.EXCAVATION_NOTICE_AREA,
-    })
+    }),
   );
   const {
     isPending: isPendingLease,
@@ -50,7 +50,7 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
   } = useQuery(
     getListLandLeaseQueryOptions({
       landLeaseType: landLeaseTypes.LAND_LEASE_AREA,
-    })
+    }),
   );
 
   const map = useMemo<DisturbanceMap>(() => {
@@ -90,13 +90,13 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
           accumulator[key] = group;
           return accumulator;
         },
-        {} as Record<string, DisturbanceGroup>
+        {} as Record<string, DisturbanceGroup>,
       );
   }, [map, selectedDate, sources]);
 
   const groups = useMemo<DisturbanceGroup[]>(
     () => Object.values(filteredMap),
-    [filteredMap]
+    [filteredMap],
   );
 
   const getSelectedGroupBySegment = (segmentId?: string) => {

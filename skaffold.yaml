@@ -2,16 +2,24 @@ apiVersion: skaffold/v4beta11
 kind: Config
 metadata:
   name: tfds-dashboard
+
 build:
+  local:
+    push: false
+    useDockerCLI: true
+    useBuildkit: true
+  hooks:
+    before:
+      - command: ["sh", "-c", "dotenvx run -- sh scripts/generate-secrets.sh"]
+        os: [darwin, linux]
   artifacts:
     - image: tfds-dashboard
       docker:
         dockerfile: Dockerfile
-  local:
-    push: false
 manifests:
   rawYaml:
     - k8s/namespace.yaml
+    - k8s/secret.yaml # Auto-generated from secret.yaml.tmpl
     - k8s/deployment.yaml
     - k8s/service.yaml
 deploy:

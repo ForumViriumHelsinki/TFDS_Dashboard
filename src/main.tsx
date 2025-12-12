@@ -1,16 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
-import '@mantine/core/styles.css';
-import '@mantine/dates/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import "./index.css";
-import { RouterProvider } from '@tanstack/react-router'
-import { router } from './router'
+import { RouterProvider } from "@tanstack/react-router";
+import { router } from "./router";
 import { createTheme, MantineProvider, Box, Text, Title } from "@mantine/core";
 import { Calendar } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatesProvider } from "@mantine/dates";
-import 'dayjs/locale/fi';
+import "dayjs/locale/fi";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +34,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 // Brand color - kept in theme only
-const BRAND_COLOR = '#FF5000';
+const BRAND_COLOR = "#FF5000";
 
 const theme = createTheme({
   fontFamily: "Montserrat, sans-serif",
@@ -84,26 +84,24 @@ const rootEl = document.getElementById("root")!;
 createRoot(rootEl).render(
   <StrictMode>
     <MantineProvider defaultColorScheme="light" theme={theme}>
-        <DatesProvider settings={{ locale: "fi" }}>
-          <Sentry.ErrorBoundary
-            fallback={({ error }) => (
-              <Box p="2xl" style={{ textAlign: "center" }}>
-                <Title order={1}>Virhe</Title>
-                <Text>Pahoittelut, jotain meni pieleen.</Text>
-                <details style={{ marginTop: "1rem" }}>
-                  <summary>Virheen yksityiskohdat</summary>
-                  <Text>{String(error)}</Text>
-                </details>
-              </Box>
-            )}
-          >
-            <QueryClientProvider client={queryClient}>
-              <RouterProvider router={router} />
-            </QueryClientProvider>
-          </Sentry.ErrorBoundary>
+      <DatesProvider settings={{ locale: "fi" }}>
+        <Sentry.ErrorBoundary
+          fallback={({ error }) => (
+            <Box p="2xl" style={{ textAlign: "center" }}>
+              <Title order={1}>Virhe</Title>
+              <Text>Pahoittelut, jotain meni pieleen.</Text>
+              <details style={{ marginTop: "1rem" }}>
+                <summary>Virheen yksityiskohdat</summary>
+                <Text>{String(error)}</Text>
+              </details>
+            </Box>
+          )}
+        >
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </Sentry.ErrorBoundary>
       </DatesProvider>
     </MantineProvider>
   </StrictMode>,
 );
-
-

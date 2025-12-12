@@ -15,65 +15,98 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
-import {
-  generateTimeTicks,
-  formatTick,
-} from "../../utils/chartUtils";
+import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 
-type TrafficPoint = { timestamp: number; floatingCarData: number; status: string };
+type TrafficPoint = {
+  timestamp: number;
+  floatingCarData: number;
+  status: string;
+};
 
 function TrafficFlowTooltipContent(point: TrafficPoint) {
   const statusLabel =
-    point.status === "closed" ? "Closed" : point.status === "open" ? "Open" : point.status || "Unknown";
+    point.status === "closed"
+      ? "Closed"
+      : point.status === "open"
+        ? "Open"
+        : point.status || "Unknown";
 
   return (
     <>
       <Text size="xs">
         FCD: <strong>{point.floatingCarData}</strong>
       </Text>
-      <Text size="xs">Status: <strong>{statusLabel}</strong></Text>
+      <Text size="xs">
+        Status: <strong>{statusLabel}</strong>
+      </Text>
     </>
   );
 }
 
 export function TrafficFlowChart() {
   const theme = useMantineTheme();
-  const navigate = useNavigate({ from: '/' });
-  const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } = useSearch({ from: '/' })
-  
+  const navigate = useNavigate({ from: "/" });
+  const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
+    useSearch({ from: "/" });
+
   const { isPending, isError, data, error } = useQuery(
     getTrafficFlowQueryOptions({
       start: selectedStartDate ?? new Date(),
       end: selectedEndDate ?? new Date(),
       segmentId: selectedSegment ?? "",
-    })
+    }),
   );
 
   const trafficSeries: TrafficPoint[] = Array.isArray(data)
     ? (data as TrafficFlowRow[]).map((row) => {
-        const isoString = String((row["_time"] as string | number | boolean | null) ?? "");
+        const isoString = String(
+          (row["_time"] as string | number | boolean | null) ?? "",
+        );
         const date = new Date(isoString);
         const timestamp = date.getTime();
-        const floatingCarDataValueRaw = row["fcd"] as number | string | boolean | null;
+        const floatingCarDataValueRaw = row["fcd"] as
+          | number
+          | string
+          | boolean
+          | null;
         const floatingCarDataValue =
           typeof floatingCarDataValueRaw === "number"
             ? floatingCarDataValueRaw
             : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
-        const statusRaw = row["segment_closure_status"] as string | number | boolean | null;
+        const statusRaw = row["segment_closure_status"] as
+          | string
+          | number
+          | boolean
+          | null;
         const status = String(statusRaw ?? "").toLowerCase();
-        return { timestamp, floatingCarData: Number.isFinite(floatingCarDataValue) ? floatingCarDataValue : 0, status };
+        return {
+          timestamp,
+          floatingCarData: Number.isFinite(floatingCarDataValue)
+            ? floatingCarDataValue
+            : 0,
+          status,
+        };
       })
     : [];
 
-  const seriesMin = trafficSeries.length ? Math.min(...trafficSeries.map((point) => point.timestamp)) : undefined;
-  const seriesMax = trafficSeries.length ? Math.max(...trafficSeries.map((point) => point.timestamp)) : undefined;
+  const seriesMin = trafficSeries.length
+    ? Math.min(...trafficSeries.map((point) => point.timestamp))
+    : undefined;
+  const seriesMax = trafficSeries.length
+    ? Math.max(...trafficSeries.map((point) => point.timestamp))
+    : undefined;
 
-  const requestedStartTs = selectedStartDate ? new Date(selectedStartDate).getTime() : undefined;
-  const requestedEndTs = selectedEndDate ? new Date(selectedEndDate).getTime() : undefined;
+  const requestedStartTs = selectedStartDate
+    ? new Date(selectedStartDate).getTime()
+    : undefined;
+  const requestedEndTs = selectedEndDate
+    ? new Date(selectedEndDate).getTime()
+    : undefined;
   // Prefer requested range when available so charts line up on the same ticks
   const axisMin = requestedStartTs ?? seriesMin;
   const axisMax = requestedEndTs ?? seriesMax;
-  const rangeMs = axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
+  const rangeMs =
+    axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const selectedDateTs =
     selectedDate && axisMin !== undefined && axisMax !== undefined
@@ -81,11 +114,18 @@ export function TrafficFlowChart() {
       : undefined;
 
   const inferredStepMs =
-    trafficSeries.length >= 2 ? Math.max(1, trafficSeries[1].timestamp - trafficSeries[0].timestamp) : 5 * 60 * 1000;
+    trafficSeries.length >= 2
+      ? Math.max(1, trafficSeries[1].timestamp - trafficSeries[0].timestamp)
+      : 5 * 60 * 1000;
 
   type Band = { x1: number; x2: number };
   function buildStatusBands(targetStatus: "open" | "closed"): Band[] {
-    if (!trafficSeries.length || seriesMin === undefined || seriesMax === undefined) return [];
+    if (
+      !trafficSeries.length ||
+      seriesMin === undefined ||
+      seriesMax === undefined
+    )
+      return [];
     const bands: Band[] = [];
     let currentStart: number | null = null;
     for (let i = 0; i < trafficSeries.length; i++) {
@@ -93,7 +133,9 @@ export function TrafficFlowChart() {
       const statusNorm = String(point.status ?? "").toLowerCase();
       const isTarget = statusNorm === targetStatus;
       const next = trafficSeries[i + 1];
-      const nextStatusNorm = next ? String(next.status ?? "").toLowerCase() : "";
+      const nextStatusNorm = next
+        ? String(next.status ?? "").toLowerCase()
+        : "";
       const nextIsTarget = next ? nextStatusNorm === targetStatus : false;
 
       if (isTarget && currentStart === null) {
@@ -123,13 +165,17 @@ export function TrafficFlowChart() {
           data={trafficSeries}
           margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
           onClick={(state) => {
-            if (state && state.activePayload && state.activePayload.length > 0) {
+            if (
+              state &&
+              state.activePayload &&
+              state.activePayload.length > 0
+            ) {
               const point = state.activePayload[0].payload as TrafficPoint;
               navigate({
-              search: (prev) => ({
-                ...prev,
-                selectedDate: new Date(point.timestamp),
-              }),
+                search: (prev) => ({
+                  ...prev,
+                  selectedDate: new Date(point.timestamp),
+                }),
                 replace: true,
               });
             }
@@ -203,7 +249,13 @@ export function TrafficFlowChart() {
             content={<ChartTooltip renderContent={TrafficFlowTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
-          <Line type="monotone" dataKey="floatingCarData" stroke={theme.colors.blue[6]} strokeWidth={2} dot={false} />
+          <Line
+            type="monotone"
+            dataKey="floatingCarData"
+            stroke={theme.colors.blue[6]}
+            strokeWidth={2}
+            dot={false}
+          />
         </LineChart>
       </ResponsiveContainer>
       {trafficSeries.length === 0 && !isPending && !isError && (
@@ -223,28 +275,32 @@ export function TrafficFlowChart() {
         </Box>
       )}
       {isError && (
-        <Box style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-        }}>
+        <Box
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
           <Text size="sm" c="red">
             Tietojen haku epäonnistui: {error?.message}.
           </Text>
         </Box>
       )}
       {isPending && (
-        <Group style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-        }}>
+        <Group
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
           <Text size="sm" c="dimmed">
             Haetaan tietoja…
           </Text>
@@ -254,5 +310,3 @@ export function TrafficFlowChart() {
     </Box>
   );
 }
-
-

@@ -15,13 +15,13 @@ export interface ListAirQualityRequest {
 }
 
 export const getListAirQualityQueryOptions = (
-  requestParams: ListAirQualityRequest
+  requestParams: ListAirQualityRequest,
 ) =>
   queryOptions({
     queryKey: ["air-quality", requestParams],
     queryFn: async () => {
       const response = await fetch(
-        `/hsy-wfs/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=${requestParams.airQualityType}&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326`
+        `/hsy-wfs/geoserver/wfs?version=2.0.0&request=GetFeature&typeNames=${requestParams.airQualityType}&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326`,
       );
       const data = await response.json();
       return data as FeatureCollection<Geometry, AirQualityProps>;

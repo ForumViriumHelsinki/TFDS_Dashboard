@@ -25,8 +25,16 @@ export function alignToStepCeil(timestamp: number, stepMs: number): number {
   return Math.ceil(timestamp / stepMs) * stepMs;
 }
 
-export function generateTimeTicks(minTimestamp?: number, maxTimestamp?: number): number[] {
-  if (minTimestamp === undefined || maxTimestamp === undefined || minTimestamp >= maxTimestamp) return [];
+export function generateTimeTicks(
+  minTimestamp?: number,
+  maxTimestamp?: number,
+): number[] {
+  if (
+    minTimestamp === undefined ||
+    maxTimestamp === undefined ||
+    minTimestamp >= maxTimestamp
+  )
+    return [];
   const step = chooseStepMs(maxTimestamp - minTimestamp);
   let currentTimestamp = alignToStepCeil(minTimestamp, step);
   const ticks: number[] = [];

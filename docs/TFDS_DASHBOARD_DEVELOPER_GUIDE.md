@@ -262,11 +262,11 @@ Vite environment variables follow a specific pattern:
 
 ### Production URLs
 
-| Service            | URL                                    | Purpose               |
-| ------------------ | -------------------------------------- | --------------------- |
-| **TFDS Dashboard** | `https://tfds-dashboard.dataportal.fi` | Main application      |
-| **InfluxDB**       | `https://influxdb.dataportal.fi`       | Time-series database  |
-| **ArgoCD**         | `https://argocd.dataportal.fi`         | Deployment management |
+| Service            | URL                                                  | Purpose               |
+| ------------------ | ---------------------------------------------------- | --------------------- |
+| **TFDS Dashboard** | `https://dashboard.helsinki.trafficflowdataspace.eu` | Main application      |
+| **InfluxDB**       | `https://influxdb.dataportal.fi`                     | Time-series database  |
+| **ArgoCD**         | `https://argocd.dataportal.fi`                       | Deployment management |
 
 ### Development URLs
 
@@ -481,7 +481,7 @@ source:
       ingress:
         enabled: true
         hosts:
-          - host: tfds-dashboard.dataportal.fi
+          - host: dashboard.helsinki.trafficflowdataspace.eu
             paths:
               - path: /
                 pathType: Prefix

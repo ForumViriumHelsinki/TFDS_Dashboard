@@ -23,7 +23,7 @@ export const AIR_QUALITY_24H_QUERY_KEY = [
 
 export function useFilteredAirQuality(
   selectedDate: Date | null | undefined,
-  enabled: boolean = true
+  enabled: boolean = true,
 ) {
   const nowQuery = useQuery({
     ...getListAirQualityQueryOptions({
