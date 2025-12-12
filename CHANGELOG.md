@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.3...tfds-dashboard-v0.5.0) (2025-12-12)
+
+
+### Features
+
+* implement server-side InfluxDB token handling for enhanced security ([#51](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/51)) ([c80d49c](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/c80d49c959735b646dac52aa197086b0b3840b89))
+
 ## [0.4.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.2...tfds-dashboard-v0.4.3) (2025-12-11)
 
 ### Bug Fixes
