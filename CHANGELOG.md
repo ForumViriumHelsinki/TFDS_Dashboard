@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.1...tfds-dashboard-v0.5.2) (2025-12-15)
+
+
+### Bug Fixes
+
+* use FQDN for InfluxDB service in NGINX proxy ([#57](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/57)) ([81ce948](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/81ce948db40cad3ab434a2777d4d45895bf95b5c))
+
 ## [0.5.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.0...tfds-dashboard-v0.5.1) (2025-12-15)
 
 
