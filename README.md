@@ -148,8 +148,8 @@ Deployed to Kubernetes via ArgoCD:
 | -------------------------------- | ----------------------------- | --------------------------- |
 | `INFLUXDB_TOKEN`                 | InfluxDB access token         | Vite proxy (dev) / NGINX    |
 | `VITE_INFLUXDB_HOST`             | InfluxDB server host          | Vite proxy (dev)            |
-| `INFLUXDB_HOST`                  | InfluxDB server host          | NGINX (production)          |
-| `NGINX_DNS_RESOLVER`             | DNS resolver for NGINX        | NGINX (production)          |
+| `INFLUXDB_URL`                   | InfluxDB full URL with proto  | NGINX (production)          |
+| `INFLUXDB_HOST`                  | InfluxDB server host:port     | NGINX (production)          |
 | `SENTRY_AUTH_TOKEN` (build-time) | Sentry auth token for uploads | GitHub Actions / build only |
 
 See `.env.example` for full list.
