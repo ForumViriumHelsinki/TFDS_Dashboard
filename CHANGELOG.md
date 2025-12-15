@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.0...tfds-dashboard-v0.5.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* correct kube-dns resolver IP for NGINX InfluxDB proxy ([#54](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/54)) ([3476d4f](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/3476d4fcc351191cf7139f4c18ae295daeb7995d))
+
 ## [0.5.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.3...tfds-dashboard-v0.5.0) (2025-12-12)
 
 
