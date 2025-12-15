@@ -4,11 +4,6 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    # DNS resolver for service discovery
-    # Uses NGINX_DNS_RESOLVER env var, defaults to 8.8.8.8 for external services
-    # For Kubernetes: set to kube-dns ClusterIP (typically 10.96.0.10)
-    resolver ${NGINX_DNS_RESOLVER} valid=30s ipv6=off;
-
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
@@ -47,35 +42,16 @@ server {
     }
 
     # Reverse proxy for InfluxDB (hides token server-side)
+    # INFLUXDB_URL is substituted by envsubst at container startup, creating a static URL
+    # that NGINX resolves at config load using the pod's /etc/resolv.conf
     location /influxdb-api/ {
-        # Store the host in a variable first
-        set $influxdb_host "${INFLUXDB_HOST}";
-
-        # Derive protocol based on host type:
-        # - Use http for localhost development (localhost:port)
-        # - Use http for internal Kubernetes services (short names without dots, or *.svc.cluster.local)
-        # - Use https for external services (*.dataportal.fi, etc.)
-        set $influxdb_protocol "https";
-        if ($influxdb_host ~* "^localhost:[0-9]+$") {
-            set $influxdb_protocol "http";
-        }
-        if ($influxdb_host ~* "\.svc\.cluster\.local$") {
-            set $influxdb_protocol "http";
-        }
-        # Short K8s service names (no dots) are internal services using HTTP
-        if ($influxdb_host ~* "^[^.:]+:[0-9]+$") {
-            set $influxdb_protocol "http";
-        }
-
-        # Rewrite to strip /influxdb-api prefix
         rewrite ^/influxdb-api/(.*)$ /$1 break;
 
         # Proxy to InfluxDB with authentication
-        proxy_pass $influxdb_protocol://$influxdb_host;
-        proxy_set_header Host $influxdb_host;
+        # Use http:// for internal K8s services (HTTPS terminated at ingress)
+        proxy_pass ${INFLUXDB_URL};
+        proxy_set_header Host ${INFLUXDB_HOST};
         proxy_set_header Authorization "Token ${INFLUXDB_TOKEN}";
-        proxy_ssl_server_name on;
-        proxy_ssl_verify off;
 
         # Timeouts for potentially long-running queries
         proxy_connect_timeout 60s;

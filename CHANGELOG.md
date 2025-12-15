@@ -9,17 +9,15 @@
 
 ## [0.5.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.0...tfds-dashboard-v0.5.1) (2025-12-15)
 
-
 ### Bug Fixes
 
-* correct kube-dns resolver IP for NGINX InfluxDB proxy ([#54](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/54)) ([3476d4f](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/3476d4fcc351191cf7139f4c18ae295daeb7995d))
+- correct kube-dns resolver IP for NGINX InfluxDB proxy ([#54](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/54)) ([3476d4f](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/3476d4fcc351191cf7139f4c18ae295daeb7995d))
 
 ## [0.5.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.3...tfds-dashboard-v0.5.0) (2025-12-12)
 
-
 ### Features
 
-* implement server-side InfluxDB token handling for enhanced security ([#51](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/51)) ([c80d49c](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/c80d49c959735b646dac52aa197086b0b3840b89))
+- implement server-side InfluxDB token handling for enhanced security ([#51](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/51)) ([c80d49c](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/c80d49c959735b646dac52aa197086b0b3840b89))
 
 ## [0.4.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.4.2...tfds-dashboard-v0.4.3) (2025-12-11)
 

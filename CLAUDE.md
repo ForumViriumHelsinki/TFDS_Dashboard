@@ -175,8 +175,7 @@ skaffold dev
 
 - NGINX proxy for InfluxDB at `/influxdb-api`
 - Token loaded from `k8s/secret.yaml` (auto-generated from `.env`)
-- External InfluxDB host (`idea-helsinki-influxdb-helm-webapp.dataportal.fi`)
-- Google DNS resolver (`8.8.8.8`) for external services
+- External InfluxDB URL (`https://idea-helsinki-influxdb-helm-webapp.dataportal.fi`)
 
 For troubleshooting NGINX issues:
 
