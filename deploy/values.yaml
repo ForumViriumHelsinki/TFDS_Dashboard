@@ -39,9 +39,9 @@ env:
         key: SENTRY_DSN
   # NGINX proxy configuration for InfluxDB
   # These are used by NGINX to proxy /influxdb-api requests
-  # Using internal Kubernetes service for better performance and security
+  # Using internal Kubernetes service FQDN (required because NGINX resolver doesn't use pod search domains)
   INFLUXDB_HOST:
-    value: "idea-helsinki-influxdb-helm-webapp:8086"
+    value: "idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086"
   INFLUXDB_TOKEN:
     valueFrom:
       secretKeyRef:
