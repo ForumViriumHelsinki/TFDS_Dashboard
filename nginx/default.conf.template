@@ -42,8 +42,10 @@ server {
     }
 
     # Reverse proxy for InfluxDB (hides token server-side)
-    # INFLUXDB_URL is substituted by envsubst at container startup, creating a static URL
-    # that NGINX resolves at config load using the pod's /etc/resolv.conf
+    # Note: We use static URLs (substituted by envsubst at startup) rather than NGINX
+    # variables with a resolver directive. This ensures DNS resolution happens at config
+    # load time using the pod's /etc/resolv.conf, avoiding the need for cluster-specific
+    # DNS resolver IPs that vary between Kubernetes distributions.
     location /influxdb-api/ {
         rewrite ^/influxdb-api/(.*)$ /$1 break;
 
