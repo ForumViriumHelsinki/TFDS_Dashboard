@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.2...tfds-dashboard-v0.5.3) (2025-12-16)
+
+
+### Bug Fixes
+
+* document NGINX proxy DNS resolution approach ([#61](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/61)) ([2492ad4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/2492ad434e2fb96496f0893af8116676eb258f35))
+
 ## [0.5.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.1...tfds-dashboard-v0.5.2) (2025-12-15)
 
 
