@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.4...tfds-dashboard-v0.5.5) (2025-12-18)
+
+
+### Bug Fixes
+
+* use server-snippet annotation to bypass basic auth for InfluxDB ([#66](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/66)) ([e5d69ea](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/e5d69eade2d70879ab6d89f8e39e7935b8412c4f))
+
 ## [0.5.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.3...tfds-dashboard-v0.5.4) (2025-12-18)
 
 
