@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.3...tfds-dashboard-v0.5.4) (2025-12-18)
+
+
+### Bug Fixes
+
+* bypass basic auth for InfluxDB proxy endpoint ([#64](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/64)) ([6141b87](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/6141b87b4b70eeaab71d6b47b8a74c69171aa2d5))
+
 ## [0.5.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.2...tfds-dashboard-v0.5.3) (2025-12-16)
 
 
