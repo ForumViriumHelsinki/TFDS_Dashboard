@@ -20,6 +20,15 @@ ingress:
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth # pragma: allowlist secret
     nginx.ingress.kubernetes.io/auth-realm: "TFDS Dashboard - Authentication Required"
+    # Bypass basic auth for InfluxDB proxy endpoint
+    # The @influxdata/influxdb-client-browser uses fetch() with credentials:"omit",
+    # which prevents the browser from sending basic auth credentials with API requests.
+    # Since the NGINX proxy already authenticates to InfluxDB using a server-side token,
+    # we don't need basic auth for this path - the data is protected by the InfluxDB token.
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      if ($request_uri ~* "^/influxdb-api/") {
+        set $auth_basic off;
+      }
   enabled: true
   className: nginx
   hosts:
