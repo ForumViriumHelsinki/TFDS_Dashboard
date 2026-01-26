@@ -22,6 +22,7 @@ import {
 } from "../../utils/airQuality";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { useMemo } from "react";
 import { ChartTooltip } from "./ChartTooltip";
 
 type TimePoint = { timestamp: number; index: number };
@@ -48,6 +49,8 @@ export function AirQualityChart() {
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
   });
+  const fallbackDate = useMemo(() => new Date(), []);
+  const displayDate = selectedDate ?? fallbackDate;
 
   const requestedStartTs = selectedStartDate
     ? new Date(selectedStartDate).getTime()
@@ -97,8 +100,8 @@ export function AirQualityChart() {
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const selectedDateTs =
-    selectedDate && axisMin !== undefined && axisMax !== undefined
-      ? new Date(selectedDate).getTime()
+    displayDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(displayDate).getTime()
       : undefined;
 
   const xTicks = generateTimeTicks(axisMin, axisMax);

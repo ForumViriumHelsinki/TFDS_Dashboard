@@ -95,7 +95,9 @@ export function MapView() {
     selectedDate,
     Boolean(showAirQuality),
   );
-  const selectedDateOutline = selectedDate
+  const fallbackDate = useMemo(() => new Date(), []);
+  const displayDate = selectedDate ?? fallbackDate;
+  const selectedDateOutline = displayDate
     ? {
         border: `1px dashed ${theme.colors.brand[0]}`,
         borderOffset: "-1px",

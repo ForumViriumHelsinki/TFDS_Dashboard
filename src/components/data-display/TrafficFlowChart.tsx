@@ -1,4 +1,5 @@
 import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { useMemo } from "react";
 import { ChartTooltip } from "./ChartTooltip";
 import {
   CartesianGrid,
@@ -48,6 +49,8 @@ export function TrafficFlowChart() {
   const navigate = useNavigate({ from: "/" });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
     useSearch({ from: "/" });
+  const fallbackDate = useMemo(() => new Date(), []);
+  const displayDate = selectedDate ?? fallbackDate;
 
   const { isPending, isError, data, error } = useQuery(
     getTrafficFlowQueryOptions({
@@ -109,8 +112,8 @@ export function TrafficFlowChart() {
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const selectedDateTs =
-    selectedDate && axisMin !== undefined && axisMax !== undefined
-      ? new Date(selectedDate).getTime()
+    displayDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(displayDate).getTime()
       : undefined;
 
   const inferredStepMs =
