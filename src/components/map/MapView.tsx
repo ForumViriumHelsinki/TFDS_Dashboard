@@ -95,6 +95,12 @@ export function MapView() {
     selectedDate,
     Boolean(showAirQuality),
   );
+  const selectedDateOutline = selectedDate
+    ? {
+        border: `1px dashed ${theme.colors.brand[0]}`,
+        borderOffset: "-1px",
+      }
+    : undefined;
 
   const handleSegmentSelect = (segmentId: string) => {
     navigate({
@@ -132,7 +138,7 @@ export function MapView() {
   }
 
   return (
-    <Box flex={1} h="100%" id="map">
+    <Box flex={1} h="100%" id="map" style={selectedDateOutline}>
       <MapContainer
         center={[60.1699, 24.9384]}
         zoom={15}
