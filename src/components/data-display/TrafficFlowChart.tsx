@@ -1,5 +1,5 @@
 import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
-import { useMemo } from "react";
+import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 import {
   CartesianGrid,
@@ -49,7 +49,7 @@ export function TrafficFlowChart() {
   const navigate = useNavigate({ from: "/" });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
     useSearch({ from: "/" });
-  const fallbackDate = useMemo(() => new Date(), []);
+  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
 
   const { isPending, isError, data, error } = useQuery(

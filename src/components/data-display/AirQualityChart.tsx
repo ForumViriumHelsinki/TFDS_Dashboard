@@ -22,7 +22,7 @@ import {
 } from "../../utils/airQuality";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
-import { useMemo } from "react";
+import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 
 type TimePoint = { timestamp: number; index: number };
@@ -49,7 +49,7 @@ export function AirQualityChart() {
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
   });
-  const fallbackDate = useMemo(() => new Date(), []);
+  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
 
   const requestedStartTs = selectedStartDate

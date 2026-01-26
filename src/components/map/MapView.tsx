@@ -29,6 +29,7 @@ import { useMemo } from "react";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 import { DisturbanceLayer } from "./DisturbanceLayer";
+import { useFallbackDate } from "../../hooks/useFallbackDate";
 
 function FitMapToSelected({
   selectedSegment,
@@ -95,7 +96,7 @@ export function MapView() {
     selectedDate,
     Boolean(showAirQuality),
   );
-  const fallbackDate = useMemo(() => new Date(), []);
+  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
   const selectedDateOutline = displayDate
     ? {

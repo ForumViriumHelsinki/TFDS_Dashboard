@@ -2,18 +2,33 @@ import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
+import { useFallbackDate } from "../../hooks/useFallbackDate";
 
 export function Header() {
   const navigate = useNavigate({ from: "/" });
   const queryClient = useQueryClient();
   const { sources, selectedDate } = useSearch({ from: "/" });
-  const fallbackDate = useMemo(() => new Date(), []);
+  const hasClearedSelectedDate = useRef(false);
+  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const [showFallback, setShowFallback] = useState(true);
   const displayDate = selectedDate ?? (showFallback ? fallbackDate : null);
   const setSources = (next: string[]) =>
     navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true });
+
+  useEffect(() => {
+    if (hasClearedSelectedDate.current) return;
+    hasClearedSelectedDate.current = true;
+    if (!selectedDate) return;
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedDate: undefined,
+      }),
+      replace: true,
+    });
+  }, [navigate, selectedDate]);
 
   return (
     <Group justify="space-between">
