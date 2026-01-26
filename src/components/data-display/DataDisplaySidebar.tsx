@@ -2,7 +2,6 @@ import {
   Button,
   Group,
   Popover,
-  Select,
   Stack,
   Text,
   useMantineTheme,
@@ -10,13 +9,6 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getAirQualityStationId } from "../../utils/airQuality";
-import {
-  AirQualityTypes,
-  getListAirQualityQueryOptions,
-} from "../../queries/air-quality";
-import { useQuery } from "@tanstack/react-query";
-import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useEffect, useMemo } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
@@ -73,23 +65,9 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const {
-    selectedSegment,
-    selectedAirQualityStation,
-    selectedStartDate,
-    selectedEndDate,
-  } = useSearch({ from: "/" });
-  const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
-    getListAirQualityQueryOptions({
-      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
-    }),
-  );
+  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: "/" });
 
-  const { map, getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
-
-  const trafficSegmentsFC = useMemo(() => {
-    return buildSegmentsFeatureCollection(map);
-  }, [map]);
+  const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
@@ -129,32 +107,6 @@ export function DataDisplaySidebar() {
       miw={300}
       style={{ borderRight: `1px solid ${theme.colors.gray[3]}` }}
     >
-      <Select
-        label="IDEA Segment"
-        placeholder="Valitse IDEA Segment"
-        value={selectedSegment}
-        size="sm"
-        variant="filled"
-        onChange={(value) =>
-          navigate({
-            search: (prev) => ({ ...prev, selectedSegment: value }),
-            replace: true,
-          })
-        }
-        data={(trafficSegmentsFC.features ?? []).map((feature) => {
-          return {
-            value: feature.properties?.segmentId ?? "",
-            label: feature.properties?.segmentId ?? "",
-          };
-        })}
-        clearable
-        onClear={() =>
-          navigate({
-            search: (prev) => ({ ...prev, selectedSegment: "" }),
-            replace: true,
-          })
-        }
-      />
       <DateTimePicker
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
@@ -188,28 +140,6 @@ export function DataDisplaySidebar() {
         size="sm"
         variant="filled"
         maxDate={new Date()}
-      />
-      <Select
-        label="Ilmanlaadun mittauspiste"
-        placeholder="Valitse mittauspiste"
-        disabled={isPendingAirQuality}
-        value={selectedAirQualityStation ?? null}
-        size="sm"
-        variant="filled"
-        onChange={(value) =>
-          navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedAirQualityStation: value ?? undefined,
-            }),
-            replace: true,
-          })
-        }
-        data={(airQualityData?.features ?? []).map((feature) => {
-          const properties = feature.properties ?? {};
-          const id = getAirQualityStationId(feature);
-          return { value: id, label: properties.Mittausasema ?? "" };
-        })}
       />
       <PropertyDisplayItem
         label="Kaupunginosa"
