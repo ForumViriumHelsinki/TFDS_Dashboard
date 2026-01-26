@@ -145,7 +145,6 @@ export function MapView() {
       <MapContainer
         center={[60.1699, 24.9384]}
         zoom={15}
-        scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
         <InvalidateSizeOnLayoutChange panelOpen={Boolean(dataPanelOpen)} />
