@@ -1,4 +1,3 @@
-import { useMantineTheme } from "@mantine/core";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { FeatureGroup, GeoJSON, Pane } from "react-leaflet";
 
@@ -23,7 +22,6 @@ export function DisturbanceLayer({
   selectedSegment,
   onSegmentSelect,
 }: DisturbanceLayerProps) {
-  const theme = useMantineTheme();
   const features = featureCollection.features ?? [];
 
   if (features.length === 0) {
@@ -31,7 +29,7 @@ export function DisturbanceLayer({
   }
 
   return (
-    <Pane name={paneName} style={{ zIndex }}>
+    <Pane name={paneName} style={{ zIndex, filter: "drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.25))" }}>
       <FeatureGroup>
         <GeoJSON
           key={layerKey}
@@ -43,9 +41,8 @@ export function DisturbanceLayer({
               segmentId && segmentId === selectedSegment,
             );
             return {
-              color: theme.colors.brand[0],
+              color: "#455AF6",
               weight: isSelected ? 12 : 6,
-              opacity: isSelected ? 1 : 0.5,
             };
           }}
           onEachFeature={(
