@@ -53,13 +53,38 @@ interface MessageProps {
   error: Error | undefined;
 }
 
-function Message({ selectedSegment, trafficSeries, isPending, isError, error }: MessageProps) {
+function Message({
+  selectedSegment,
+  trafficSeries,
+  isPending,
+  isError,
+  error,
+}: MessageProps) {
   const message = useMemo(() => {
     if (!selectedSegment) return "Ei valittua segmenttiä.";
     if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
     return null;
   }, [selectedSegment, trafficSeries.length, isError, error]);
+
+  if (!selectedSegment) {
+    return (
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text size="sm" c="dimmed">
+          Ei valittua segmenttiä.
+        </Text>
+      </Box>
+    );
+  }
 
   if (isPending) {
     return (
@@ -80,6 +105,8 @@ function Message({ selectedSegment, trafficSeries, isPending, isError, error }: 
       </Box>
     );
   }
+
+  if (!message) return null;
 
   return (
     <Box

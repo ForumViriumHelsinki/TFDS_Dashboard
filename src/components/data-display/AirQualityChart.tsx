@@ -44,13 +44,38 @@ interface MessageProps {
   error: Error | undefined;
 }
 
-function Message({ selectedAirQualityStation, filteredSeries, isPending, isError, error }: MessageProps) {
+function Message({
+  selectedAirQualityStation,
+  filteredSeries,
+  isPending,
+  isError,
+  error,
+}: MessageProps) {
   const message = useMemo(() => {
     if (!selectedAirQualityStation) return "Ei valittua ilmanlaadun mittausasemaa.";
     if (filteredSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
     return null;
   }, [selectedAirQualityStation, filteredSeries.length, isError, error]);
+
+  if (!selectedAirQualityStation) {
+    return (
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text size="sm" c="dimmed">
+          Ei valittua ilmanlaadun mittausasemaa.
+        </Text>
+      </Box>
+    );
+  }
 
   if (isPending) {
     return (
@@ -71,6 +96,8 @@ function Message({ selectedAirQualityStation, filteredSeries, isPending, isError
       </Box>
     );
   }
+
+  if (!message) return null;
 
   return (
     <Box
