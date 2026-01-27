@@ -1,4 +1,4 @@
-import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { Box, Loader, Text, useMantineTheme } from "@mantine/core";
 import { useMemo } from "react";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
@@ -45,6 +45,60 @@ function TrafficFlowTooltipContent(point: TrafficPoint) {
   );
 }
 
+interface MessageProps {
+  selectedSegment: string | undefined;
+  trafficSeries: TrafficPoint[];
+  isPending: boolean;
+  isError: boolean;
+  error: Error | undefined;
+}
+
+function Message({ selectedSegment, trafficSeries, isPending, isError, error }: MessageProps) {
+  const message = useMemo(() => {
+    if (!selectedSegment) return "Ei valittua segmenttiä.";
+    if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
+    if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
+    return null;
+  }, [selectedSegment, trafficSeries.length, isError, error]);
+
+  if (isPending) {
+    return (
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text size="sm" c={isError ? "red" : "dimmed"}>
+          Haetaan tietoja…
+        </Text>
+        <Loader size="sm" ml="md"/>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+      }}
+    >
+      <Text size="sm" c={isError ? "red" : "dimmed"}>
+        {message}
+      </Text>
+    </Box>
+  );
+}
+
 export function TrafficFlowChart() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
@@ -60,13 +114,14 @@ export function TrafficFlowChart() {
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
 
-  const { isPending, isError, data, error } = useQuery(
-    getTrafficFlowQueryOptions({
+  const { isPending, isError, data, error } = useQuery({
+    ...getTrafficFlowQueryOptions({
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
     }),
-  );
+    enabled: Boolean(selectedSegment),
+  });
 
   const trafficSeries: TrafficPoint[] = Array.isArray(data)
     ? (data as TrafficFlowRow[]).map((row) => {
@@ -269,55 +324,7 @@ export function TrafficFlowChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      {trafficSeries.length === 0 && !isPending && !isError && (
-        <Box
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="dimmed">
-            Ei näytettäviä tietoja.
-          </Text>
-        </Box>
-      )}
-      {isError && (
-        <Box
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="red">
-            Tietojen haku epäonnistui: {error?.message}.
-          </Text>
-        </Box>
-      )}
-      {isPending && (
-        <Group
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="dimmed">
-            Haetaan tietoja…
-          </Text>
-          <Loader size="sm" />
-        </Group>
-      )}
+      <Message selectedSegment={selectedSegment} trafficSeries={trafficSeries} isPending={isPending} isError={isError} error={error ?? undefined} />
     </Box>
   );
 }
