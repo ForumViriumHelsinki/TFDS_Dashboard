@@ -73,6 +73,7 @@ export function Header() {
                 });
               }
             }}
+            maxDate={new Date()}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
           <Checkbox value="excavation-notices" label="Kaivuilmoitukset" />
