@@ -61,11 +61,10 @@ function Message({
   error,
 }: MessageProps) {
   const message = useMemo(() => {
-    if (!selectedSegment) return "Ei valittua segmenttiä.";
     if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
     return null;
-  }, [selectedSegment, trafficSeries.length, isError, error]);
+  }, [trafficSeries.length, isError, error]);
 
   if (!selectedSegment) {
     return (

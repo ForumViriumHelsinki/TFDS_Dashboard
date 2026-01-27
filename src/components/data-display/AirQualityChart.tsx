@@ -52,11 +52,10 @@ function Message({
   error,
 }: MessageProps) {
   const message = useMemo(() => {
-    if (!selectedAirQualityStation) return "Ei valittua ilmanlaadun mittausasemaa.";
     if (filteredSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
     return null;
-  }, [selectedAirQualityStation, filteredSeries.length, isError, error]);
+  }, [filteredSeries.length, isError, error]);
 
   if (!selectedAirQualityStation) {
     return (
