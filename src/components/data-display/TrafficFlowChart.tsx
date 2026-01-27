@@ -1,4 +1,5 @@
 import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { useMemo } from "react";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 import {
@@ -50,12 +51,19 @@ export function TrafficFlowChart() {
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
     useSearch({ from: "/" });
   const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
+  const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
+  const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
+  const effectiveStartDate = useMemo(() => {
+    if (selectedStartDate) return selectedStartDate;
+    const baseEnd = effectiveEndDate;
+    return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
+  }, [effectiveEndDate, selectedStartDate]);
 
   const { isPending, isError, data, error } = useQuery(
     getTrafficFlowQueryOptions({
-      start: selectedStartDate ?? new Date(),
-      end: selectedEndDate ?? new Date(),
+      start: effectiveStartDate,
+      end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
     }),
   );

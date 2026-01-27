@@ -9,7 +9,7 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
 const DEFAULT_END_DATE = new Date();
@@ -65,7 +65,10 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({ from: "/" });
+  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
+    from: "/",
+  });
+  const hasClearedDateRange = useRef(false);
 
   const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
@@ -84,20 +87,20 @@ export function DataDisplaySidebar() {
     }
   }, [isLoading, selectedSegment, selectedGroup, navigate]);
 
-  // Initialize URL search params with defaults on first load if missing
+  // Clear date range on first load to force defaults
   useEffect(() => {
-    if (!selectedStartDate || !selectedEndDate) {
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          selectedStartDate: selectedStartDate ?? DEFAULT_START_DATE,
-          selectedEndDate: selectedEndDate ?? DEFAULT_END_DATE,
-        }),
-        replace: true,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (hasClearedDateRange.current) return;
+    hasClearedDateRange.current = true;
+    if (!selectedStartDate && !selectedEndDate) return;
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedStartDate: undefined,
+        selectedEndDate: undefined,
+      }),
+      replace: true,
+    });
+  }, [navigate, selectedEndDate, selectedStartDate]);
 
   return (
     <Stack
@@ -110,7 +113,7 @@ export function DataDisplaySidebar() {
       <DateTimePicker
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
-        value={selectedStartDate ?? null}
+        value={selectedStartDate ?? DEFAULT_START_DATE}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
@@ -127,7 +130,7 @@ export function DataDisplaySidebar() {
       <DateTimePicker
         label="Mittausaikaväli päättyen"
         placeholder="Valitse loppuhetki"
-        value={selectedEndDate ?? null}
+        value={selectedEndDate ?? DEFAULT_END_DATE}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
