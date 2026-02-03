@@ -2,7 +2,6 @@ import {
   Button,
   Group,
   Popover,
-  Select,
   Stack,
   Text,
   useMantineTheme,
@@ -10,14 +9,7 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getAirQualityStationId } from "../../utils/airQuality";
-import {
-  AirQualityTypes,
-  getListAirQualityQueryOptions,
-} from "../../queries/air-quality";
-import { useQuery } from "@tanstack/react-query";
-import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 
 const DEFAULT_END_DATE = new Date();
@@ -73,23 +65,12 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const {
-    selectedSegment,
-    selectedAirQualityStation,
-    selectedStartDate,
-    selectedEndDate,
-  } = useSearch({ from: "/" });
-  const { isPending: isPendingAirQuality, data: airQualityData } = useQuery(
-    getListAirQualityQueryOptions({
-      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
-    }),
-  );
+  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
+    from: "/",
+  });
+  const hasClearedDateRange = useRef(false);
 
-  const { map, getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
-
-  const trafficSegmentsFC = useMemo(() => {
-    return buildSegmentsFeatureCollection(map);
-  }, [map]);
+  const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
   const selectedGroup = useMemo(
     () => getSelectedGroupBySegment(selectedSegment),
@@ -106,20 +87,20 @@ export function DataDisplaySidebar() {
     }
   }, [isLoading, selectedSegment, selectedGroup, navigate]);
 
-  // Initialize URL search params with defaults on first load if missing
+  // Clear date range on first load to force defaults
   useEffect(() => {
-    if (!selectedStartDate || !selectedEndDate) {
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          selectedStartDate: selectedStartDate ?? DEFAULT_START_DATE,
-          selectedEndDate: selectedEndDate ?? DEFAULT_END_DATE,
-        }),
-        replace: true,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (hasClearedDateRange.current) return;
+    hasClearedDateRange.current = true;
+    if (!selectedStartDate && !selectedEndDate) return;
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedStartDate: undefined,
+        selectedEndDate: undefined,
+      }),
+      replace: true,
+    });
+  }, [navigate, selectedEndDate, selectedStartDate]);
 
   return (
     <Stack
@@ -129,36 +110,10 @@ export function DataDisplaySidebar() {
       miw={300}
       style={{ borderRight: `1px solid ${theme.colors.gray[3]}` }}
     >
-      <Select
-        label="IDEA Segment"
-        placeholder="Valitse IDEA Segment"
-        value={selectedSegment}
-        size="sm"
-        variant="filled"
-        onChange={(value) =>
-          navigate({
-            search: (prev) => ({ ...prev, selectedSegment: value }),
-            replace: true,
-          })
-        }
-        data={(trafficSegmentsFC.features ?? []).map((feature) => {
-          return {
-            value: feature.properties?.segmentId ?? "",
-            label: feature.properties?.segmentId ?? "",
-          };
-        })}
-        clearable
-        onClear={() =>
-          navigate({
-            search: (prev) => ({ ...prev, selectedSegment: "" }),
-            replace: true,
-          })
-        }
-      />
       <DateTimePicker
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
-        value={selectedStartDate ?? null}
+        value={selectedStartDate ?? DEFAULT_START_DATE}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
@@ -175,7 +130,7 @@ export function DataDisplaySidebar() {
       <DateTimePicker
         label="Mittausaikaväli päättyen"
         placeholder="Valitse loppuhetki"
-        value={selectedEndDate ?? null}
+        value={selectedEndDate ?? DEFAULT_END_DATE}
         onChange={(value) => {
           void navigate({
             search: (prev) => ({
@@ -188,28 +143,6 @@ export function DataDisplaySidebar() {
         size="sm"
         variant="filled"
         maxDate={new Date()}
-      />
-      <Select
-        label="Ilmanlaadun mittauspiste"
-        placeholder="Valitse mittauspiste"
-        disabled={isPendingAirQuality}
-        value={selectedAirQualityStation ?? null}
-        size="sm"
-        variant="filled"
-        onChange={(value) =>
-          navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedAirQualityStation: value ?? undefined,
-            }),
-            replace: true,
-          })
-        }
-        data={(airQualityData?.features ?? []).map((feature) => {
-          const properties = feature.properties ?? {};
-          const id = getAirQualityStationId(feature);
-          return { value: id, label: properties.Mittausasema ?? "" };
-        })}
       />
       <PropertyDisplayItem
         label="Kaupunginosa"

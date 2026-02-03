@@ -21,7 +21,9 @@ import {
   type AirQualityProps,
 } from "../../utils/airQuality";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { Box, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import { Box, Loader, Text, useMantineTheme } from "@mantine/core";
+import { useMemo } from "react";
+import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 
 type TimePoint = { timestamp: number; index: number };
@@ -31,6 +33,86 @@ function AirQualityTooltipContent(point: TimePoint) {
     <Text size="xs">
       Ilmanlaatuindeksi: <strong>{point.index}</strong>
     </Text>
+  );
+}
+
+interface MessageProps {
+  selectedAirQualityStation: string | undefined;
+  filteredSeries: TimePoint[];
+  isPending: boolean;
+  isError: boolean;
+  error: Error | undefined;
+}
+
+function Message({
+  selectedAirQualityStation,
+  filteredSeries,
+  isPending,
+  isError,
+  error,
+}: MessageProps) {
+  const message = useMemo(() => {
+    if (filteredSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
+    if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
+    return null;
+  }, [filteredSeries.length, isError, error]);
+
+  if (!selectedAirQualityStation) {
+    return (
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text size="sm" c="dimmed">
+          Ei valittua ilmanlaadun mittausasemaa.
+        </Text>
+      </Box>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text size="sm" c={isError ? "red" : "dimmed"}>
+          Haetaan tietoja…
+        </Text>
+        <Loader size="sm" ml="md"/>
+      </Box>
+    );
+  }
+
+  if (!message) return null;
+
+  return (
+    <Box
+      style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        pointerEvents: "none",
+      }}
+    >
+      <Text size="sm" c={isError ? "red" : "dimmed"}>
+        {message}
+      </Text>
+    </Box>
   );
 }
 
@@ -47,14 +129,20 @@ export function AirQualityChart() {
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
+    enabled: Boolean(selectedAirQualityStation),
   });
+  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
+  const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
+  const displayDate = selectedDate ?? fallbackDate;
+  const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
+  const effectiveStartDate = useMemo(() => {
+    if (selectedStartDate) return selectedStartDate;
+    const baseEnd = effectiveEndDate;
+    return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
+  }, [effectiveEndDate, selectedStartDate]);
 
-  const requestedStartTs = selectedStartDate
-    ? new Date(selectedStartDate).getTime()
-    : undefined;
-  const requestedEndTs = selectedEndDate
-    ? new Date(selectedEndDate).getTime()
-    : undefined;
+  const requestedStartTs = effectiveStartDate.getTime();
+  const requestedEndTs = effectiveEndDate.getTime();
 
   const features =
     (data as FeatureCollection<Geometry, AirQualityProps> | undefined)
@@ -97,8 +185,8 @@ export function AirQualityChart() {
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const selectedDateTs =
-    selectedDate && axisMin !== undefined && axisMax !== undefined
-      ? new Date(selectedDate).getTime()
+    displayDate && axisMin !== undefined && axisMax !== undefined
+      ? new Date(displayDate).getTime()
       : undefined;
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
@@ -111,6 +199,7 @@ export function AirQualityChart() {
       ? [yMin, yMax]
       : [Math.max(0, yMin - 1), yMax + 1];
 
+    
   return (
     <Box pos="relative" h="100%" w="100%">
       <ResponsiveContainer>
@@ -193,55 +282,7 @@ export function AirQualityChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      {filteredSeries.length === 0 && !isPending && !isError && (
-        <Box
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="dimmed">
-            Ei näytettäviä tietoja.
-          </Text>
-        </Box>
-      )}
-      {isError && (
-        <Box
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="red">
-            Tietojen haku epäonnistui: {error?.message}.
-          </Text>
-        </Box>
-      )}
-      {isPending && (
-        <Group
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <Text size="sm" c="dimmed">
-            Haetaan tietoja…
-          </Text>
-          <Loader size="sm" />
-        </Group>
-      )}
+      <Message selectedAirQualityStation={selectedAirQualityStation} filteredSeries={filteredSeries} isPending={isPending} isError={isError} error={error ?? undefined} />
     </Box>
   );
 }
