@@ -11,6 +11,8 @@ import { Calendar } from "lucide-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatesProvider } from "@mantine/dates";
 import "dayjs/locale/fi";
+import { OpenFeatureProvider } from "@openfeature/react-sdk";
+import "./openfeature";
 
 const queryClient = new QueryClient();
 
@@ -98,7 +100,9 @@ createRoot(rootEl).render(
           )}
         >
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <OpenFeatureProvider>
+              <RouterProvider router={router} />
+            </OpenFeatureProvider>
           </QueryClientProvider>
         </Sentry.ErrorBoundary>
       </DatesProvider>
