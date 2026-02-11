@@ -3,17 +3,21 @@ import {
   Button,
   Group,
   ScrollArea,
+  Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { LandLeaseSearch } from "../segments/LandLeaseSearch";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { getFloatingCarDataQueryOptions } from "../../queries/floating-car-data";
+import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
+import { SegmentItem } from "../segments/SegmentItem";
+import { SegmentMeasurementFieldSelect } from "../segments/SegmentMeasurementFieldSelect";
 
 export function SegmentsTab() {
   const theme = useMantineTheme();
+  const navigate = useNavigate({ from: "/" });
   const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
     from: "/",
   });
@@ -42,8 +46,36 @@ export function SegmentsTab() {
 
   const fcdCount = Array.isArray(fcdRows) ? fcdRows.length : 0;
 
+  const {
+    data: segmentsMapping,
+    isLoading: isSegmentsMappingLoading,
+    isFetching: isSegmentsMappingFetching,
+    isError: isSegmentsMappingError,
+    error: segmentsMappingError,
+    refetch: refetchSegmentsMapping,
+  } = useQuery(getSegmentsMappingQueryOptions());
+
+  const segmentIds = useMemo(() => {
+    const ids = Object.keys(segmentsMapping?.segmentId ?? {});
+    ids.sort((a, b) =>
+      a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
+    );
+    return ids;
+  }, [segmentsMapping]);
+
+  const handleSegmentClick = (segmentId: string) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedSegment: segmentId,
+        dataPanelOpen: true,
+      }),
+      replace: true,
+    });
+  };
+
   return (
-    <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
+    <>
       <AppShell.Section
         p="md"
         style={{ borderBottom: `1px solid ${theme.colors.gray[3]}` }}
@@ -63,9 +95,56 @@ export function SegmentsTab() {
               : `FCD rows: ${fcdCount}`}
           </Text>
         </Group>
-        <LandLeaseSearch />
+        <Group justify="space-between" mb="sm" gap="md">
+          <Button
+            size="xs"
+            variant="light"
+            onClick={() => refetchSegmentsMapping()}
+            loading={isSegmentsMappingFetching}
+          >
+            Refresh segments mapping
+          </Button>
+          <Text size="xs" c={isSegmentsMappingError ? "red" : "dimmed"}>
+            {isSegmentsMappingError
+              ? `Segments mapping error: ${
+                  segmentsMappingError?.message ?? "unknown"
+                }`
+              : isSegmentsMappingLoading
+                ? "Loading segments mapping…"
+                : `Segments: ${segmentIds.length}`}
+          </Text>
+        </Group>
+        <SegmentMeasurementFieldSelect />
       </AppShell.Section>
-      Segments view is under construction.
-    </AppShell.Section>
+
+      <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
+        {isSegmentsMappingLoading ? (
+          <Text size="sm" c="dimmed" p="md">
+            Loading road segments…
+          </Text>
+        ) : isSegmentsMappingError ? (
+          <Text size="sm" c="red" p="md">
+            Failed to load road segments.
+          </Text>
+        ) : segmentIds.length === 0 ? (
+          <Text size="sm" c="dimmed" p="md">
+            No segments found in `segments_mapping.json`.
+          </Text>
+        ) : (
+          <Stack gap={0} p="md">
+            {segmentIds.map((segmentId) => (
+              <div key={segmentId} data-segment-id={segmentId}>
+                <SegmentItem
+                  segmentId={segmentId}
+                  segmentLabel="IDEA Segment"
+                  isSelected={selectedSegment === segmentId}
+                  onClick={() => handleSegmentClick(segmentId)}
+                />
+              </div>
+            ))}
+          </Stack>
+        )}
+      </AppShell.Section>
+    </>
   );
 }

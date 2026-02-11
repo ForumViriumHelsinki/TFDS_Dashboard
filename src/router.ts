@@ -20,6 +20,9 @@ const searchSchema = z.object({
   selectedSegment: z.string().optional(),
   selectedAirQualityStation: z.string().optional(),
   landLeaseSearch: z.string().optional(),
+  segmentMeasurementField: z
+    .enum(["typical_speed", "current_speed", "confidence_level", "fcd_coverage"])
+    .optional(),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),
   selectedDate: z.coerce.date().optional(),
