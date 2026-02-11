@@ -236,7 +236,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2602,
+                        "traffic_disturbance_id": 2607,
                         "application_id": "KP2600056",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -274,7 +274,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2600,
+                        "traffic_disturbance_id": 2605,
                         "application_id": "KP2600054-2",
                         "star_date": "2026-01-19",
                         "end_date": "2026-05-14"
@@ -308,7 +308,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1387,
+                        "traffic_disturbance_id": 1373,
                         "application_id": "AL2600053",
                         "star_date": "2026-01-12",
                         "end_date": "2028-01-10"
@@ -1048,7 +1048,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1074,7 +1074,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1100,7 +1100,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1130,7 +1130,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1156,7 +1156,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1182,7 +1182,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1208,7 +1208,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1234,7 +1234,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1260,7 +1260,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1286,7 +1286,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1312,7 +1312,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1338,7 +1338,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -1372,8 +1372,17 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1111,
-                        "application_id": "AL2503240-4",
+                        "traffic_disturbance_id": 1100,
+                        "application_id": "AL2503240-5",
+                        "star_date": "2026-02-06",
+                        "end_date": "2026-02-06"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 1097,
+                        "application_id": "AL2503240-5",
                         "star_date": "2026-01-16",
                         "end_date": "2026-01-16"
                     }
@@ -1402,7 +1411,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2298,
+                        "traffic_disturbance_id": 2297,
                         "application_id": "KP2503526",
                         "star_date": "2025-12-13",
                         "end_date": "2026-05-14"
@@ -1428,7 +1437,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2806,
+                        "traffic_disturbance_id": 2810,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1454,7 +1463,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2805,
+                        "traffic_disturbance_id": 2809,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1463,7 +1472,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2808,
+                        "traffic_disturbance_id": 2812,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1472,7 +1481,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2807,
+                        "traffic_disturbance_id": 2811,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1498,7 +1507,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2803,
+                        "traffic_disturbance_id": 2807,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1524,7 +1533,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2801,
+                        "traffic_disturbance_id": 2805,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1558,7 +1567,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2813,
+                        "traffic_disturbance_id": 2817,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1604,7 +1613,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2811,
+                        "traffic_disturbance_id": 2815,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1638,7 +1647,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2821,
+                        "traffic_disturbance_id": 2825,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -1664,7 +1673,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -1690,7 +1699,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -1724,7 +1733,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1635,
+                        "traffic_disturbance_id": 1634,
                         "application_id": "KP2503181-5",
                         "star_date": "2025-12-11",
                         "end_date": "2026-05-14"
@@ -1754,7 +1763,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2499,
+                        "traffic_disturbance_id": 2501,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -1784,7 +1793,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2495,
+                        "traffic_disturbance_id": 2497,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -1793,7 +1802,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2494,
+                        "traffic_disturbance_id": 2496,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -1823,7 +1832,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2492,
+                        "traffic_disturbance_id": 2494,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -1832,7 +1841,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2491,
+                        "traffic_disturbance_id": 2493,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -1902,7 +1911,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -1911,43 +1920,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -1956,7 +1929,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -1965,7 +1956,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -1974,7 +1983,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -1983,7 +1992,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1106,
+                        "traffic_disturbance_id": 1092,
                         "application_id": "AL2503225-4",
                         "star_date": "2025-09-19",
                         "end_date": "2026-09-18"
@@ -2025,7 +2034,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2034,43 +2043,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2079,7 +2052,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2088,7 +2079,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2097,7 +2106,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -2135,7 +2144,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2144,43 +2153,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2189,7 +2162,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2198,7 +2189,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2207,7 +2216,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -2241,43 +2250,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2286,7 +2259,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2295,7 +2286,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2304,7 +2313,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -2334,43 +2343,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2379,7 +2352,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2388,7 +2379,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2397,7 +2406,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -2423,7 +2432,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2432,43 +2441,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2477,7 +2450,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2486,7 +2477,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2495,7 +2504,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -2525,7 +2534,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2534,52 +2543,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
-                        "application_id": "AL2600068",
-                        "star_date": "2026-01-19",
-                        "end_date": "2026-12-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -2588,7 +2552,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -2597,7 +2579,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -2606,10 +2606,19 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 1380,
+                        "application_id": "AL2600068",
+                        "star_date": "2026-01-19",
+                        "end_date": "2026-12-31"
                     }
                 }
             ]
@@ -2640,7 +2649,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2666,7 +2675,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2696,7 +2705,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2722,7 +2731,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2748,7 +2757,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2778,7 +2787,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2808,7 +2817,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2842,7 +2851,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2880,7 +2889,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2910,7 +2919,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2940,7 +2949,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -2974,7 +2983,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3000,7 +3009,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3030,7 +3039,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3060,7 +3069,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3175,7 +3184,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2852,
+                        "traffic_disturbance_id": 2857,
                         "application_id": "KP2600143-2",
                         "star_date": "2026-02-02",
                         "end_date": "2026-07-31"
@@ -3205,7 +3214,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2852,
+                        "traffic_disturbance_id": 2857,
                         "application_id": "KP2600143-2",
                         "star_date": "2026-02-02",
                         "end_date": "2026-07-31"
@@ -3255,7 +3264,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 837,
+                        "traffic_disturbance_id": 823,
                         "application_id": "AL2502721",
                         "star_date": "2025-10-05",
                         "end_date": "2026-12-31"
@@ -3313,7 +3322,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3339,7 +3348,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3365,7 +3374,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3391,7 +3400,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3425,7 +3434,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3451,7 +3460,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3477,7 +3486,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3507,7 +3516,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3537,7 +3546,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3563,7 +3572,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3589,7 +3598,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3615,7 +3624,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3645,7 +3654,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3675,7 +3684,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3701,7 +3710,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3727,7 +3736,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3757,7 +3766,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3787,7 +3796,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3817,7 +3826,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3843,7 +3852,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3869,7 +3878,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3903,7 +3912,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -3933,7 +3942,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1786,
+                        "traffic_disturbance_id": 1785,
                         "application_id": "KP2503277",
                         "star_date": "2025-11-24",
                         "end_date": "2026-05-14"
@@ -3942,7 +3951,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1341,
+                        "traffic_disturbance_id": 1329,
                         "application_id": "AL2503436",
                         "star_date": "2026-01-05",
                         "end_date": "2026-04-30"
@@ -4614,7 +4623,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1467,
+                        "traffic_disturbance_id": 1466,
                         "application_id": "KP2502945-2",
                         "star_date": "2025-11-20",
                         "end_date": "2026-05-14"
@@ -4648,7 +4657,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1470,
+                        "traffic_disturbance_id": 1469,
                         "application_id": "KP2502945-2",
                         "star_date": "2025-11-20",
                         "end_date": "2026-05-14"
@@ -4686,7 +4695,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1795,
+                        "traffic_disturbance_id": 1794,
                         "application_id": "KP2503277",
                         "star_date": "2025-11-24",
                         "end_date": "2026-05-14"
@@ -4720,7 +4729,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1788,
+                        "traffic_disturbance_id": 1787,
                         "application_id": "KP2503277",
                         "star_date": "2025-11-24",
                         "end_date": "2026-05-14"
@@ -4746,7 +4755,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2401,
+                        "traffic_disturbance_id": 2403,
                         "application_id": "KP2503588",
                         "star_date": "2026-01-01",
                         "end_date": "2026-05-14"
@@ -4772,7 +4781,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4802,7 +4811,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4832,7 +4841,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4862,7 +4871,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4892,7 +4901,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4918,7 +4927,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4948,7 +4957,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -4974,7 +4983,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5004,7 +5013,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5034,7 +5043,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5060,7 +5069,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5086,7 +5095,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5120,7 +5129,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5150,7 +5159,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5176,7 +5185,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5202,7 +5211,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5228,7 +5237,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5254,7 +5263,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5284,7 +5293,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5310,7 +5319,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5340,7 +5349,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5378,7 +5387,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5420,7 +5429,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5450,7 +5459,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5516,7 +5525,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 835,
+                        "traffic_disturbance_id": 821,
                         "application_id": "AL2502721",
                         "star_date": "2025-10-05",
                         "end_date": "2026-12-31"
@@ -5546,7 +5555,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 836,
+                        "traffic_disturbance_id": 822,
                         "application_id": "AL2502721",
                         "star_date": "2025-10-05",
                         "end_date": "2026-12-31"
@@ -5555,7 +5564,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 838,
+                        "traffic_disturbance_id": 824,
                         "application_id": "AL2502721",
                         "star_date": "2025-10-05",
                         "end_date": "2026-12-31"
@@ -5585,7 +5594,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 837,
+                        "traffic_disturbance_id": 823,
                         "application_id": "AL2502721",
                         "star_date": "2025-10-05",
                         "end_date": "2026-12-31"
@@ -5665,7 +5674,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2852,
+                        "traffic_disturbance_id": 2857,
                         "application_id": "KP2600143-2",
                         "star_date": "2026-02-02",
                         "end_date": "2026-07-31"
@@ -5767,7 +5776,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5797,7 +5806,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5823,7 +5832,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5849,7 +5858,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -5879,7 +5888,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -5905,7 +5914,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -5931,7 +5940,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -5981,7 +5990,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6027,7 +6036,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6061,7 +6070,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6087,7 +6096,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6117,7 +6126,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6143,7 +6152,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6173,7 +6182,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6199,7 +6208,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6233,7 +6242,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1380,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6263,7 +6272,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1394,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6272,52 +6281,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
-                        "application_id": "AL2600068",
-                        "star_date": "2026-01-19",
-                        "end_date": "2026-12-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6326,7 +6290,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6335,7 +6317,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6344,10 +6344,19 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 1380,
+                        "application_id": "AL2600068",
+                        "star_date": "2026-01-19",
+                        "end_date": "2026-12-31"
                     }
                 }
             ]
@@ -6382,7 +6391,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6391,43 +6400,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6436,7 +6409,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6445,7 +6436,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6454,7 +6463,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6488,7 +6497,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6497,43 +6506,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6542,7 +6515,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6551,7 +6542,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6560,7 +6569,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6590,43 +6599,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6635,7 +6608,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6644,7 +6635,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6653,7 +6662,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6683,43 +6692,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6728,7 +6701,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6737,7 +6728,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6746,7 +6755,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6776,43 +6785,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6821,7 +6794,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6830,7 +6821,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6839,7 +6848,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6873,43 +6882,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -6918,7 +6891,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -6927,7 +6918,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -6936,7 +6945,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -6966,7 +6975,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -6975,43 +6984,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -7020,7 +6993,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -7029,7 +7020,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -7038,7 +7047,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -7068,7 +7077,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -7077,43 +7086,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -7122,7 +7095,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -7131,7 +7122,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -7140,7 +7149,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -7170,7 +7179,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -7179,43 +7188,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -7224,7 +7197,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -7233,7 +7224,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -7242,7 +7251,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -7276,7 +7285,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -7285,43 +7294,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -7330,7 +7303,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -7339,7 +7330,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -7348,7 +7357,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -7357,7 +7366,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 251,
+                        "traffic_disturbance_id": 247,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-09-16",
                         "end_date": "2025-09-19"
@@ -7419,7 +7428,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1395,
+                        "traffic_disturbance_id": 1381,
                         "application_id": "AL2600068",
                         "star_date": "2026-01-19",
                         "end_date": "2026-12-31"
@@ -7428,43 +7437,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 253,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-13",
-                        "end_date": "2025-10-17"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 247,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-06-17",
-                        "end_date": "2025-06-19"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 255,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-27",
-                        "end_date": "2025-10-31"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 252,
-                        "application_id": "AL2402974-16",
-                        "star_date": "2025-10-07",
-                        "end_date": "2025-10-10"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 249,
+                        "traffic_disturbance_id": 245,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-30",
                         "end_date": "2025-07-27"
@@ -7473,7 +7446,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 246,
+                        "traffic_disturbance_id": 248,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-07",
+                        "end_date": "2025-10-10"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 251,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-27",
+                        "end_date": "2025-10-31"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 242,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-16",
                         "end_date": "2025-06-17"
@@ -7482,7 +7473,25 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 254,
+                        "traffic_disturbance_id": 243,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-06-17",
+                        "end_date": "2025-06-19"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 249,
+                        "application_id": "AL2402974-16",
+                        "star_date": "2025-10-13",
+                        "end_date": "2025-10-17"
+                    }
+                },
+                {
+                    "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 250,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-24"
@@ -7491,7 +7500,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 245,
+                        "traffic_disturbance_id": 241,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-06-12",
                         "end_date": "2025-06-13"
@@ -7500,7 +7509,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 251,
+                        "traffic_disturbance_id": 247,
                         "application_id": "AL2402974-16",
                         "star_date": "2025-09-16",
                         "end_date": "2025-09-19"
@@ -7509,7 +7518,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1106,
+                        "traffic_disturbance_id": 1092,
                         "application_id": "AL2503225-4",
                         "star_date": "2025-09-19",
                         "end_date": "2026-09-18"
@@ -7539,7 +7548,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2512,
+                        "traffic_disturbance_id": 2514,
                         "application_id": "KP2600011",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -7573,7 +7582,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2294,
+                        "traffic_disturbance_id": 2293,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -7599,7 +7608,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2294,
+                        "traffic_disturbance_id": 2293,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -7625,7 +7634,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -7663,7 +7672,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -7693,7 +7702,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2791,
+                        "traffic_disturbance_id": 2795,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -7723,7 +7732,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2798,
+                        "traffic_disturbance_id": 2802,
                         "application_id": "KP2600110",
                         "star_date": "2026-02-02",
                         "end_date": "2026-02-27"
@@ -7749,8 +7758,8 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 800,
-                        "application_id": "AL2502529-13",
+                        "traffic_disturbance_id": 786,
+                        "application_id": "AL2502529-14",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-21"
                     }
@@ -7775,8 +7784,8 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 800,
-                        "application_id": "AL2502529-13",
+                        "traffic_disturbance_id": 786,
+                        "application_id": "AL2502529-14",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-21"
                     }
@@ -7801,8 +7810,8 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 800,
-                        "application_id": "AL2502529-13",
+                        "traffic_disturbance_id": 786,
+                        "application_id": "AL2502529-14",
                         "star_date": "2025-10-20",
                         "end_date": "2025-10-21"
                     }
@@ -7851,7 +7860,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1426,
+                        "traffic_disturbance_id": 1425,
                         "application_id": "KP2502897-3",
                         "star_date": "2025-11-17",
                         "end_date": "2027-05-31"
@@ -7881,7 +7890,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1426,
+                        "traffic_disturbance_id": 1425,
                         "application_id": "KP2502897-3",
                         "star_date": "2025-11-17",
                         "end_date": "2027-05-31"
@@ -7907,7 +7916,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1426,
+                        "traffic_disturbance_id": 1425,
                         "application_id": "KP2502897-3",
                         "star_date": "2025-11-17",
                         "end_date": "2027-05-31"
@@ -7937,7 +7946,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2298,
+                        "traffic_disturbance_id": 2297,
                         "application_id": "KP2503526",
                         "star_date": "2025-12-13",
                         "end_date": "2026-05-14"
@@ -7967,7 +7976,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -7993,7 +8002,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8019,7 +8028,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8045,7 +8054,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8071,7 +8080,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8101,7 +8110,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8127,7 +8136,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8157,7 +8166,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8191,7 +8200,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8221,7 +8230,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8263,7 +8272,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1538,
+                        "traffic_disturbance_id": 1537,
                         "application_id": "KP2503062-8",
                         "star_date": "2025-11-14",
                         "end_date": "2027-09-30"
@@ -8289,7 +8298,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2375,
+                        "traffic_disturbance_id": 2377,
                         "application_id": "KP2503579-2",
                         "star_date": "2026-01-07",
                         "end_date": "2026-05-14"
@@ -8319,7 +8328,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2379,
+                        "traffic_disturbance_id": 2381,
                         "application_id": "KP2503579-2",
                         "star_date": "2026-01-07",
                         "end_date": "2026-05-14"
@@ -8373,7 +8382,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1411,
+                        "traffic_disturbance_id": 1410,
                         "application_id": "KP2502872-2",
                         "star_date": "2025-11-18",
                         "end_date": "2026-05-14"
@@ -8895,7 +8904,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1387,
+                        "traffic_disturbance_id": 1373,
                         "application_id": "AL2600053",
                         "star_date": "2026-01-12",
                         "end_date": "2028-01-10"
@@ -8933,7 +8942,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2600,
+                        "traffic_disturbance_id": 2605,
                         "application_id": "KP2600054-2",
                         "star_date": "2026-01-19",
                         "end_date": "2026-05-14"
@@ -8983,7 +8992,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2602,
+                        "traffic_disturbance_id": 2607,
                         "application_id": "KP2600056",
                         "star_date": "2026-02-02",
                         "end_date": "2026-05-14"
@@ -9169,7 +9178,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 288,
+                        "traffic_disturbance_id": 284,
                         "application_id": "AL2403654-16",
                         "star_date": "2025-07-31",
                         "end_date": "2025-09-14"
@@ -9178,7 +9187,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 293,
+                        "traffic_disturbance_id": 289,
                         "application_id": "AL2403654-16",
                         "star_date": "2025-09-15",
                         "end_date": "2026-10-30"
@@ -9294,7 +9303,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 692,
+                        "traffic_disturbance_id": 677,
                         "application_id": "AL2502167-3",
                         "star_date": "2025-08-19",
                         "end_date": "2025-08-19"
@@ -9303,7 +9312,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 694,
+                        "traffic_disturbance_id": 679,
                         "application_id": "AL2502167-3",
                         "star_date": "2025-09-01",
                         "end_date": "2026-05-29"
@@ -9355,7 +9364,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9381,7 +9390,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9407,7 +9416,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9433,7 +9442,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9459,7 +9468,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9485,7 +9494,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9511,7 +9520,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9541,7 +9550,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9567,7 +9576,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9593,7 +9602,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2400,
+                        "traffic_disturbance_id": 2402,
                         "application_id": "KP2503587-2",
                         "star_date": "2026-01-06",
                         "end_date": "2026-09-13"
@@ -9619,7 +9628,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1703,
+                        "traffic_disturbance_id": 1702,
                         "application_id": "KP2503229-2",
                         "star_date": "2025-12-01",
                         "end_date": "2026-05-14"
@@ -9645,7 +9654,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 879,
+                        "traffic_disturbance_id": 865,
                         "application_id": "AL2502891-7",
                         "star_date": "2025-10-27",
                         "end_date": "2025-11-06"
@@ -9654,7 +9663,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 882,
+                        "traffic_disturbance_id": 868,
                         "application_id": "AL2502891-7",
                         "star_date": "2025-11-07",
                         "end_date": "2026-02-27"
@@ -9680,7 +9689,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 888,
+                        "traffic_disturbance_id": 874,
                         "application_id": "AL2502891-7",
                         "star_date": "2026-02-04",
                         "end_date": "2026-02-04"
@@ -9689,7 +9698,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 879,
+                        "traffic_disturbance_id": 865,
                         "application_id": "AL2502891-7",
                         "star_date": "2025-10-27",
                         "end_date": "2025-11-06"
@@ -9698,7 +9707,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 882,
+                        "traffic_disturbance_id": 868,
                         "application_id": "AL2502891-7",
                         "star_date": "2025-11-07",
                         "end_date": "2026-02-27"
@@ -9724,7 +9733,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2559,
+                        "traffic_disturbance_id": 2562,
                         "application_id": "KP2600036",
                         "star_date": "2026-01-22",
                         "end_date": "2026-02-20"
@@ -9750,7 +9759,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2555,
+                        "traffic_disturbance_id": 2558,
                         "application_id": "KP2600036",
                         "star_date": "2026-01-22",
                         "end_date": "2026-02-20"
@@ -9776,7 +9785,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2552,
+                        "traffic_disturbance_id": 2555,
                         "application_id": "KP2600036",
                         "star_date": "2026-01-22",
                         "end_date": "2026-02-20"
@@ -9806,7 +9815,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1445,
+                        "traffic_disturbance_id": 1444,
                         "application_id": "KP2502933-3",
                         "star_date": "2025-11-01",
                         "end_date": "2026-05-14"
@@ -9832,7 +9841,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1488,
+                        "traffic_disturbance_id": 1487,
                         "application_id": "KP2502982-2",
                         "star_date": "2025-10-21",
                         "end_date": "2026-05-14"
@@ -9858,7 +9867,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1114,
+                        "traffic_disturbance_id": 1102,
                         "application_id": "AL2503247-4",
                         "star_date": "2025-12-30",
                         "end_date": "2025-12-30"
@@ -9884,7 +9893,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1114,
+                        "traffic_disturbance_id": 1102,
                         "application_id": "AL2503247-4",
                         "star_date": "2025-12-30",
                         "end_date": "2025-12-30"
@@ -9970,7 +9979,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1790,
+                        "traffic_disturbance_id": 1789,
                         "application_id": "KP2503277",
                         "star_date": "2025-11-24",
                         "end_date": "2026-05-14"
@@ -10200,7 +10209,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2122,
+                        "traffic_disturbance_id": 2121,
                         "application_id": "KP2503415-2",
                         "star_date": "2026-01-28",
                         "end_date": "2026-05-14"
@@ -10234,7 +10243,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2122,
+                        "traffic_disturbance_id": 2121,
                         "application_id": "KP2503415-2",
                         "star_date": "2026-01-28",
                         "end_date": "2026-05-14"
@@ -10310,7 +10319,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 651,
+                        "traffic_disturbance_id": 634,
                         "application_id": "AL2501947-2",
                         "star_date": "2025-09-15",
                         "end_date": "2026-09-18"
@@ -10348,7 +10357,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 655,
+                        "traffic_disturbance_id": 638,
                         "application_id": "AL2501947-2",
                         "star_date": "2025-09-15",
                         "end_date": "2026-09-18"
@@ -10490,7 +10499,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 1261,
+                        "traffic_disturbance_id": 1260,
                         "application_id": "KP2502770-2",
                         "star_date": "2025-10-13",
                         "end_date": "2026-05-14"
@@ -10524,7 +10533,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -10586,7 +10595,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -10616,7 +10625,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2293,
+                        "traffic_disturbance_id": 2292,
                         "application_id": "KP2503521-4",
                         "star_date": "2026-01-20",
                         "end_date": "2026-05-14"
@@ -10650,7 +10659,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 865,
+                        "traffic_disturbance_id": 851,
                         "application_id": "AL2502807-3",
                         "star_date": "2026-02-25",
                         "end_date": "2026-02-26"
@@ -10659,7 +10668,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
-                        "traffic_disturbance_id": 2411,
+                        "traffic_disturbance_id": 2413,
                         "application_id": "KP2503598",
                         "star_date": "2026-01-31",
                         "end_date": "2026-05-14"
@@ -10727,7 +10736,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 1475,
+                        "traffic_disturbance_id": 1458,
                         "application_id": "AL2600124",
                         "star_date": "2026-02-05",
                         "end_date": "2026-03-31"
@@ -11600,6 +11609,15 @@
             "detailedCollisions": [
                 {
                     "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 852,
+                        "application_id": "AL2502822-5",
+                        "star_date": "2025-10-30",
+                        "end_date": "2025-12-21"
+                    }
+                },
+                {
+                    "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
                         "traffic_disturbance_id": 981,
                         "application_id": "KP2502186-6",
@@ -11610,16 +11628,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 866,
-                        "application_id": "AL2502822-5",
-                        "star_date": "2025-10-30",
-                        "end_date": "2025-12-21"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 867,
+                        "traffic_disturbance_id": 853,
                         "application_id": "AL2502822-5",
                         "star_date": "2025-12-22",
                         "end_date": "2026-12-31"
@@ -11645,7 +11654,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 433,
+                        "traffic_disturbance_id": 416,
                         "application_id": "AL2500521-5",
                         "star_date": "2025-11-25",
                         "end_date": "2025-11-25"
@@ -11670,6 +11679,15 @@
             "detailedCollisions": [
                 {
                     "properties": {
+                        "traffic_disturbance_type": "Aluevuokraus",
+                        "traffic_disturbance_id": 852,
+                        "application_id": "AL2502822-5",
+                        "star_date": "2025-10-30",
+                        "end_date": "2025-12-21"
+                    }
+                },
+                {
+                    "properties": {
                         "traffic_disturbance_type": "Kaivuilmoitus",
                         "traffic_disturbance_id": 981,
                         "application_id": "KP2502186-6",
@@ -11680,16 +11698,7 @@
                 {
                     "properties": {
                         "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 866,
-                        "application_id": "AL2502822-5",
-                        "star_date": "2025-10-30",
-                        "end_date": "2025-12-21"
-                    }
-                },
-                {
-                    "properties": {
-                        "traffic_disturbance_type": "Aluevuokraus",
-                        "traffic_disturbance_id": 867,
+                        "traffic_disturbance_id": 853,
                         "application_id": "AL2502822-5",
                         "star_date": "2025-12-22",
                         "end_date": "2026-12-31"
