@@ -129,7 +129,15 @@ export function TrafficFlowChart() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
   const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
-    useSearch({ from: "/" });
+    useSearch({
+      from: "/",
+      select: (s) => ({
+        selectedSegment: s.selectedSegment,
+        selectedStartDate: s.selectedStartDate,
+        selectedEndDate: s.selectedEndDate,
+        selectedDate: s.selectedDate,
+      }),
+    });
   const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;

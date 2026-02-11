@@ -124,7 +124,15 @@ export function AirQualityChart() {
     selectedStartDate,
     selectedEndDate,
     selectedDate,
-  } = useSearch({ from: "/" });
+  } = useSearch({
+    from: "/",
+    select: (s) => ({
+      selectedAirQualityStation: s.selectedAirQualityStation,
+      selectedStartDate: s.selectedStartDate,
+      selectedEndDate: s.selectedEndDate,
+      selectedDate: s.selectedDate,
+    }),
+  });
   const { isPending, isError, data, error } = useQuery({
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,

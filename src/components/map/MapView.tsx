@@ -70,9 +70,15 @@ function FitMapToSelected({
 
 export function MapView() {
   const theme = useMantineTheme();
-  const { selectedSegment, selectedDate } = useSearch({ from: "/" });
-  const { dataPanelOpen } = useSearch({ from: "/" });
-  const { sources } = useSearch({ from: "/" });
+  const { selectedSegment, selectedDate, dataPanelOpen, sources } = useSearch({
+    from: "/",
+    select: (s) => ({
+      selectedSegment: s.selectedSegment,
+      selectedDate: s.selectedDate,
+      dataPanelOpen: s.dataPanelOpen,
+      sources: s.sources,
+    }),
+  });
   const navigate = useNavigate({ from: "/" });
   const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
   const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);

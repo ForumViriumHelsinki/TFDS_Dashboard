@@ -32,7 +32,13 @@ export function useMergedDisturbances(): UseMergedDisturbancesReturn {
     error: trafficError,
   } = useQuery(getTrafficDisturbancesQueryOptions());
 
-  const { selectedDate, sources } = useSearch({ from: "/" });
+  const { selectedDate, sources } = useSearch({
+    from: "/",
+    select: (s) => ({
+      selectedDate: s.selectedDate,
+      sources: s.sources,
+    }),
+  });
 
   const {
     isPending: isPendingExc,
