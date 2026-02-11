@@ -16,7 +16,7 @@ export function Sidebar() {
       <Tabs.List grow>
         <Tabs.Tab value="Häiriöt">Häiriöt</Tabs.Tab>
         <Tabs.Tab value="Ilmanlaatu">Ilmanlaatu</Tabs.Tab>
-        {showSegmentsTab && <Tabs.Tab value="Segments">Segments</Tabs.Tab>}
+        {showSegmentsTab && <Tabs.Tab value="Segmentit">Segmentit</Tabs.Tab>}
       </Tabs.List>
 
       <Tabs.Panel
@@ -45,7 +45,7 @@ export function Sidebar() {
 
       {showSegmentsTab && (
         <Tabs.Panel
-          value="Segments"
+          value="Segmentit"
           style={{
             flex: 1,
             display: "flex",
