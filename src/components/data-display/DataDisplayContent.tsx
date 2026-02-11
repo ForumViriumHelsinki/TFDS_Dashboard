@@ -6,13 +6,14 @@ import { DataDisplayCharts } from "./DataDisplayCharts";
 export function DataDisplayContent() {
   const { dataPanelOpen } = useSearch({ from: "/" });
 
+  if (!dataPanelOpen) return null;
+
   return (
     <Group
       h="100%"
       mah="548px"
       gap={0}
       align="flex-start"
-      display={dataPanelOpen ? "flex" : "none"}
     >
       <DataDisplaySidebar />
       <DataDisplayCharts />
