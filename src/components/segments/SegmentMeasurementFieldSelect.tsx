@@ -1,9 +1,9 @@
 import { Select } from "@mantine/core";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-const measurementFieldOptions = [
-  { value: "typical_speed", label: "Tyypillinen nopeus" },
-  { value: "current_speed", label: "Nykyinen nopeus" },
+export const measurementFieldOptions = [
+  { value: "typicalSpeed", label: "Tyypillinen nopeus" },
+  { value: "currentSpeed", label: "Nykyinen nopeus" },
   { value: "confidence_level", label: "Luotettavuus" },
   { value: "fcd_coverage", label: "FCD-kattavuus" },
 ];

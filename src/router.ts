@@ -14,15 +14,29 @@ export const Sources = {
 // eslint-disable-next-line no-redeclare
 export type Sources = (typeof Sources)[keyof typeof Sources];
 
+function normalizeSegmentMeasurementField(value: unknown) {
+  if (value === "typical_speed") return "typicalSpeed";
+  if (value === "current_speed") return "currentSpeed";
+  return value;
+}
+
 // Validate and normalize query params once per route
 const searchSchema = z.object({
   dataPanelOpen: z.coerce.boolean().optional().default(false).catch(false),
   selectedSegment: z.string().optional(),
   selectedAirQualityStation: z.string().optional(),
   landLeaseSearch: z.string().optional(),
-  segmentMeasurementField: z
-    .enum(["typical_speed", "current_speed", "confidence_level", "fcd_coverage"])
-    .optional(),
+  segmentMeasurementField: z.preprocess(
+    normalizeSegmentMeasurementField,
+    z
+      .enum([
+        "typicalSpeed",
+        "currentSpeed",
+        "confidence_level",
+        "fcd_coverage",
+      ])
+      .optional(),
+  ),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),
   selectedDate: z.coerce.date().optional(),

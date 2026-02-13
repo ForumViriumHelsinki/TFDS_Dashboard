@@ -1,6 +1,5 @@
 import {
   AppShell,
-  Button,
   Group,
   ScrollArea,
   Stack,
@@ -10,15 +9,23 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getFloatingCarDataQueryOptions } from "../../queries/floating-car-data";
+import { getFloatingCarDataFieldBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { SegmentItem } from "../segments/SegmentItem";
-import { SegmentMeasurementFieldSelect } from "../segments/SegmentMeasurementFieldSelect";
+import {
+  SegmentMeasurementFieldSelect,
+  measurementFieldOptions,
+} from "../segments/SegmentMeasurementFieldSelect";
 
 export function SegmentsTab() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
+  const {
+    selectedSegment,
+    selectedStartDate,
+    selectedEndDate,
+    segmentMeasurementField,
+  } = useSearch({
     from: "/",
   });
   const { start, end } = useMemo(() => {
@@ -30,29 +37,54 @@ export function SegmentsTab() {
   }, [selectedEndDate, selectedStartDate]);
 
   const {
-    data: fcdRows,
-    isFetching: isFcdFetching,
-    isError: isFcdError,
-    error: fcdError,
-    refetch: refetchFcd,
+    data: segmentFieldRows,
+    isFetching: isSegmentFieldFetching,
+    isError: isSegmentFieldError,
+    error: segmentFieldError,
   } = useQuery({
-    ...getFloatingCarDataQueryOptions({
+    ...getFloatingCarDataFieldBySegmentQueryOptions({
       start,
       end,
-      segmentId: selectedSegment ?? "",
+      field: segmentMeasurementField ?? "",
     }),
-    enabled: false,
+    enabled: Boolean(segmentMeasurementField),
   });
 
-  const fcdCount = Array.isArray(fcdRows) ? fcdRows.length : 0;
+  const segmentFieldLabel = useMemo(() => {
+    if (!segmentMeasurementField) return null;
+    return (
+      measurementFieldOptions.find(
+        (option) => option.value === segmentMeasurementField,
+      )?.label ?? segmentMeasurementField
+    );
+  }, [segmentMeasurementField]);
+
+  const segmentFieldById = useMemo(() => {
+    if (!Array.isArray(segmentFieldRows)) return new Map<string, string>();
+    const entries = new Map<string, string>();
+    for (const row of segmentFieldRows) {
+      const segmentId = String(row["segmentId"] ?? "").trim();
+      if (!segmentId) continue;
+      const rawValue = row["_value"];
+      if (rawValue === null || rawValue === undefined) continue;
+      let formatted: string;
+      if (typeof rawValue === "number") {
+        const rounded = Math.round(rawValue * 10) / 10;
+        formatted = Number.isFinite(rounded) ? String(rounded) : "";
+      } else {
+        formatted = String(rawValue);
+      }
+      if (formatted.length === 0) continue;
+      entries.set(segmentId, formatted);
+    }
+    return entries;
+  }, [segmentFieldRows]);
 
   const {
     data: segmentsMapping,
     isLoading: isSegmentsMappingLoading,
-    isFetching: isSegmentsMappingFetching,
     isError: isSegmentsMappingError,
     error: segmentsMappingError,
-    refetch: refetchSegmentsMapping,
   } = useQuery(getSegmentsMappingQueryOptions());
 
   const segmentIds = useMemo(() => {
@@ -62,6 +94,11 @@ export function SegmentsTab() {
     );
     return ids;
   }, [segmentsMapping]);
+
+  const filteredSegmentIds = useMemo(() => {
+    if (!segmentMeasurementField) return segmentIds;
+    return segmentIds.filter((segmentId) => segmentFieldById.has(segmentId));
+  }, [segmentIds, segmentFieldById, segmentMeasurementField]);
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({
@@ -80,30 +117,18 @@ export function SegmentsTab() {
         p="md"
         style={{ borderBottom: `1px solid ${theme.colors.gray[3]}` }}
       >
+        <Text size="xs" c={isSegmentFieldError ? "red" : "dimmed"} mb="sm">
+          {!segmentMeasurementField
+            ? "Valitse muuttuja nähdäksesi FCD-arvot."
+            : isSegmentFieldFetching
+              ? "Ladataan FCD-arvoja…"
+              : isSegmentFieldError
+                ? `FCD error: ${segmentFieldError?.message ?? "unknown"}`
+                : `FCD-arvoja (${segmentFieldLabel ?? segmentMeasurementField}): ${
+                    filteredSegmentIds.length
+                  } segmentille`}
+        </Text>
         <Group justify="space-between" mb="sm" gap="md">
-          <Button
-            size="xs"
-            onClick={() => refetchFcd()}
-            disabled={!selectedSegment}
-            loading={isFcdFetching}
-          >
-            Test FCD Query
-          </Button>
-          <Text size="xs" c={isFcdError ? "red" : "dimmed"}>
-            {isFcdError
-              ? `FCD error: ${fcdError?.message ?? "unknown"}`
-              : `FCD rows: ${fcdCount}`}
-          </Text>
-        </Group>
-        <Group justify="space-between" mb="sm" gap="md">
-          <Button
-            size="xs"
-            variant="light"
-            onClick={() => refetchSegmentsMapping()}
-            loading={isSegmentsMappingFetching}
-          >
-            Refresh segments mapping
-          </Button>
           <Text size="xs" c={isSegmentsMappingError ? "red" : "dimmed"}>
             {isSegmentsMappingError
               ? `Segments mapping error: ${
@@ -126,18 +151,21 @@ export function SegmentsTab() {
           <Text size="sm" c="red" p="md">
             Failed to load road segments.
           </Text>
-        ) : segmentIds.length === 0 ? (
+        ) : filteredSegmentIds.length === 0 ? (
           <Text size="sm" c="dimmed" p="md">
-            No segments found in `segments_mapping.json`.
+            {segmentMeasurementField
+              ? "Ei segmenttejä valitulla muuttujalla ja aikavälillä."
+              : "No segments found in `segments_mapping.json`."}
           </Text>
         ) : (
           <Stack gap={0} p="md">
-            {segmentIds.map((segmentId) => (
+            {filteredSegmentIds.map((segmentId) => (
               <div key={segmentId} data-segment-id={segmentId}>
                 <SegmentItem
                   segmentId={segmentId}
                   segmentLabel="IDEA Segment"
                   isSelected={selectedSegment === segmentId}
+                  measurementText={segmentFieldById.get(segmentId)}
                   onClick={() => handleSegmentClick(segmentId)}
                 />
               </div>
