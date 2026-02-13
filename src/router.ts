@@ -22,6 +22,10 @@ function normalizeSegmentMeasurementField(value: unknown) {
 
 // Validate and normalize query params once per route
 const searchSchema = z.object({
+  activeTab: z
+    .enum(["Häiriöt", "Ilmanlaatu", "Segmentit"])
+    .optional()
+    .default("Häiriöt"),
   dataPanelOpen: z.coerce.boolean().optional().default(false).catch(false),
   selectedSegment: z.string().optional(),
   selectedAirQualityStation: z.string().optional(),

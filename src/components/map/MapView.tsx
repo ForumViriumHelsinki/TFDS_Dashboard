@@ -22,36 +22,38 @@ import type {
 } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-import { useMemo } from "react";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 import { DisturbanceLayer } from "./DisturbanceLayer";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
+import { useQuery } from "@tanstack/react-query";
+import {
+  getFloatingCarDataFieldBySegmentQueryOptions,
+} from "../../queries/floating-car-data";
+import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
+import type { LineString } from "geojson";
 
 function FitMapToSelected({
   selectedSegment,
-  areaRentalSegmentsFeatureCollection,
-  excavationSegmentsFeatureCollection,
+  featureCollections,
 }: {
   selectedSegment?: string;
-  areaRentalSegmentsFeatureCollection: FeatureCollection;
-  excavationSegmentsFeatureCollection: FeatureCollection;
+  featureCollections: FeatureCollection[];
 }) {
   const map = useMap();
 
   useEffect(() => {
     if (!map || !selectedSegment) return;
-    const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> = [
-      ...((areaRentalSegmentsFeatureCollection.features as
-        | Array<Feature<Geometry, { segmentId?: string }>>
-        | undefined) ?? []),
-      ...((excavationSegmentsFeatureCollection.features as
-        | Array<Feature<Geometry, { segmentId?: string }>>
-        | undefined) ?? []),
-    ];
+    const allFeatures: Array<Feature<Geometry, { segmentId?: string }>> =
+      featureCollections.flatMap(
+        (collection) =>
+          (collection.features as
+            | Array<Feature<Geometry, { segmentId?: string }>>
+            | undefined) ?? [],
+      );
     const matched =
       allFeatures.find(
         (feature) => feature?.properties?.segmentId === selectedSegment,
@@ -70,19 +72,36 @@ function FitMapToSelected({
 
 export function MapView() {
   const theme = useMantineTheme();
-  const { selectedSegment, selectedDate, dataPanelOpen, sources } = useSearch({
+  const {
+    selectedSegment,
+    selectedDate,
+    dataPanelOpen,
+    sources,
+    activeTab,
+    segmentMeasurementField,
+    selectedStartDate,
+    selectedEndDate,
+  } = useSearch({
     from: "/",
     select: (s) => ({
       selectedSegment: s.selectedSegment,
       selectedDate: s.selectedDate,
       dataPanelOpen: s.dataPanelOpen,
       sources: s.sources,
+      activeTab: s.activeTab,
+      segmentMeasurementField: s.segmentMeasurementField,
+      selectedStartDate: s.selectedStartDate,
+      selectedEndDate: s.selectedEndDate,
     }),
   });
   const navigate = useNavigate({ from: "/" });
-  const showAirQuality = sources?.includes(Sources.AIR_QUALITY);
-  const showAreaRentals = sources?.includes(Sources.AREA_RENTALS);
-  const showExcavationNotices = sources?.includes(Sources.EXCAVATION_NOTICES);
+  const showSegmentsTab = activeTab === "Segmentit";
+  const showAirQuality =
+    !showSegmentsTab && sources?.includes(Sources.AIR_QUALITY);
+  const showAreaRentals =
+    !showSegmentsTab && sources?.includes(Sources.AREA_RENTALS);
+  const showExcavationNotices =
+    !showSegmentsTab && sources?.includes(Sources.EXCAVATION_NOTICES);
   const { map: disturbanceMap } = useMergedDisturbances();
 
   const areaRentalSegmentsFeatureCollection = useMemo(() => {
@@ -104,12 +123,70 @@ export function MapView() {
   );
   const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
+  const { start: segmentsStart, end: segmentsEnd } = useMemo(() => {
+    const effectiveEnd = selectedEndDate ?? new Date();
+    const effectiveStart =
+      selectedStartDate ??
+      new Date(effectiveEnd.getTime() - 12 * 60 * 60 * 1000);
+    return { start: effectiveStart, end: effectiveEnd };
+  }, [selectedEndDate, selectedStartDate]);
   const selectedDateOutline = displayDate
     ? {
         border: `1px dashed ${theme.colors.brand[0]}`,
         borderOffset: "-1px",
       }
     : undefined;
+
+  const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
+  const { data: segmentFieldRows } = useQuery({
+    ...getFloatingCarDataFieldBySegmentQueryOptions({
+      start: segmentsStart,
+      end: segmentsEnd,
+      field: segmentMeasurementField ?? "",
+    }),
+    enabled: Boolean(showSegmentsTab && segmentMeasurementField),
+  });
+
+  const segmentFieldIdSet = useMemo(() => {
+    if (!Array.isArray(segmentFieldRows)) return new Set<string>();
+    const ids = new Set<string>();
+    for (const row of segmentFieldRows) {
+      const segmentId = String(row["segmentId"] ?? "").trim();
+      if (segmentId) ids.add(segmentId);
+    }
+    return ids;
+  }, [segmentFieldRows]);
+
+  const segmentsFeatureCollection = useMemo(() => {
+    const features: Array<
+      Feature<LineString, { segmentId: string }>
+    > = [];
+    if (!segmentsMapping?.segmentId) {
+      return {
+        type: "FeatureCollection",
+        features,
+      } as FeatureCollection<LineString, { segmentId: string }>;
+    }
+    const allowed =
+      showSegmentsTab && segmentMeasurementField
+        ? segmentFieldIdSet
+        : undefined;
+    for (const [segmentId, entry] of Object.entries(
+      segmentsMapping.segmentId ?? {},
+    )) {
+      if (!entry?.geometry) continue;
+      if (allowed && !allowed.has(segmentId)) continue;
+      features.push({
+        type: "Feature",
+        geometry: entry.geometry,
+        properties: { segmentId },
+      });
+    }
+    return {
+      type: "FeatureCollection",
+      features,
+    } as FeatureCollection<LineString, { segmentId: string }>;
+  }, [segmentsMapping, showSegmentsTab, segmentMeasurementField, segmentFieldIdSet]);
 
   const handleSegmentSelect = (segmentId: string) => {
     navigate({
@@ -261,15 +338,30 @@ export function MapView() {
                 onSegmentSelect={handleSegmentSelect}
               />
             )}
+
+          {showSegmentsTab && segmentsFeatureCollection.features.length > 0 && (
+            <DisturbanceLayer
+              layerKey={`segments-${
+                segmentMeasurementField ?? "all"
+              }-${segmentsEnd.toISOString()}`}
+              paneName="traffic-segments-fcd"
+              zIndex={652}
+              featureCollection={segmentsFeatureCollection}
+              selectedSegment={selectedSegment}
+              onSegmentSelect={handleSegmentSelect}
+            />
+          )}
         </LayersControl>
         <AirQualityIndicator />
         <FitMapToSelected
           selectedSegment={selectedSegment}
-          areaRentalSegmentsFeatureCollection={
-            areaRentalSegmentsFeatureCollection
-          }
-          excavationSegmentsFeatureCollection={
-            excavationSegmentsFeatureCollection
+          featureCollections={
+            showSegmentsTab
+              ? [segmentsFeatureCollection]
+              : [
+                  areaRentalSegmentsFeatureCollection,
+                  excavationSegmentsFeatureCollection,
+                ]
           }
         />
       </MapContainer>

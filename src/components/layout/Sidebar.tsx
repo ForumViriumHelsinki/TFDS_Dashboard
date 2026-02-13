@@ -3,13 +3,33 @@ import { DisruptionsTab } from "../tabs/DisruptionsTab";
 import { AirQualityTab } from "../tabs/AirQualityTab";
 import { SegmentsTab } from "../tabs/SegmentsTab";
 import { useFlag } from "@openfeature/react-sdk";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 export function Sidebar() {
   const { value: showSegmentsTab } = useFlag("segments-tab", false);
+  const navigate = useNavigate({ from: "/" });
+  const { activeTab } = useSearch({
+    from: "/",
+    select: (s) => ({
+      activeTab: s.activeTab,
+    }),
+  });
+  const effectiveTab =
+    activeTab === "Segmentit" && !showSegmentsTab ? "Häiriöt" : activeTab;
 
   return (
     <Tabs
-      defaultValue="Häiriöt"
+      value={effectiveTab}
+      onChange={(nextValue) => {
+        if (!nextValue) return;
+        navigate({
+          search: (prev) => ({
+            ...prev,
+            activeTab: nextValue,
+          }),
+          replace: true,
+        });
+      }}
       h="100%"
       style={{ display: "flex", flexDirection: "column", minHeight: 0 }}
     >
