@@ -35,6 +35,7 @@ import {
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
+import { getDefaultDateRange } from "../../utils/defaultDateRange";
 
 function FitMapToSelected({
   selectedSegment,
@@ -123,13 +124,13 @@ export function MapView() {
   );
   const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const { start: segmentsStart, end: segmentsEnd } = useMemo(() => {
-    const effectiveEnd = selectedEndDate ?? new Date();
+    const effectiveEnd = selectedEndDate ?? fallbackRange.end;
     const effectiveStart =
-      selectedStartDate ??
-      new Date(effectiveEnd.getTime() - 12 * 60 * 60 * 1000);
+      selectedStartDate ?? fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
-  }, [selectedEndDate, selectedStartDate]);
+  }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
   const selectedDateOutline = displayDate
     ? {
         border: `1px dashed ${theme.colors.brand[0]}`,

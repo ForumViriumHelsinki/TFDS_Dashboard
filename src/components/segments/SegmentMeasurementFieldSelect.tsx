@@ -8,7 +8,13 @@ export const measurementFieldOptions = [
   { value: "fcd_coverage", label: "FCD-kattavuus" },
 ];
 
-export function SegmentMeasurementFieldSelect() {
+interface SegmentMeasurementFieldSelectProps {
+  disabled?: boolean;
+}
+
+export function SegmentMeasurementFieldSelect({
+  disabled = false,
+}: SegmentMeasurementFieldSelectProps) {
   const navigate = useNavigate({ from: "/" });
   const { segmentMeasurementField } = useSearch({ from: "/" });
 
@@ -21,6 +27,7 @@ export function SegmentMeasurementFieldSelect() {
       description="Valitse kartalla esitettävä muuttuja Influxista"
       data={measurementFieldOptions}
       value={segmentMeasurementField ?? null}
+      disabled={disabled}
       onChange={(nextValue) => {
         navigate({
           search: (prev) => ({

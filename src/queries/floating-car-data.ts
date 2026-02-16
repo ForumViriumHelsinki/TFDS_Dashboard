@@ -27,6 +27,8 @@ export const getFloatingCarDataAllFieldsBySegmentQueryOptions = (
 ) =>
   queryOptions({
     queryKey: ["floating-car-data-all-fields-by-segment", params],
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       if (!influxdbQueryApi) {
         throw new Error(

@@ -1,6 +1,5 @@
 import {
   AppShell,
-  Group,
   ScrollArea,
   Stack,
   Text,
@@ -11,11 +10,10 @@ import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { getFloatingCarDataAllFieldsBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
+import { getDefaultDateRange } from "../../utils/defaultDateRange";
 import { SegmentItem } from "../segments/SegmentItem";
-import {
-  SegmentMeasurementFieldSelect,
-  measurementFieldOptions,
-} from "../segments/SegmentMeasurementFieldSelect";
+import { SegmentMeasurementFieldSelect } from "../segments/SegmentMeasurementFieldSelect";
+import { LoadingState } from "../shared/LoadingState";
 
 export function SegmentsTab() {
   const theme = useMantineTheme();
@@ -28,34 +26,26 @@ export function SegmentsTab() {
   } = useSearch({
     from: "/",
   });
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const { start, end } = useMemo(() => {
-    const effectiveEnd = selectedEndDate ?? new Date();
+    const effectiveEnd = selectedEndDate ?? fallbackRange.end;
     const effectiveStart =
       selectedStartDate ??
-      new Date(effectiveEnd.getTime() - 12 * 60 * 60 * 1000);
+      fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
-  }, [selectedEndDate, selectedStartDate]);
+  }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
 
   const {
     data: segmentRows,
+    isPending: isSegmentFieldPending,
     isFetching: isSegmentFieldFetching,
     isError: isSegmentFieldError,
-    error: segmentFieldError,
   } = useQuery({
     ...getFloatingCarDataAllFieldsBySegmentQueryOptions({
       start,
       end,
     }),
   });
-
-  const segmentFieldLabel = useMemo(() => {
-    if (!segmentMeasurementField) return null;
-    return (
-      measurementFieldOptions.find(
-        (option) => option.value === segmentMeasurementField,
-      )?.label ?? segmentMeasurementField
-    );
-  }, [segmentMeasurementField]);
 
   const segmentFieldById = useMemo(() => {
     if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
@@ -84,7 +74,6 @@ export function SegmentsTab() {
     data: segmentsMapping,
     isLoading: isSegmentsMappingLoading,
     isError: isSegmentsMappingError,
-    error: segmentsMappingError,
   } = useQuery(getSegmentsMappingQueryOptions());
 
   const segmentIds = useMemo(() => {
@@ -99,6 +88,10 @@ export function SegmentsTab() {
     if (!segmentMeasurementField) return segmentIds;
     return segmentIds.filter((segmentId) => segmentFieldById.has(segmentId));
   }, [segmentIds, segmentFieldById, segmentMeasurementField]);
+  const isSegmentsDataLoading =
+    isSegmentsMappingLoading ||
+    isSegmentFieldPending ||
+    isSegmentFieldFetching;
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({
@@ -117,53 +110,35 @@ export function SegmentsTab() {
         p="md"
         style={{ borderBottom: `1px solid ${theme.colors.gray[3]}` }}
       >
-        <Text size="xs" c={isSegmentFieldError ? "red" : "dimmed"} mb="sm">
-          {!segmentMeasurementField
-            ? "Valitse muuttuja nähdäksesi FCD-arvot."
-            : isSegmentFieldFetching
-              ? "Ladataan FCD-arvoja…"
-              : isSegmentFieldError
-                ? `FCD error: ${segmentFieldError?.message ?? "unknown"}`
-                : `FCD-arvoja (${segmentFieldLabel ?? segmentMeasurementField}): ${
-                    filteredSegmentIds.length
-                  } segmentille`}
-        </Text>
-        <Group justify="space-between" mb="sm" gap="md">
-          <Text size="xs" c={isSegmentsMappingError ? "red" : "dimmed"}>
-            {isSegmentsMappingError
-              ? `Segments mapping error: ${
-                  segmentsMappingError?.message ?? "unknown"
-                }`
-              : isSegmentsMappingLoading
-                ? "Loading segments mapping…"
-                : `Segments: ${segmentIds.length}`}
-          </Text>
-        </Group>
-        <SegmentMeasurementFieldSelect />
+        <SegmentMeasurementFieldSelect disabled={isSegmentsDataLoading} />
       </AppShell.Section>
 
       <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
         {isSegmentsMappingLoading ? (
-          <Text size="sm" c="dimmed" p="md">
-            Loading road segments…
-          </Text>
+          <LoadingState message="Ladataan tiesegmenttejä…" />
         ) : isSegmentsMappingError ? (
           <Text size="sm" c="red" p="md">
-            Failed to load road segments.
+            Tiesegmenttien lataus epäonnistui.
           </Text>
+        ) : segmentMeasurementField &&
+          !isSegmentFieldError &&
+          (!Array.isArray(segmentRows) ||
+            isSegmentFieldPending ||
+            isSegmentFieldFetching) ? (
+          <LoadingState message="Ladataan FCD-arvoja segmenteille…" />
         ) : filteredSegmentIds.length === 0 ? (
           <Text size="sm" c="dimmed" p="md">
             {segmentMeasurementField
               ? "Ei segmenttejä valitulla muuttujalla ja aikavälillä."
-              : "No segments found in `segments_mapping.json`."}
+              : "Tiedostosta `segments_mapping.json` ei löytynyt segmenttejä."}
           </Text>
         ) : (
-          <Stack gap={0} p="md">
+          <Stack gap={0}>
             {filteredSegmentIds.map((segmentId) => (
               <div key={segmentId} data-segment-id={segmentId}>
                 <SegmentItem
                   segmentId={segmentId}
-                  segmentLabel="IDEA Segment"
+                  segmentLabel="IDEA-segmentti"
                   isSelected={selectedSegment === segmentId}
                   measurementText={segmentFieldById.get(segmentId)}
                   onClick={() => handleSegmentClick(segmentId)}
