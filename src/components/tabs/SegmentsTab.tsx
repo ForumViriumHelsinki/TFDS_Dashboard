@@ -8,6 +8,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { getFloatingCarDataAllFieldsBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { getDefaultDateRange } from "../../utils/defaultDateRange";
@@ -29,9 +30,7 @@ export function SegmentsTab() {
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const { start, end } = useMemo(() => {
     const effectiveEnd = selectedEndDate ?? fallbackRange.end;
-    const effectiveStart =
-      selectedStartDate ??
-      fallbackRange.start;
+    const effectiveStart = selectedStartDate ?? fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
   }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
 
@@ -88,6 +87,9 @@ export function SegmentsTab() {
     if (!segmentMeasurementField) return segmentIds;
     return segmentIds.filter((segmentId) => segmentFieldById.has(segmentId));
   }, [segmentIds, segmentFieldById, segmentMeasurementField]);
+  const selectedFieldConfig = getSegmentMeasurementFieldConfig(
+    segmentMeasurementField,
+  );
   const isSegmentsDataLoading =
     isSegmentsMappingLoading ||
     isSegmentFieldPending ||
@@ -120,8 +122,13 @@ export function SegmentsTab() {
           <Text size="sm" c="red" p="md">
             Tiesegmenttien lataus epäonnistui.
           </Text>
+        ) : segmentMeasurementField && isSegmentFieldError ? (
+          <Text size="sm" c="red" p="md">
+            {selectedFieldConfig
+              ? `${selectedFieldConfig.label}-datan lataus epäonnistui.`
+              : "FCD-datan lataus epäonnistui."}
+          </Text>
         ) : segmentMeasurementField &&
-          !isSegmentFieldError &&
           (!Array.isArray(segmentRows) ||
             isSegmentFieldPending ||
             isSegmentFieldFetching) ? (

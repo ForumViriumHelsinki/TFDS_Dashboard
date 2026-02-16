@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { z } from "zod";
 import App from "./App";
+import { segmentMeasurementFieldValues } from "./constants/segment-fields";
 
 export const Sources = {
   AREA_RENTALS: "area-rentals",
@@ -32,14 +33,7 @@ const searchSchema = z.object({
   landLeaseSearch: z.string().optional(),
   segmentMeasurementField: z.preprocess(
     normalizeSegmentMeasurementField,
-    z
-      .enum([
-        "typicalSpeed",
-        "currentSpeed",
-        "confidence_level",
-        "fcd_coverage",
-      ])
-      .optional(),
+    z.enum(segmentMeasurementFieldValues).optional(),
   ),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),

@@ -1,5 +1,6 @@
 import { Stack, Text } from "@mantine/core";
 import { useSearch } from "@tanstack/react-router";
+import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { TrafficFlowChart } from "./TrafficFlowChart";
 import { AirQualityChart } from "./AirQualityChart";
 
@@ -12,16 +13,13 @@ export function DataDisplayCharts() {
     }),
   });
   const isSegmentsTab = activeTab === "Segmentit";
+  const selectedFieldConfig = getSegmentMeasurementFieldConfig(
+    segmentMeasurementField,
+  );
   const trafficTitle = isSegmentsTab
-    ? segmentMeasurementField === "typicalSpeed"
-      ? "Otsikko: Tyypillinen nopeus (0-120)"
-      : segmentMeasurementField === "currentSpeed"
-        ? "Otsikko: Nykyinen nopeus (0-120)"
-        : segmentMeasurementField === "confidence_level"
-          ? "Otsikko: Luotettavuus (0-100)"
-          : segmentMeasurementField === "fcd_coverage"
-            ? "Otsikko: FCD-kattavuus (0-10)"
-            : "Otsikko: Valitse muuttuja"
+    ? selectedFieldConfig
+      ? `Otsikko: ${selectedFieldConfig.label} (0-${selectedFieldConfig.yMax})`
+      : "Otsikko: Valitse muuttuja"
     : "Otsikko: Liikennetiedon kattavuus (1-10)";
 
   return (

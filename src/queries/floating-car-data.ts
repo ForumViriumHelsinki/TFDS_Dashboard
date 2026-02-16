@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import influxdbQueryApi from "../services/influxdb";
+import { segmentMeasurementFieldValues } from "../constants/segment-fields";
 
 export interface FloatingCarDataAllFieldsBySegmentRequest {
   start: Date;
@@ -40,12 +41,15 @@ export const getFloatingCarDataAllFieldsBySegmentQueryOptions = (
       const end = toFluxTime(params.end);
       const bucket =
         import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
+      const fieldFilter = segmentMeasurementFieldValues
+        .map((field) => `r["_field"] == "${field}"`)
+        .join(" or ");
 
       const flux = `
 from(bucket: "${bucket}")
   |> range(start: ${start}, stop: ${end})
   |> filter(fn: (r) => r["_measurement"] == "segment_data")
-  |> filter(fn: (r) => r["_field"] == "typicalSpeed" or r["_field"] == "currentSpeed" or r["_field"] == "confidence_level" or r["_field"] == "fcd_coverage")
+  |> filter(fn: (r) => ${fieldFilter})
   |> group(columns: ["segmentId", "_field"])
   |> last()
   |> keep(columns: ["segmentId", "_field", "_value"])

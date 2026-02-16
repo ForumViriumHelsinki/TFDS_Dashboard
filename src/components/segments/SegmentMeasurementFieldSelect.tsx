@@ -1,12 +1,6 @@
 import { Select } from "@mantine/core";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-
-export const measurementFieldOptions = [
-  { value: "typicalSpeed", label: "Tyypillinen nopeus" },
-  { value: "currentSpeed", label: "Nykyinen nopeus" },
-  { value: "confidence_level", label: "Luotettavuus" },
-  { value: "fcd_coverage", label: "FCD-kattavuus" },
-];
+import { segmentMeasurementFieldOptions } from "../../constants/segment-fields";
 
 interface SegmentMeasurementFieldSelectProps {
   disabled?: boolean;
@@ -25,7 +19,7 @@ export function SegmentMeasurementFieldSelect({
       label="Kartalla esitettävä muuttuja"
       placeholder="Valitse muuttuja"
       description="Valitse kartalla esitettävä muuttuja Influxista"
-      data={measurementFieldOptions}
+      data={segmentMeasurementFieldOptions}
       value={segmentMeasurementField ?? null}
       disabled={disabled}
       onChange={(nextValue) => {

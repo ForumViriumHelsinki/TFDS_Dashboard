@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
+import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import {
   getFloatingCarDataTimeSeriesQueryOptions,
   type FloatingCarDataRow,
@@ -36,34 +37,6 @@ type FieldConfig = {
   ticks: number[];
 };
 
-const measurementFieldConfig: Record<string, FieldConfig> = {
-  typicalSpeed: {
-    label: "Tyypillinen nopeus",
-    yMax: 120,
-    ticks: [0, 20, 40, 60, 80, 100, 120],
-  },
-  currentSpeed: {
-    label: "Nykyinen nopeus",
-    yMax: 120,
-    ticks: [0, 20, 40, 60, 80, 100, 120],
-  },
-  confidence_level: {
-    label: "Luotettavuus",
-    yMax: 100,
-    ticks: [0, 20, 40, 60, 80, 100],
-  },
-  fcd_coverage: {
-    label: "FCD-kattavuus",
-    yMax: 10,
-    ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    tickFormatter: (value: number) => {
-      if (value === 0) return "Pieni (0)";
-      if (value === 10) return "Suuri (10)";
-      return String(value);
-    },
-  },
-};
-
 function TrafficFlowTooltipContent({
   point,
   label,
@@ -75,10 +48,10 @@ function TrafficFlowTooltipContent({
 }) {
   const statusLabel =
     point.status === "closed"
-      ? "Closed"
+      ? "Suljettu"
       : point.status === "open"
-        ? "Open"
-        : point.status || "Unknown";
+        ? "Auki"
+        : point.status || "Tuntematon";
 
   return (
     <>
@@ -87,7 +60,7 @@ function TrafficFlowTooltipContent({
       </Text>
       {showStatus && (
         <Text size="xs">
-          Status: <strong>{statusLabel}</strong>
+          Tila: <strong>{statusLabel}</strong>
         </Text>
       )}
     </>
@@ -110,8 +83,8 @@ function Message({
   error,
 }: MessageProps) {
   const message = useMemo(() => {
-    if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
+    if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
     return null;
   }, [trafficSeries.length, isError, error]);
 
@@ -246,9 +219,14 @@ export function TrafficFlowChart() {
         },
       } as FieldConfig;
     }
+    const config = getSegmentMeasurementFieldConfig(segmentMeasurementField);
     return (
-      measurementFieldConfig[segmentMeasurementField] ?? {
-        label: segmentMeasurementField,
+      (config && {
+        label: config.label,
+        yMax: config.yMax,
+        ticks: config.ticks,
+      }) ?? {
+        label: "FCD",
         yMax: 10,
         ticks: [0, 2, 4, 6, 8, 10],
       }

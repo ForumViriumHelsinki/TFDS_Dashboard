@@ -127,8 +127,7 @@ export function MapView() {
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const { start: segmentsStart, end: segmentsEnd } = useMemo(() => {
     const effectiveEnd = selectedEndDate ?? fallbackRange.end;
-    const effectiveStart =
-      selectedStartDate ?? fallbackRange.start;
+    const effectiveStart = selectedStartDate ?? fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
   }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
   const selectedDateOutline = displayDate
