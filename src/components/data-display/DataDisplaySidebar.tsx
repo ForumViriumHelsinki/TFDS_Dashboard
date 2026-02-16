@@ -65,7 +65,12 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
+  const {
+    selectedSegment,
+    selectedStartDate,
+    selectedEndDate,
+    activeTab,
+  } = useSearch({
     from: "/",
   });
   const hasClearedDateRange = useRef(false);
@@ -79,13 +84,13 @@ export function DataDisplaySidebar() {
 
   // If selected segment is not found (e.g. filtered out), clear it
   useEffect(() => {
-    if (!isLoading && selectedSegment && !selectedGroup) {
+    if (!isLoading && selectedSegment && !selectedGroup && activeTab !== "Segmentit") {
       navigate({
         search: (prev) => ({ ...prev, selectedSegment: undefined }),
         replace: true,
       });
     }
-  }, [isLoading, selectedSegment, selectedGroup, navigate]);
+  }, [isLoading, selectedSegment, selectedGroup, activeTab, navigate]);
 
   // Clear date range on first load to force defaults
   useEffect(() => {
