@@ -17,15 +17,62 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
+import {
+  getFloatingCarDataTimeSeriesQueryOptions,
+  type FloatingCarDataRow,
+} from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 
 type TrafficPoint = {
   timestamp: number;
-  floatingCarData: number;
-  status: string;
+  value: number;
+  status?: string;
 };
 
-function TrafficFlowTooltipContent(point: TrafficPoint) {
+type FieldConfig = {
+  label: string;
+  yMax: number;
+  tickFormatter?: (value: number) => string;
+  ticks: number[];
+};
+
+const measurementFieldConfig: Record<string, FieldConfig> = {
+  typicalSpeed: {
+    label: "Tyypillinen nopeus",
+    yMax: 120,
+    ticks: [0, 20, 40, 60, 80, 100, 120],
+  },
+  currentSpeed: {
+    label: "Nykyinen nopeus",
+    yMax: 120,
+    ticks: [0, 20, 40, 60, 80, 100, 120],
+  },
+  confidence_level: {
+    label: "Luotettavuus",
+    yMax: 100,
+    ticks: [0, 20, 40, 60, 80, 100],
+  },
+  fcd_coverage: {
+    label: "FCD-kattavuus",
+    yMax: 10,
+    ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    tickFormatter: (value: number) => {
+      if (value === 0) return "Pieni (0)";
+      if (value === 10) return "Suuri (10)";
+      return String(value);
+    },
+  },
+};
+
+function TrafficFlowTooltipContent({
+  point,
+  label,
+  showStatus,
+}: {
+  point: TrafficPoint;
+  label: string;
+  showStatus: boolean;
+}) {
   const statusLabel =
     point.status === "closed"
       ? "Closed"
@@ -36,11 +83,13 @@ function TrafficFlowTooltipContent(point: TrafficPoint) {
   return (
     <>
       <Text size="xs">
-        FCD: <strong>{point.floatingCarData}</strong>
+        {label}: <strong>{point.value}</strong>
       </Text>
-      <Text size="xs">
-        Status: <strong>{statusLabel}</strong>
-      </Text>
+      {showStatus && (
+        <Text size="xs">
+          Status: <strong>{statusLabel}</strong>
+        </Text>
+      )}
     </>
   );
 }
@@ -128,16 +177,25 @@ function Message({
 export function TrafficFlowChart() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
-    useSearch({
+  const {
+    selectedSegment,
+    selectedStartDate,
+    selectedEndDate,
+    selectedDate,
+    activeTab,
+    segmentMeasurementField,
+  } = useSearch({
       from: "/",
       select: (s) => ({
         selectedSegment: s.selectedSegment,
         selectedStartDate: s.selectedStartDate,
         selectedEndDate: s.selectedEndDate,
         selectedDate: s.selectedDate,
+        activeTab: s.activeTab,
+        segmentMeasurementField: s.segmentMeasurementField,
       }),
     });
+  const isSegmentsTab = activeTab === "Segmentit";
   const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
   const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
@@ -148,45 +206,106 @@ export function TrafficFlowChart() {
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
 
-  const { isPending, isError, data, error } = useQuery({
+  const trafficFlowQuery = useQuery({
     ...getTrafficFlowQueryOptions({
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
     }),
-    enabled: Boolean(selectedSegment),
+    enabled: Boolean(selectedSegment && !isSegmentsTab),
+  });
+  const segmentFieldQuery = useQuery({
+    ...getFloatingCarDataTimeSeriesQueryOptions({
+      start: effectiveStartDate,
+      end: effectiveEndDate,
+      segmentId: selectedSegment ?? "",
+      field: segmentMeasurementField ?? "",
+    }),
+    enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
   });
 
+  const isPending = isSegmentsTab
+    ? segmentFieldQuery.isPending
+    : trafficFlowQuery.isPending;
+  const isError = isSegmentsTab
+    ? segmentFieldQuery.isError
+    : trafficFlowQuery.isError;
+  const data = isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data;
+  const error = isSegmentsTab ? segmentFieldQuery.error : trafficFlowQuery.error;
+
+  const fieldConfig = useMemo(() => {
+    if (!isSegmentsTab || !segmentMeasurementField) {
+      return {
+        label: "FCD",
+        yMax: 10,
+        ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        tickFormatter: (value: number) => {
+          if (value === 0) return "Pieni (0)";
+          if (value === 10) return "Suuri (10)";
+          return String(value);
+        },
+      } as FieldConfig;
+    }
+    return (
+      measurementFieldConfig[segmentMeasurementField] ?? {
+        label: segmentMeasurementField,
+        yMax: 10,
+        ticks: [0, 2, 4, 6, 8, 10],
+      }
+    );
+  }, [isSegmentsTab, segmentMeasurementField]);
+
   const trafficSeries: TrafficPoint[] = Array.isArray(data)
-    ? (data as TrafficFlowRow[]).map((row) => {
-        const isoString = String(
-          (row["_time"] as string | number | boolean | null) ?? "",
-        );
-        const date = new Date(isoString);
-        const timestamp = date.getTime();
-        const floatingCarDataValueRaw = row["fcd"] as
-          | number
-          | string
-          | boolean
-          | null;
-        const floatingCarDataValue =
-          typeof floatingCarDataValueRaw === "number"
-            ? floatingCarDataValueRaw
-            : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
-        const statusRaw = row["segment_closure_status"] as
-          | string
-          | number
-          | boolean
-          | null;
-        const status = String(statusRaw ?? "").toLowerCase();
-        return {
-          timestamp,
-          floatingCarData: Number.isFinite(floatingCarDataValue)
-            ? floatingCarDataValue
-            : 0,
-          status,
-        };
-      })
+    ? (isSegmentsTab
+        ? (data as FloatingCarDataRow[]).map((row) => {
+            const isoString = String(
+              (row["_time"] as string | number | boolean | null) ?? "",
+            );
+            const date = new Date(isoString);
+            const timestamp = date.getTime();
+            const valueRaw = row["_value"] as
+              | number
+              | string
+              | boolean
+              | null;
+            const value =
+              typeof valueRaw === "number"
+                ? valueRaw
+                : Number.parseFloat(String(valueRaw ?? 0));
+            return {
+              timestamp,
+              value: Number.isFinite(value) ? value : 0,
+            };
+          })
+        : (data as TrafficFlowRow[]).map((row) => {
+            const isoString = String(
+              (row["_time"] as string | number | boolean | null) ?? "",
+            );
+            const date = new Date(isoString);
+            const timestamp = date.getTime();
+            const floatingCarDataValueRaw = row["fcd"] as
+              | number
+              | string
+              | boolean
+              | null;
+            const floatingCarDataValue =
+              typeof floatingCarDataValueRaw === "number"
+                ? floatingCarDataValueRaw
+                : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
+            const statusRaw = row["segment_closure_status"] as
+              | string
+              | number
+              | boolean
+              | null;
+            const status = String(statusRaw ?? "").toLowerCase();
+            return {
+              timestamp,
+              value: Number.isFinite(floatingCarDataValue)
+                ? floatingCarDataValue
+                : 0,
+              status,
+            };
+          }))
     : [];
 
   const seriesMin = trafficSeries.length
@@ -254,7 +373,7 @@ export function TrafficFlowChart() {
     }
     return bands;
   }
-  const closedBands = buildStatusBands("closed");
+  const closedBands = isSegmentsTab ? [] : buildStatusBands("closed");
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -286,7 +405,7 @@ export function TrafficFlowChart() {
             x1={axisMin !== undefined ? (axisMin as number) : undefined}
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
             y1={0}
-            y2={10}
+            y2={fieldConfig.yMax}
             fill={theme.colors.gray[1]}
             fillOpacity={1}
             stroke="none"
@@ -297,25 +416,25 @@ export function TrafficFlowChart() {
               x1={b.x1}
               x2={b.x2}
               y1={0}
-              y2={10}
+              y2={fieldConfig.yMax}
               fill={theme.colors.red[0]}
               fillOpacity={1}
               stroke="none"
             />
           ))}
           <YAxis
-            ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-            domain={[0, 10]}
+            ticks={fieldConfig.ticks}
+            domain={[0, fieldConfig.yMax]}
             width={40}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
-            tickFormatter={(value: number) => {
-              if (value === 0) return "Pieni (0)";
-              if (value === 10) return "Suuri (10)";
-              return String(value);
-            }}
+            tickFormatter={(value: number) =>
+              fieldConfig.tickFormatter
+                ? fieldConfig.tickFormatter(value)
+                : String(value)
+            }
           />
           <XAxis
             dataKey="timestamp"
@@ -346,12 +465,22 @@ export function TrafficFlowChart() {
               />
             )}
           <Tooltip
-            content={<ChartTooltip renderContent={TrafficFlowTooltipContent} />}
+            content={
+              <ChartTooltip<TrafficPoint>
+                renderContent={(point) =>
+                  TrafficFlowTooltipContent({
+                    point,
+                    label: fieldConfig.label,
+                    showStatus: !isSegmentsTab,
+                  })
+                }
+              />
+            }
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
           <Line
             type="monotone"
-            dataKey="floatingCarData"
+            dataKey="value"
             stroke={theme.colors.blue[6]}
             strokeWidth={2}
             dot={false}
