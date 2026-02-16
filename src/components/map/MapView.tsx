@@ -31,7 +31,7 @@ import { DisturbanceLayer } from "./DisturbanceLayer";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getFloatingCarDataFieldBySegmentQueryOptions,
+  getFloatingCarDataAllFieldsBySegmentQueryOptions,
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
@@ -138,24 +138,28 @@ export function MapView() {
     : undefined;
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
-  const { data: segmentFieldRows } = useQuery({
-    ...getFloatingCarDataFieldBySegmentQueryOptions({
+  const { data: segmentRows } = useQuery({
+    ...getFloatingCarDataAllFieldsBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
-      field: segmentMeasurementField ?? "",
     }),
-    enabled: Boolean(showSegmentsTab && segmentMeasurementField),
+    enabled: Boolean(showSegmentsTab),
   });
 
   const segmentFieldIdSet = useMemo(() => {
-    if (!Array.isArray(segmentFieldRows)) return new Set<string>();
+    if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
+      return new Set<string>();
+    }
     const ids = new Set<string>();
-    for (const row of segmentFieldRows) {
+    for (const row of segmentRows) {
       const segmentId = String(row["segmentId"] ?? "").trim();
-      if (segmentId) ids.add(segmentId);
+      if (!segmentId) continue;
+      const value = row[segmentMeasurementField];
+      if (value === null || value === undefined) continue;
+      ids.add(segmentId);
     }
     return ids;
-  }, [segmentFieldRows]);
+  }, [segmentRows, segmentMeasurementField]);
 
   const segmentsFeatureCollection = useMemo(() => {
     const features: Array<

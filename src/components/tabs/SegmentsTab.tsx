@@ -9,7 +9,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getFloatingCarDataFieldBySegmentQueryOptions } from "../../queries/floating-car-data";
+import { getFloatingCarDataAllFieldsBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { SegmentItem } from "../segments/SegmentItem";
 import {
@@ -37,17 +37,15 @@ export function SegmentsTab() {
   }, [selectedEndDate, selectedStartDate]);
 
   const {
-    data: segmentFieldRows,
+    data: segmentRows,
     isFetching: isSegmentFieldFetching,
     isError: isSegmentFieldError,
     error: segmentFieldError,
   } = useQuery({
-    ...getFloatingCarDataFieldBySegmentQueryOptions({
+    ...getFloatingCarDataAllFieldsBySegmentQueryOptions({
       start,
       end,
-      field: segmentMeasurementField ?? "",
     }),
-    enabled: Boolean(segmentMeasurementField),
   });
 
   const segmentFieldLabel = useMemo(() => {
@@ -60,12 +58,14 @@ export function SegmentsTab() {
   }, [segmentMeasurementField]);
 
   const segmentFieldById = useMemo(() => {
-    if (!Array.isArray(segmentFieldRows)) return new Map<string, string>();
+    if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
+      return new Map<string, string>();
+    }
     const entries = new Map<string, string>();
-    for (const row of segmentFieldRows) {
+    for (const row of segmentRows) {
       const segmentId = String(row["segmentId"] ?? "").trim();
       if (!segmentId) continue;
-      const rawValue = row["_value"];
+      const rawValue = row[segmentMeasurementField];
       if (rawValue === null || rawValue === undefined) continue;
       let formatted: string;
       if (typeof rawValue === "number") {
@@ -78,7 +78,7 @@ export function SegmentsTab() {
       entries.set(segmentId, formatted);
     }
     return entries;
-  }, [segmentFieldRows]);
+  }, [segmentRows, segmentMeasurementField]);
 
   const {
     data: segmentsMapping,
