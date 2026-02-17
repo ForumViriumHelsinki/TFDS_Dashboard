@@ -37,6 +37,8 @@ import {
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
 import { getDefaultDateRange } from "../../utils/defaultDateRange";
+import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
+import { getSegmentColorForValue } from "../../utils/segmentColors";
 
 function FitMapToSelected({
   selectedSegment,
@@ -162,15 +164,55 @@ export function MapView() {
     return ids;
   }, [segmentRows, segmentMeasurementField]);
 
+  const segmentFieldValueById = useMemo(() => {
+    const values = new Map<string, number>();
+    if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
+      return values;
+    }
+
+    for (const row of segmentRows) {
+      const segmentId = String(row["segmentId"] ?? "").trim();
+      if (!segmentId) continue;
+      const rawValue = row[segmentMeasurementField];
+      if (rawValue === null || rawValue === undefined) continue;
+      const numericValue =
+        typeof rawValue === "number"
+          ? rawValue
+          : Number.parseFloat(String(rawValue));
+      if (!Number.isFinite(numericValue)) continue;
+      values.set(segmentId, numericValue);
+    }
+
+    return values;
+  }, [segmentRows, segmentMeasurementField]);
+
+  const segmentFieldConfig = useMemo(
+    () => getSegmentMeasurementFieldConfig(segmentMeasurementField),
+    [segmentMeasurementField],
+  );
+
+  const segmentColorById = useMemo(() => {
+    const colors = new Map<string, string>();
+    if (!showSegmentsTab || !segmentFieldConfig || segmentFieldValueById.size === 0) {
+      return colors;
+    }
+
+    for (const [segmentId, value] of segmentFieldValueById.entries()) {
+      colors.set(segmentId, getSegmentColorForValue(value, segmentFieldConfig.yMax));
+    }
+
+    return colors;
+  }, [showSegmentsTab, segmentFieldConfig, segmentFieldValueById]);
+
   const segmentsFeatureCollection = useMemo(() => {
     const features: Array<
-      Feature<LineString, { segmentId: string }>
+      Feature<LineString, { segmentId: string; segmentColor?: string }>
     > = [];
     if (!segmentsMapping?.segmentId) {
       return {
         type: "FeatureCollection",
         features,
-      } as FeatureCollection<LineString, { segmentId: string }>;
+      } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
     }
     const allowed =
       showSegmentsTab && segmentMeasurementField
@@ -184,14 +226,20 @@ export function MapView() {
       features.push({
         type: "Feature",
         geometry: entry.geometry,
-        properties: { segmentId },
+        properties: { segmentId, segmentColor: segmentColorById.get(segmentId) },
       });
     }
     return {
       type: "FeatureCollection",
       features,
-    } as FeatureCollection<LineString, { segmentId: string }>;
-  }, [segmentsMapping, showSegmentsTab, segmentMeasurementField, segmentFieldIdSet]);
+    } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
+  }, [
+    segmentsMapping,
+    showSegmentsTab,
+    segmentMeasurementField,
+    segmentFieldIdSet,
+    segmentColorById,
+  ]);
 
   const handleSegmentSelect = (segmentId: string) => {
     navigate({

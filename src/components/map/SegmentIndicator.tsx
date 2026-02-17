@@ -10,14 +10,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
-
-const SEGMENT_COLORS = {
-  top: "#58A7FF",
-  upperMid: "#4452E5",
-  mid: "#5322B8",
-  lowerMid: "#790DA5",
-  bottom: "#8B0A7A",
-} as const;
+import { getSegmentGradientCss } from "../../utils/segmentColors";
 
 export function SegmentIndicator() {
   const theme = useMantineTheme();
@@ -50,7 +43,7 @@ export function SegmentIndicator() {
             w={24}
             style={{
               borderRadius: 25,
-              background: `linear-gradient(180deg, ${SEGMENT_COLORS.top} 0%, ${SEGMENT_COLORS.upperMid} 25%, ${SEGMENT_COLORS.mid} 50%, ${SEGMENT_COLORS.lowerMid} 75%, ${SEGMENT_COLORS.bottom} 100%)`,
+              background: getSegmentGradientCss(),
             }}
           />
         </Center>
@@ -69,9 +62,16 @@ export function SegmentIndicator() {
           </Popover.Target>
           <Popover.Dropdown>
             <Title order={5}>Segmentit (FCD)</Title>
-            <Text size="sm">
-              FCD-indikaattori näyttää segmenttidatan väriskaalalla.
+            <Text size="sm" pb={6}>
+              Väri määräytyy valitun mittarin arvon mukaan.
             </Text>
+            <Text size="sm">Sininen = suurempi arvo</Text>
+            <Text size="sm" pb={6}>Violetti = pienempi arvo</Text>
+            <Text size="sm">Skaalat mittareittain:</Text>
+            <Text size="sm">Tyypillinen nopeus: 0-120</Text>
+            <Text size="sm">Nykyinen nopeus: 0-120</Text>
+            <Text size="sm">Luotettavuus: 0-100</Text>
+            <Text size="sm">FCD-kattavuus: 0-10</Text>
           </Popover.Dropdown>
         </Popover>
       </Stack>

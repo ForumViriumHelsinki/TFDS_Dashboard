@@ -3,6 +3,7 @@ import { FeatureGroup, GeoJSON, Pane } from "react-leaflet";
 
 type SegmentFeatureProps = {
   segmentId?: string;
+  segmentColor?: string;
 } & Record<string, unknown>;
 
 type DisturbanceLayerProps = {
@@ -41,7 +42,7 @@ export function DisturbanceLayer({
               segmentId && segmentId === selectedSegment,
             );
             return {
-              color: "#455AF6",
+              color: feature?.properties?.segmentColor ?? "#455AF6",
               weight: isSelected ? 12 : 6,
             };
           }}
