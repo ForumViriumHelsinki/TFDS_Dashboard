@@ -46,27 +46,19 @@ export function SegmentsTab() {
     }),
   });
 
-  const segmentFieldById = useMemo(() => {
+  const segmentIdsWithSelectedField = useMemo(() => {
     if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
-      return new Map<string, string>();
+      return new Set<string>();
     }
-    const entries = new Map<string, string>();
+    const ids = new Set<string>();
     for (const row of segmentRows) {
       const segmentId = String(row["segmentId"] ?? "").trim();
       if (!segmentId) continue;
       const rawValue = row[segmentMeasurementField];
       if (rawValue === null || rawValue === undefined) continue;
-      let formatted: string;
-      if (typeof rawValue === "number") {
-        const rounded = Math.round(rawValue * 10) / 10;
-        formatted = Number.isFinite(rounded) ? String(rounded) : "";
-      } else {
-        formatted = String(rawValue);
-      }
-      if (formatted.length === 0) continue;
-      entries.set(segmentId, formatted);
+      ids.add(segmentId);
     }
-    return entries;
+    return ids;
   }, [segmentRows, segmentMeasurementField]);
 
   const {
@@ -85,8 +77,10 @@ export function SegmentsTab() {
 
   const filteredSegmentIds = useMemo(() => {
     if (!segmentMeasurementField) return segmentIds;
-    return segmentIds.filter((segmentId) => segmentFieldById.has(segmentId));
-  }, [segmentIds, segmentFieldById, segmentMeasurementField]);
+    return segmentIds.filter((segmentId) =>
+      segmentIdsWithSelectedField.has(segmentId),
+    );
+  }, [segmentIds, segmentIdsWithSelectedField, segmentMeasurementField]);
   const selectedFieldConfig = getSegmentMeasurementFieldConfig(
     segmentMeasurementField,
   );
@@ -147,7 +141,6 @@ export function SegmentsTab() {
                   segmentId={segmentId}
                   segmentLabel="IDEA-segmentti"
                   isSelected={selectedSegment === segmentId}
-                  measurementText={segmentFieldById.get(segmentId)}
                   onClick={() => handleSegmentClick(segmentId)}
                 />
               </div>
