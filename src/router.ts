@@ -33,7 +33,10 @@ const searchSchema = z.object({
   landLeaseSearch: z.string().optional(),
   segmentMeasurementField: z.preprocess(
     normalizeSegmentMeasurementField,
-    z.enum(segmentMeasurementFieldValues).optional(),
+    z
+      .enum(segmentMeasurementFieldValues)
+      .default("typicalSpeed")
+      .catch("typicalSpeed"),
   ),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),
