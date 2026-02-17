@@ -21,6 +21,7 @@ import type {
   FeatureCollection,
 } from "geojson";
 import { AirQualityIndicator } from "./AirQualityIndicator";
+import { SegmentIndicator } from "./SegmentIndicator";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
@@ -356,7 +357,8 @@ export function MapView() {
             />
           )}
         </LayersControl>
-        <AirQualityIndicator />
+        {!showSegmentsTab && <AirQualityIndicator />}
+        {showSegmentsTab && <SegmentIndicator />}
         <FitMapToSelected
           selectedSegment={selectedSegment}
           featureCollections={
