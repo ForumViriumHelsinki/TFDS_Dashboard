@@ -21,12 +21,24 @@ export interface FloatingCarDataClosestBySegmentRequest {
   target: Date;
 }
 
+export interface FloatingCarDataFieldPointsBySegmentRequest {
+  start: Date;
+  end: Date;
+  field: string;
+}
+
 export type FloatingCarDataRow = Record<
   string,
   string | number | boolean | null
 >;
 
 export interface FloatingCarDataClosestBySegmentRow {
+  segmentId: string;
+  value: number;
+  timestamp: Date;
+}
+
+export interface FloatingCarDataFieldPointBySegmentRow {
   segmentId: string;
   value: number;
   timestamp: Date;
@@ -182,5 +194,58 @@ from(bucket: "${bucket}")
           timestamp: entry.timestamp,
         }),
       );
+    },
+  });
+
+export const getFloatingCarDataFieldPointsBySegmentQueryOptions = (
+  params: FloatingCarDataFieldPointsBySegmentRequest,
+) =>
+  queryOptions({
+    queryKey: ["floating-car-data-field-points-by-segment", params],
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      if (!influxdbQueryApi) {
+        throw new Error(
+          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
+        );
+      }
+
+      const start = toFluxTime(params.start);
+      const end = toFluxTime(params.end);
+      const field = params.field.trim().replace(/"/g, '\\"');
+      const bucket =
+        import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
+
+      const flux = `
+from(bucket: "${bucket}")
+  |> range(start: ${start}, stop: ${end})
+  |> filter(fn: (r) => r["_measurement"] == "segment_data")
+  |> filter(fn: (r) => r["_field"] == "${field}")
+  |> keep(columns: ["segmentId", "_time", "_value"])
+`.trim();
+
+      const rows = await influxdbQueryApi.collectRows<FloatingCarDataRow>(flux);
+      const points: FloatingCarDataFieldPointBySegmentRow[] = [];
+
+      for (const row of rows) {
+        const segmentId = String(row["segmentId"] ?? "").trim();
+        if (!segmentId) continue;
+
+        const valueRaw = row["_value"];
+        const value =
+          typeof valueRaw === "number"
+            ? valueRaw
+            : Number.parseFloat(String(valueRaw ?? ""));
+        if (!Number.isFinite(value)) continue;
+
+        const isoString = String(row["_time"] ?? "");
+        const timestamp = new Date(isoString);
+        if (!Number.isFinite(timestamp.getTime())) continue;
+
+        points.push({ segmentId, value, timestamp });
+      }
+
+      return points;
     },
   });
