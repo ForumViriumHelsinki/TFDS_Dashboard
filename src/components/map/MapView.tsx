@@ -32,7 +32,7 @@ import { DisturbanceLayer } from "./DisturbanceLayer";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getFloatingCarDataAllFieldsBySegmentQueryOptions,
+  getFloatingCarDataClosestBySegmentQueryOptions,
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
@@ -142,11 +142,13 @@ export function MapView() {
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
   const { data: segmentRows } = useQuery({
-    ...getFloatingCarDataAllFieldsBySegmentQueryOptions({
+    ...getFloatingCarDataClosestBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
+      field: segmentMeasurementField ?? "",
+      target: displayDate,
     }),
-    enabled: Boolean(showSegmentsTab),
+    enabled: Boolean(showSegmentsTab && segmentMeasurementField),
   });
 
   const segmentFieldIdSet = useMemo(() => {
@@ -155,10 +157,9 @@ export function MapView() {
     }
     const ids = new Set<string>();
     for (const row of segmentRows) {
-      const segmentId = String(row["segmentId"] ?? "").trim();
+      const segmentId = row.segmentId?.trim();
       if (!segmentId) continue;
-      const value = row[segmentMeasurementField];
-      if (value === null || value === undefined) continue;
+      if (!Number.isFinite(row.value)) continue;
       ids.add(segmentId);
     }
     return ids;
@@ -171,16 +172,10 @@ export function MapView() {
     }
 
     for (const row of segmentRows) {
-      const segmentId = String(row["segmentId"] ?? "").trim();
+      const segmentId = row.segmentId?.trim();
       if (!segmentId) continue;
-      const rawValue = row[segmentMeasurementField];
-      if (rawValue === null || rawValue === undefined) continue;
-      const numericValue =
-        typeof rawValue === "number"
-          ? rawValue
-          : Number.parseFloat(String(rawValue));
-      if (!Number.isFinite(numericValue)) continue;
-      values.set(segmentId, numericValue);
+      if (!Number.isFinite(row.value)) continue;
+      values.set(segmentId, row.value);
     }
 
     return values;
