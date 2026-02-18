@@ -4,8 +4,8 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { z } from "zod";
-import App from "./App";
 import { segmentMeasurementFieldValues } from "./constants/segment-fields";
+import { IndexRoute } from "./routes/IndexRoute";
 
 export const Sources = {
   AREA_RENTALS: "area-rentals",
@@ -56,7 +56,7 @@ const rootRoute = createRootRoute();
 export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: App,
+  component: IndexRoute,
   validateSearch: (search) => searchSchema.parse(search),
 });
 

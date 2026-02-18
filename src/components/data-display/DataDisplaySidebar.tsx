@@ -69,7 +69,6 @@ export function DataDisplaySidebar() {
   } = useSearch({
     from: "/",
   });
-  const hasClearedDateRange = useRef(false);
   const { start: defaultStartDate, end: defaultEndDate } = useMemo(
     () => getDefaultDateRange(),
     [],
@@ -78,6 +77,8 @@ export function DataDisplaySidebar() {
   const endDisplayTs = selectedEndDate?.getTime() ?? defaultEndDate.getTime();
   const draftStartDateRef = useRef<Date | null>(new Date(startDisplayTs));
   const draftEndDateRef = useRef<Date | null>(new Date(endDisplayTs));
+  const hasPendingStartChangeRef = useRef(false);
+  const hasPendingEndChangeRef = useRef(false);
 
   const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
@@ -96,22 +97,18 @@ export function DataDisplaySidebar() {
     }
   }, [isLoading, selectedSegment, selectedGroup, activeTab, navigate]);
 
-  // Clear date range on first load to force defaults
+  // Keep draft refs in sync with displayed values when URL/search changes externally.
   useEffect(() => {
-    if (hasClearedDateRange.current) return;
-    hasClearedDateRange.current = true;
-    if (!selectedStartDate && !selectedEndDate) return;
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        selectedStartDate: undefined,
-        selectedEndDate: undefined,
-      }),
-      replace: true,
-    });
-  }, [navigate, selectedEndDate, selectedStartDate]);
+    draftStartDateRef.current = new Date(startDisplayTs);
+  }, [startDisplayTs]);
 
-  const commitStartDate = (value: Date | null) => {
+  useEffect(() => {
+    draftEndDateRef.current = new Date(endDisplayTs);
+  }, [endDisplayTs]);
+
+  const commitStartDate = (value: Date | null, force = false) => {
+    if (!force && !hasPendingStartChangeRef.current) return;
+    hasPendingStartChangeRef.current = false;
     const snappedValue = value ? roundToFiveMinutes(value) : undefined;
     void navigate({
       search: (prev) => ({
@@ -122,7 +119,9 @@ export function DataDisplaySidebar() {
     });
   };
 
-  const commitEndDate = (value: Date | null) => {
+  const commitEndDate = (value: Date | null, force = false) => {
+    if (!force && !hasPendingEndChangeRef.current) return;
+    hasPendingEndChangeRef.current = false;
     const snappedValue = value ? roundToFiveMinutes(value) : undefined;
     void navigate({
       search: (prev) => ({
@@ -148,7 +147,12 @@ export function DataDisplaySidebar() {
         defaultValue={new Date(startDisplayTs)}
         timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          draftStartDateRef.current = toDateOrNull(value);
+          hasPendingStartChangeRef.current = true;
+          const next = toDateOrNull(value);
+          draftStartDateRef.current = next;
+          if (!next) {
+            commitStartDate(null, true);
+          }
         }}
         onBlur={() => commitStartDate(draftStartDateRef.current)}
         onDropdownClose={() => commitStartDate(draftStartDateRef.current)}
@@ -163,7 +167,12 @@ export function DataDisplaySidebar() {
         defaultValue={new Date(endDisplayTs)}
         timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          draftEndDateRef.current = toDateOrNull(value);
+          hasPendingEndChangeRef.current = true;
+          const next = toDateOrNull(value);
+          draftEndDateRef.current = next;
+          if (!next) {
+            commitEndDate(null, true);
+          }
         }}
         onBlur={() => commitEndDate(draftEndDateRef.current)}
         onDropdownClose={() => commitEndDate(draftEndDateRef.current)}
