@@ -7,7 +7,6 @@ interface SegmentItemProps {
   segmentLabel: string;
   isSelected: boolean;
   onClick: () => void;
-  measurementText?: string;
 }
 
 export function SegmentItem({
@@ -15,18 +14,14 @@ export function SegmentItem({
   segmentLabel,
   isSelected,
   onClick,
-  measurementText,
 }: SegmentItemProps) {
   const theme = useMantineTheme();
   const brandColor = theme.colors.brand[0];
-  const description = measurementText
-    ? `${segmentId} · ${measurementText}`
-    : segmentId;
 
   return (
     <SelectableNavItem
       label={segmentLabel}
-      description={description}
+      description={segmentId}
       onClick={onClick}
       leftSection={
         <ChartLine size={16} color={isSelected ? brandColor : theme.black} />
