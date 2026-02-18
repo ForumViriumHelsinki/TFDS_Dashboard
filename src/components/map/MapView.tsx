@@ -148,7 +148,11 @@ export function MapView() {
     : undefined;
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
-  const { data: segmentRows, dataUpdatedAt: segmentRowsUpdatedAt } = useQuery({
+  const {
+    data: segmentRows,
+    dataUpdatedAt: segmentRowsUpdatedAt,
+    isFetching: isSegmentRowsFetching,
+  } = useQuery({
     ...getFloatingCarDataNearestBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
@@ -183,6 +187,9 @@ export function MapView() {
 
   const segmentColorById = useMemo(() => {
     const colors = new Map<string, string>();
+    if (showSegmentsTab && isSegmentRowsFetching) {
+      return colors;
+    }
     if (!showSegmentsTab || !segmentFieldConfig || segmentFieldValueById.size === 0) {
       return colors;
     }
@@ -192,7 +199,7 @@ export function MapView() {
     }
 
     return colors;
-  }, [showSegmentsTab, segmentFieldConfig, segmentFieldValueById]);
+  }, [showSegmentsTab, isSegmentRowsFetching, segmentFieldConfig, segmentFieldValueById]);
 
   const segmentsFeatureCollection = useMemo(() => {
     const features: Array<
@@ -382,7 +389,7 @@ export function MapView() {
             <DisturbanceLayer
               layerKey={`segments-${
                 segmentMeasurementField ?? "all"
-              }-${segmentsEnd.toISOString()}-${targetDateMs}-${segmentRowsUpdatedAt}`}
+              }-${segmentsEnd.toISOString()}-${targetDateMs}-${segmentRowsUpdatedAt}-${isSegmentRowsFetching ? "loading" : "ready"}`}
               paneName="traffic-segments-fcd"
               zIndex={652}
               featureCollection={segmentsFeatureCollection}
