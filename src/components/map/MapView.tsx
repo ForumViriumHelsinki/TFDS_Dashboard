@@ -150,6 +150,7 @@ export function MapView() {
   const {
     data: segmentRows,
     dataUpdatedAt: segmentRowsUpdatedAt,
+    isFetching: isSegmentRowsFetching,
   } = useQuery({
     ...getFloatingCarDataNearestBySegmentQueryOptions({
       start: segmentsStart,
@@ -185,6 +186,9 @@ export function MapView() {
 
   const segmentColorById = useMemo(() => {
     const colors = new Map<string, string>();
+    if (showSegmentsTab && isSegmentRowsFetching) {
+      return colors;
+    }
     if (!showSegmentsTab || !segmentFieldConfig || segmentFieldValueById.size === 0) {
       return colors;
     }
@@ -194,7 +198,7 @@ export function MapView() {
     }
 
     return colors;
-  }, [showSegmentsTab, segmentFieldConfig, segmentFieldValueById]);
+  }, [showSegmentsTab, isSegmentRowsFetching, segmentFieldConfig, segmentFieldValueById]);
 
   const segmentsFeatureCollection = useMemo(() => {
     const features: Array<
