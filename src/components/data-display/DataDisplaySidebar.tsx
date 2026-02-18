@@ -11,7 +11,7 @@ import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-import { floorToFiveMinutes, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
+import { getDefaultDateRange, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
 
 interface PropertyDisplayItemProps {
   label: string;
@@ -70,10 +70,9 @@ export function DataDisplaySidebar() {
     from: "/",
   });
   const hasClearedDateRange = useRef(false);
-  const defaultEndDate = useMemo(() => floorToFiveMinutes(new Date()), []);
-  const defaultStartDate = useMemo(
-    () => new Date(defaultEndDate.getTime() - 12 * 60 * 60 * 1000),
-    [defaultEndDate],
+  const { start: defaultStartDate, end: defaultEndDate } = useMemo(
+    () => getDefaultDateRange(),
+    [],
   );
   const startDisplayTs = selectedStartDate?.getTime() ?? defaultStartDate.getTime();
   const endDisplayTs = selectedEndDate?.getTime() ?? defaultEndDate.getTime();
