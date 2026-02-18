@@ -110,7 +110,7 @@ export function SegmentsTab() {
 
       <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
         {isSegmentsMappingLoading ? (
-          <LoadingState message="Ladataan tiesegmenttejä…" />
+          <LoadingState message="Haetaan tiesegmenttejä…" />
         ) : isSegmentsMappingError ? (
           <Text size="sm" c="red" p="md">
             Tiesegmenttien lataus epäonnistui.
@@ -125,7 +125,7 @@ export function SegmentsTab() {
           (!Array.isArray(segmentRows) ||
             isSegmentFieldPending ||
             isSegmentFieldFetching) ? (
-          <LoadingState message="Ladataan FCD-arvoja segmenteille…" />
+          <LoadingState message="Haetaan FCD-arvoja segmenteille…" />
         ) : filteredSegmentIds.length === 0 ? (
           <Text size="sm" c="dimmed" p="md">
             {segmentMeasurementField

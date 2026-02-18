@@ -21,10 +21,11 @@ import {
   type AirQualityProps,
 } from "../../utils/airQuality";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { Box, Loader, Text, useMantineTheme } from "@mantine/core";
+import { Box, Text, useMantineTheme } from "@mantine/core";
 import { useMemo } from "react";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
+import { LoadingState } from "../shared/LoadingState";
 
 type TimePoint = { timestamp: number; index: number };
 
@@ -77,23 +78,7 @@ function Message({
   }
 
   if (isPending) {
-    return (
-      <Box
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-        }}
-      >
-        <Text size="sm" c={isError ? "red" : "dimmed"}>
-          Haetaan tietoja…
-        </Text>
-        <Loader size="sm" ml="md"/>
-      </Box>
-    );
+    return <LoadingState message="Haetaan ilmanlaatutietoja…" variant="overlay" />;
   }
 
   if (!message) return null;

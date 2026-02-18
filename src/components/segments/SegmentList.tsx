@@ -132,7 +132,7 @@ export function SegmentList() {
 
   return (
     <>
-      {isLoading && <div style={{ padding: theme.spacing.xs }}>Ladataan…</div>}
+      {isLoading && <div style={{ padding: theme.spacing.xs }}>Haetaan…</div>}
       {error && (
         <div style={{ padding: theme.spacing.xs, color: theme.colors.red[7] }}>
           {(() => {
