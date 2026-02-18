@@ -231,11 +231,20 @@ export function TrafficFlowChart() {
   const isError = isSegmentsTab
     ? segmentFieldQuery.isError || segmentNearestQuery.isError
     : trafficFlowQuery.isError;
-  const data = isSegmentsTab
-    ? hasNearValueForSelectedSegment
-      ? segmentFieldQuery.data
-      : []
-    : trafficFlowQuery.data;
+  const data = useMemo(
+    () =>
+      isSegmentsTab
+        ? hasNearValueForSelectedSegment
+          ? segmentFieldQuery.data
+          : []
+        : trafficFlowQuery.data,
+    [
+      isSegmentsTab,
+      hasNearValueForSelectedSegment,
+      segmentFieldQuery.data,
+      trafficFlowQuery.data,
+    ],
+  );
   const error = isSegmentsTab
     ? segmentNearestQuery.error ?? segmentFieldQuery.error
     : trafficFlowQuery.error;
@@ -267,58 +276,43 @@ export function TrafficFlowChart() {
     );
   }, [isSegmentsTab, segmentMeasurementField]);
 
-  const trafficSeries: TrafficPoint[] = Array.isArray(data)
-    ? (isSegmentsTab
-        ? (data as FloatingCarDataRow[]).map((row) => {
-            const isoString = String(
-              (row["_time"] as string | number | boolean | null) ?? "",
-            );
-            const date = new Date(isoString);
-            const timestamp = date.getTime();
-            const valueRaw = row["_value"] as
-              | number
-              | string
-              | boolean
-              | null;
-            const value =
-              typeof valueRaw === "number"
-                ? valueRaw
-                : Number.parseFloat(String(valueRaw ?? 0));
-            return {
-              timestamp,
-              value: Number.isFinite(value) ? value : 0,
-            };
-          })
-        : (data as TrafficFlowRow[]).map((row) => {
-            const isoString = String(
-              (row["_time"] as string | number | boolean | null) ?? "",
-            );
-            const date = new Date(isoString);
-            const timestamp = date.getTime();
-            const floatingCarDataValueRaw = row["fcd"] as
-              | number
-              | string
-              | boolean
-              | null;
-            const floatingCarDataValue =
-              typeof floatingCarDataValueRaw === "number"
-                ? floatingCarDataValueRaw
-                : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
-            const statusRaw = row["segment_closure_status"] as
-              | string
-              | number
-              | boolean
-              | null;
-            const status = String(statusRaw ?? "").toLowerCase();
-            return {
-              timestamp,
-              value: Number.isFinite(floatingCarDataValue)
-                ? floatingCarDataValue
-                : 0,
-              status,
-            };
-          }))
-    : [];
+  const trafficSeries: TrafficPoint[] = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+
+    const rows = isSegmentsTab
+      ? (data as FloatingCarDataRow[])
+      : (data as TrafficFlowRow[]);
+
+    return rows.map((row) => {
+      const isoString = String(
+        (row["_time"] as string | number | boolean | null) ?? "",
+      );
+      const timestamp = new Date(isoString).getTime();
+      const valueRaw = isSegmentsTab ? row["_value"] : row["fcd"];
+      const numericValue =
+        typeof valueRaw === "number"
+          ? valueRaw
+          : Number.parseFloat(String(valueRaw ?? 0));
+
+      if (isSegmentsTab) {
+        return {
+          timestamp,
+          value: Number.isFinite(numericValue) ? numericValue : 0,
+        };
+      }
+
+      const statusRaw = row["segment_closure_status"] as
+        | string
+        | number
+        | boolean
+        | null;
+      return {
+        timestamp,
+        value: Number.isFinite(numericValue) ? numericValue : 0,
+        status: String(statusRaw ?? "").toLowerCase(),
+      };
+    });
+  }, [data, isSegmentsTab]);
 
   const seriesMin = trafficSeries.length
     ? Math.min(...trafficSeries.map((point) => point.timestamp))
