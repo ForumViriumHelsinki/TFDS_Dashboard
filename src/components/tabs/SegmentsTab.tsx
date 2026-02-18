@@ -11,7 +11,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { getFloatingCarDataAllFieldsBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
-import { getDefaultDateRange } from "../../utils/defaultDateRange";
+import { getDefaultDateRange } from "../../utils/time";
 import { SegmentItem } from "../segments/SegmentItem";
 import { SegmentMeasurementFieldSelect } from "../segments/SegmentMeasurementFieldSelect";
 import { LoadingState } from "../shared/LoadingState";

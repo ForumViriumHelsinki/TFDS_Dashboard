@@ -24,8 +24,7 @@ import {
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { getDefaultDateRange } from "../../utils/defaultDateRange";
-import { floorToFiveMinutes } from "../../utils/time";
+import { floorToFiveMinutes, getDefaultDateRange } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;

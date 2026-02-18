@@ -36,10 +36,9 @@ import {
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
-import { getDefaultDateRange } from "../../utils/defaultDateRange";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { getSegmentColorForValue } from "../../utils/segmentColors";
-import { floorToFiveMinutes } from "../../utils/time";
+import { floorToFiveMinutes, getDefaultDateRange } from "../../utils/time";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
