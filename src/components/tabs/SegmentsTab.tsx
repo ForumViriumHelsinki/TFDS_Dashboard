@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
-import { getFloatingCarDataAllFieldsBySegmentQueryOptions } from "../../queries/floating-car-data";
+import { getFcdBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { getDefaultDateRange } from "../../utils/time";
 import { SegmentItem } from "../segments/SegmentItem";
@@ -39,7 +39,7 @@ export function SegmentsTab() {
     isFetching: isSegmentFieldFetching,
     isError: isSegmentFieldError,
   } = useQuery({
-    ...getFloatingCarDataAllFieldsBySegmentQueryOptions({
+    ...getFcdBySegmentQueryOptions({
       start,
       end,
     }),

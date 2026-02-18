@@ -37,7 +37,7 @@ function toFluxTime(value: Date): string {
   return value.toISOString();
 }
 
-export const getFloatingCarDataAllFieldsBySegmentQueryOptions = (
+export const getFcdBySegmentQueryOptions = (
   params: FloatingCarDataAllFieldsBySegmentRequest,
 ) =>
   queryOptions({
