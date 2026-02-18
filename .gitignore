@@ -147,5 +147,6 @@ k8s/secret.yaml
 # macOS
 /.DS_Store
 
-# data directory
-public/data/
+# .json files in data directory
+public/data/*.json
+!public/data/.gitkeep
