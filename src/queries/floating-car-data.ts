@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import influxdbQueryApi from "../services/influxdb";
 import { segmentMeasurementFieldValues } from "../constants/segment-fields";
 
-export interface FloatingCarDataAllFieldsBySegmentRequest {
+export interface FcdBySegmentRequest {
   start: Date;
   end: Date;
 }
@@ -33,38 +33,49 @@ export interface FloatingCarDataClosestBySegmentRow {
   timestamp: Date;
 }
 
+const fcdFieldFilter = segmentMeasurementFieldValues
+  .map((field) => `r["_field"] == "${field}"`)
+  .join(" or ");
+
 function toFluxTime(value: Date): string {
   return value.toISOString();
 }
 
+function getInfluxQueryApiOrThrow() {
+  if (!influxdbQueryApi) {
+    throw new Error(
+      "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
+    );
+  }
+  return influxdbQueryApi;
+}
+
+function getFcdBucket() {
+  return import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
+}
+
+function escapeFluxString(value: string): string {
+  return value.trim().replace(/"/g, '\\"');
+}
+
 export const getFcdBySegmentQueryOptions = (
-  params: FloatingCarDataAllFieldsBySegmentRequest,
+  params: FcdBySegmentRequest,
 ) =>
   queryOptions({
-    queryKey: ["floating-car-data-all-fields-by-segment", params],
+    queryKey: ["fcd-by-segment", params],
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
     queryFn: async () => {
-      if (!influxdbQueryApi) {
-        throw new Error(
-          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
-        );
-      }
-      const queryApi = influxdbQueryApi;
-
+      const queryApi = getInfluxQueryApiOrThrow();
       const start = toFluxTime(params.start);
       const end = toFluxTime(params.end);
-      const bucket =
-        import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
-      const fieldFilter = segmentMeasurementFieldValues
-        .map((field) => `r["_field"] == "${field}"`)
-        .join(" or ");
+      const bucket = getFcdBucket();
 
       const flux = `
 from(bucket: "${bucket}")
   |> range(start: ${start}, stop: ${end})
   |> filter(fn: (r) => r["_measurement"] == "segment_data")
-  |> filter(fn: (r) => ${fieldFilter})
+  |> filter(fn: (r) => ${fcdFieldFilter})
   |> group(columns: ["segmentId", "_field"])
   |> last()
   |> keep(columns: ["segmentId", "_field", "_value"])
@@ -83,18 +94,12 @@ export const getFloatingCarDataTimeSeriesQueryOptions = (
   queryOptions({
     queryKey: ["floating-car-data-time-series", params],
     queryFn: async () => {
-      if (!influxdbQueryApi) {
-        throw new Error(
-          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
-        );
-      }
-
+      const queryApi = getInfluxQueryApiOrThrow();
       const start = toFluxTime(params.start);
       const end = toFluxTime(params.end);
-      const segmentId = params.segmentId.trim().replace(/"/g, '\\"');
-      const field = params.field.trim().replace(/"/g, '\\"');
-      const bucket =
-        import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
+      const segmentId = escapeFluxString(params.segmentId);
+      const field = escapeFluxString(params.field);
+      const bucket = getFcdBucket();
 
       const flux = `
 from(bucket: "${bucket}")
@@ -107,7 +112,7 @@ from(bucket: "${bucket}")
   |> keep(columns: ["_time", "_value", "segmentId"])
 `.trim();
 
-      const rows = await influxdbQueryApi.collectRows<FloatingCarDataRow>(flux);
+      const rows = await queryApi.collectRows<FloatingCarDataRow>(flux);
       return rows;
     },
   });
@@ -120,14 +125,9 @@ export const getFloatingCarDataNearestBySegmentQueryOptions = (
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
     queryFn: async () => {
-      if (!influxdbQueryApi) {
-        throw new Error(
-          "InfluxDB is not configured. Please set VITE_INFLUXDB_URL environment variable.",
-        );
-      }
-      const queryApi = influxdbQueryApi;
+      const queryApi = getInfluxQueryApiOrThrow();
 
-      const field = params.field.trim().replace(/"/g, '\\"');
+      const field = escapeFluxString(params.field);
       const startMs = params.start.getTime();
       const endMs = params.end.getTime();
       const targetTs = params.target.getTime();
@@ -135,8 +135,7 @@ export const getFloatingCarDataNearestBySegmentQueryOptions = (
         return [];
       }
       const boundedTargetTs = Math.min(endMs, Math.max(startMs, targetTs));
-      const bucket =
-        import.meta.env.VITE_INFLUXDB_FCD_BUCKET || "idea-fcd-bucket";
+      const bucket = getFcdBucket();
       const requiredSegmentIds = (params.requiredSegmentIds ?? [])
         .map((id) => id.trim())
         .filter((id) => id.length > 0);
@@ -147,12 +146,14 @@ export const getFloatingCarDataNearestBySegmentQueryOptions = (
         { value: number; timestampMs: number; distanceMs: number }
       >();
 
-      const collectRange = async (rangeStartMs: number, rangeEndMs: number) => {
-        if (!(rangeStartMs < rangeEndMs)) return;
+      const firstWindowMs = 5 * 60 * 1000;
+      const firstWindowStartMs = Math.max(startMs, boundedTargetTs - firstWindowMs);
+      const firstWindowEndMs = Math.min(endMs, boundedTargetTs + firstWindowMs);
+      if (!(firstWindowStartMs < firstWindowEndMs)) return [];
 
-        const start = toFluxTime(new Date(rangeStartMs));
-        const end = toFluxTime(new Date(rangeEndMs));
-        const flux = `
+      const start = toFluxTime(new Date(firstWindowStartMs));
+      const end = toFluxTime(new Date(firstWindowEndMs));
+      const flux = `
 from(bucket: "${bucket}")
   |> range(start: ${start}, stop: ${end})
   |> filter(fn: (r) => r["_measurement"] == "segment_data")
@@ -160,41 +161,33 @@ from(bucket: "${bucket}")
   |> keep(columns: ["segmentId", "_time", "_value"])
 `.trim();
 
-        const rows = await queryApi.collectRows<FloatingCarDataRow>(flux);
+      const rows = await queryApi.collectRows<FloatingCarDataRow>(flux);
 
-        for (const row of rows) {
-          const segmentId = String(row["segmentId"] ?? "").trim();
-          if (!segmentId) continue;
-          if (hasRequiredSegments && !requiredSegmentSet.has(segmentId)) continue;
+      for (const row of rows) {
+        const segmentId = String(row["segmentId"] ?? "").trim();
+        if (!segmentId) continue;
+        if (hasRequiredSegments && !requiredSegmentSet.has(segmentId)) continue;
 
-          const valueRaw = row["_value"];
-          const value =
-            typeof valueRaw === "number"
-              ? valueRaw
-              : Number.parseFloat(String(valueRaw ?? ""));
-          if (!Number.isFinite(value)) continue;
+        const valueRaw = row["_value"];
+        const value =
+          typeof valueRaw === "number"
+            ? valueRaw
+            : Number.parseFloat(String(valueRaw ?? ""));
+        if (!Number.isFinite(value)) continue;
 
-          const ts = new Date(String(row["_time"] ?? "")).getTime();
-          if (!Number.isFinite(ts)) continue;
+        const ts = new Date(String(row["_time"] ?? "")).getTime();
+        if (!Number.isFinite(ts)) continue;
 
-          const distanceMs = Math.abs(ts - boundedTargetTs);
-          const current = closestBySegment.get(segmentId);
-          if (
-            !current ||
-            distanceMs < current.distanceMs ||
-            (distanceMs === current.distanceMs && ts > current.timestampMs)
-          ) {
-            closestBySegment.set(segmentId, { value, timestampMs: ts, distanceMs });
-          }
+        const distanceMs = Math.abs(ts - boundedTargetTs);
+        const current = closestBySegment.get(segmentId);
+        if (
+          !current ||
+          distanceMs < current.distanceMs ||
+          (distanceMs === current.distanceMs && ts > current.timestampMs)
+        ) {
+          closestBySegment.set(segmentId, { value, timestampMs: ts, distanceMs });
         }
-      };
-
-      const firstWindowMs = 5 * 60 * 1000;
-      const firstWindowStartMs = Math.max(startMs, boundedTargetTs - firstWindowMs);
-      const firstWindowEndMs = Math.min(endMs, boundedTargetTs + firstWindowMs);
-
-      // Single strict window around selected moment. No widening.
-      await collectRange(firstWindowStartMs, firstWindowEndMs);
+      }
 
       return Array.from(closestBySegment.entries()).map(
         ([segmentId, entry]): FloatingCarDataClosestBySegmentRow => ({
