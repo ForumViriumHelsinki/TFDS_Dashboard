@@ -39,6 +39,17 @@ type FieldConfig = {
   ticks: number[];
 };
 
+const DEFAULT_TRAFFIC_FIELD_CONFIG: FieldConfig = {
+  label: "FCD",
+  yMax: 10,
+  ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  tickFormatter: (value: number) => {
+    if (value === 0) return "Pieni (0)";
+    if (value === 10) return "Suuri (10)";
+    return String(value);
+  },
+};
+
 function TrafficFlowTooltipContent({
   point,
   label,
@@ -84,12 +95,6 @@ function Message({
   isError,
   error,
 }: MessageProps) {
-  const message = useMemo(() => {
-    if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
-    if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
-    return null;
-  }, [trafficSeries.length, isError, error]);
-
   if (!selectedSegment) {
     return (
       <Box
@@ -112,6 +117,12 @@ function Message({
   if (isPending) {
     return <LoadingState message="Haetaan liikennetietoja…" variant="overlay" />;
   }
+
+  const message = isError
+    ? `Tietojen haku epäonnistui: ${error?.message}.`
+    : trafficSeries.length === 0
+      ? "Ei näytettäviä tietoja valitulla aikavälillä."
+      : null;
 
   if (!message) return null;
 
@@ -144,16 +155,16 @@ export function TrafficFlowChart() {
     activeTab,
     segmentMeasurementField,
   } = useSearch({
-      from: "/",
-      select: (s) => ({
-        selectedSegment: s.selectedSegment,
-        selectedStartDate: s.selectedStartDate,
-        selectedEndDate: s.selectedEndDate,
-        selectedDate: s.selectedDate,
-        activeTab: s.activeTab,
-        segmentMeasurementField: s.segmentMeasurementField,
-      }),
-    });
+    from: "/",
+    select: (s) => ({
+      selectedSegment: s.selectedSegment,
+      selectedStartDate: s.selectedStartDate,
+      selectedEndDate: s.selectedEndDate,
+      selectedDate: s.selectedDate,
+      activeTab: s.activeTab,
+      segmentMeasurementField: s.segmentMeasurementField,
+    }),
+  });
   const isSegmentsTab = activeTab === "Segmentit";
   const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
   const fallbackDate = floorToFiveMinutes(fallbackDateRaw);
@@ -179,12 +190,12 @@ export function TrafficFlowChart() {
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
-      field: segmentMeasurementField ?? "",
+      field: segmentMeasurementField,
     }),
-    enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
+    enabled: Boolean(selectedSegment && isSegmentsTab),
   });
   const selectedDateTs = displayDate.getTime();
-  const hasNearValueForSelectedSegment = (() => {
+  const hasNearValueForSelectedSegment = useMemo(() => {
     if (!isSegmentsTab || !selectedSegment) return true;
     if (!Array.isArray(segmentFieldQuery.data)) return false;
 
@@ -196,14 +207,11 @@ export function TrafficFlowChart() {
       if (!Number.isFinite(ts)) return false;
       return Math.abs(ts - selectedDateTs) <= FIVE_MINUTES_MS;
     });
-  })();
+  }, [isSegmentsTab, selectedSegment, segmentFieldQuery.data, selectedDateTs]);
 
-  const isPending = isSegmentsTab
-    ? segmentFieldQuery.isPending
-    : trafficFlowQuery.isPending;
-  const isError = isSegmentsTab
-    ? segmentFieldQuery.isError
-    : trafficFlowQuery.isError;
+  const activeQuery = isSegmentsTab ? segmentFieldQuery : trafficFlowQuery;
+  const isPending = activeQuery.isPending;
+  const isError = activeQuery.isError;
   const data = useMemo(
     () =>
       isSegmentsTab
@@ -218,21 +226,10 @@ export function TrafficFlowChart() {
       trafficFlowQuery.data,
     ],
   );
-  const error = isSegmentsTab ? segmentFieldQuery.error : trafficFlowQuery.error;
+  const error = activeQuery.error;
 
   const fieldConfig = useMemo(() => {
-    if (!isSegmentsTab || !segmentMeasurementField) {
-      return {
-        label: "FCD",
-        yMax: 10,
-        ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        tickFormatter: (value: number) => {
-          if (value === 0) return "Pieni (0)";
-          if (value === 10) return "Suuri (10)";
-          return String(value);
-        },
-      } as FieldConfig;
-    }
+    if (!isSegmentsTab) return DEFAULT_TRAFFIC_FIELD_CONFIG;
     const config = getSegmentMeasurementFieldConfig(segmentMeasurementField);
     return (
       (config && {
@@ -240,8 +237,7 @@ export function TrafficFlowChart() {
         yMax: config.yMax,
         ticks: config.ticks,
       }) ?? {
-        label: "FCD",
-        yMax: 10,
+        ...DEFAULT_TRAFFIC_FIELD_CONFIG,
         ticks: [0, 2, 4, 6, 8, 10],
       }
     );
@@ -292,12 +288,8 @@ export function TrafficFlowChart() {
     ? Math.max(...trafficSeries.map((point) => point.timestamp))
     : undefined;
 
-  const requestedStartTs = selectedStartDate
-    ? new Date(selectedStartDate).getTime()
-    : undefined;
-  const requestedEndTs = selectedEndDate
-    ? new Date(selectedEndDate).getTime()
-    : undefined;
+  const requestedStartTs = selectedStartDate?.getTime();
+  const requestedEndTs = selectedEndDate?.getTime();
   // Prefer requested range when available so charts line up on the same ticks
   const axisMin = requestedStartTs ?? seriesMin;
   const axisMax = requestedEndTs ?? seriesMax;
@@ -305,8 +297,8 @@ export function TrafficFlowChart() {
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
   const selectedDateTsForReferenceLine =
-    displayDate && axisMin !== undefined && axisMax !== undefined
-      ? new Date(displayDate).getTime()
+    axisMin !== undefined && axisMax !== undefined
+      ? displayDate.getTime()
       : undefined;
 
   const inferredStepMs =
