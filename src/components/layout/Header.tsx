@@ -2,33 +2,59 @@ import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
+import { floorToFiveMinutes, roundToFiveMinutes } from "../../utils/time";
+
+function toDateOrNull(value: string | Date | null): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
+}
 
 export function Header() {
   const navigate = useNavigate({ from: "/" });
   const queryClient = useQueryClient();
   const { sources, selectedDate } = useSearch({ from: "/" });
-  const hasClearedSelectedDate = useRef(false);
-  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
-  const [showFallback, setShowFallback] = useState(true);
-  const displayDate = selectedDate ?? (showFallback ? fallbackDate : null);
+  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
+  const fallbackDateTs = floorToFiveMinutes(fallbackDateRaw).getTime();
+  const displayTs = selectedDate?.getTime() ?? fallbackDateTs;
+  const displayDate = new Date(displayTs);
+  const draftDateRef = useRef<Date | null>(displayDate);
+  const hasPendingUserChangeRef = useRef(false);
   const setSources = (next: string[]) =>
     navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true });
 
-  useEffect(() => {
-    if (hasClearedSelectedDate.current) return;
-    hasClearedSelectedDate.current = true;
-    if (!selectedDate) return;
+  const commitSelectedDate = (value: Date | null) => {
+    if (!hasPendingUserChangeRef.current) return;
+    hasPendingUserChangeRef.current = false;
+
+    if (!value) {
+      void navigate({
+        search: (prev) => ({
+          ...prev,
+          // Clear selectedDate in URL, but visually fall back to current time
+          selectedDate: undefined,
+        }),
+        replace: true,
+      });
+      void queryClient.invalidateQueries({
+        queryKey: AIR_QUALITY_NOW_QUERY_KEY,
+      });
+      return;
+    }
+
+    const snappedValue = roundToFiveMinutes(value);
     void navigate({
       search: (prev) => ({
         ...prev,
-        selectedDate: undefined,
+        selectedDate: snappedValue,
       }),
       replace: true,
     });
-  }, [navigate, selectedDate]);
+  };
 
   return (
     <Group justify="space-between">
@@ -51,28 +77,20 @@ export function Header() {
             Ajankohta
           </Text>
           <DateTimePicker
+            key={`header-datetime-${selectedDate ? "manual" : "auto"}-${displayTs}`}
             clearable
-            value={displayDate}
+            defaultValue={displayDate}
+            timePickerProps={{ minutesStep: 5 }}
             onChange={(value) => {
-              if (!value) {
-                // Clear selectedDate in URL, but visually fall back to current time
-                setShowFallback(true);
-              } else {
-                setShowFallback(false);
-              }
-              void navigate({
-                search: (prev) => ({
-                  ...prev,
-                  selectedDate: value ?? undefined,
-                }),
-                replace: true,
-              });
-              if (!value) {
-                void queryClient.invalidateQueries({
-                  queryKey: AIR_QUALITY_NOW_QUERY_KEY,
-                });
+              hasPendingUserChangeRef.current = true;
+              const next = toDateOrNull(value);
+              draftDateRef.current = next;
+              if (!next) {
+                commitSelectedDate(null);
               }
             }}
+            onBlur={() => commitSelectedDate(draftDateRef.current)}
+            onDropdownClose={() => commitSelectedDate(draftDateRef.current)}
             maxDate={new Date()}
           />
           <Checkbox value="area-rentals" label="Aluevuokraukset" />
