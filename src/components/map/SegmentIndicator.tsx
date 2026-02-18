@@ -10,7 +10,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
-import { getSegmentGradientCss } from "../../utils/segmentColors";
+import { getSegmentGradientCss } from "../../utils/colors";
 import { SegmentMeasurementFieldConfig, segmentMeasurementFieldConfigs } from "../../constants/segment-fields";
 
 export function SegmentIndicator() {
@@ -31,17 +31,13 @@ export function SegmentIndicator() {
       style={{ zIndex: 400 }}
     >
       <Stack h="100%" gap={0} align="center">
-        <Text
-          size="xs"
-          c={theme.colors.gray[7]}
-          style={{ fontFamily: "Montserrat, sans-serif", lineHeight: 1.55 }}
-        >
+        <Text size="xs" c={theme.colors.gray[7]}>
           FCD
         </Text>
         <Center flex={1} w="100%" h={180} p="xs">
           <Box
             h="100%"
-            w={24}
+            w="100%"
             style={{
               borderRadius: 25,
               background: getSegmentGradientCss(),

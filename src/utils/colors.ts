@@ -6,6 +6,14 @@ const SEGMENT_COLOR_STOPS = [
   "#8B0A7A",
 ] as const;
 
+export const AIR_QUALITY_COLORS = {
+  "Good air quality": "#67E567", // (103,229,103)
+  "Satisfactory air quality": "#FFF055", // (255,240,85)
+  "Fair air quality": "#FFBB58", // (255,187,88)
+  "Poor air quality": "#FE4543", // (254,69,67)
+  "Very poor air quality": "#B5468B", // (181,70,139)
+} as const;
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -36,6 +44,19 @@ function interpolateColor(from: string, to: string, t: number): string {
 
 export function getSegmentGradientCss(): string {
   return `linear-gradient(180deg, ${SEGMENT_COLOR_STOPS[0]} 0%, ${SEGMENT_COLOR_STOPS[1]} 25%, ${SEGMENT_COLOR_STOPS[2]} 50%, ${SEGMENT_COLOR_STOPS[3]} 75%, ${SEGMENT_COLOR_STOPS[4]} 100%)`;
+}
+
+export function getAirQualityGradientCss(): string {
+  return `linear-gradient(180deg, ${AIR_QUALITY_COLORS["Good air quality"]} 0%, ${AIR_QUALITY_COLORS["Satisfactory air quality"]} 25%, ${AIR_QUALITY_COLORS["Fair air quality"]} 50%, ${AIR_QUALITY_COLORS["Poor air quality"]} 75%, ${AIR_QUALITY_COLORS["Very poor air quality"]} 100%)`;
+}
+
+export function getAirQualityColor(index?: number): string {
+  if (index === undefined || index === null) return "#7e7e7e";
+  if (index <= 50) return AIR_QUALITY_COLORS["Good air quality"];
+  if (index <= 75) return AIR_QUALITY_COLORS["Satisfactory air quality"];
+  if (index <= 100) return AIR_QUALITY_COLORS["Fair air quality"];
+  if (index <= 150) return AIR_QUALITY_COLORS["Poor air quality"];
+  return AIR_QUALITY_COLORS["Very poor air quality"];
 }
 
 export function getSegmentColorForValue(

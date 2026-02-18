@@ -1,9 +1,7 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
-import {
-  getAirQualityColor,
-  getAirQualityStationId,
-} from "../../utils/airQuality";
+import { getAirQualityStationId } from "../../utils/airQuality";
+import { getAirQualityColor } from "../../utils/colors";
 import { AirQualityStationItem } from "./AirQualityStationItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";

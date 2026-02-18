@@ -10,7 +10,6 @@ import {
 } from "react-leaflet";
 import {
   AirQualityProps,
-  getAirQualityColor,
   getAirQualityStationId,
 } from "../../utils/airQuality";
 import L from "leaflet";
@@ -37,7 +36,7 @@ import {
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
-import { getSegmentColorForValue } from "../../utils/segmentColors";
+import { getAirQualityColor, getSegmentColorForValue } from "../../utils/colors";
 import { floorToFiveMinutes, getDefaultDateRange } from "../../utils/time";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";

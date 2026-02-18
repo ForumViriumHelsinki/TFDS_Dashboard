@@ -10,7 +10,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
-import { AIR_QUALITY_COLORS } from "../../utils/airQuality";
+import { getAirQualityGradientCss } from "../../utils/colors";
 
 export function AirQualityIndicator() {
   const theme = useMantineTheme();
@@ -38,7 +38,7 @@ export function AirQualityIndicator() {
             w="100%"
             style={{
               borderRadius: 25,
-              background: `linear-gradient(180deg, ${AIR_QUALITY_COLORS["Good air quality"]} 0%, ${AIR_QUALITY_COLORS["Satisfactory air quality"]} 25%, ${AIR_QUALITY_COLORS["Fair air quality"]} 50%, ${AIR_QUALITY_COLORS["Poor air quality"]} 75%, ${AIR_QUALITY_COLORS["Very poor air quality"]} 100%)`,
+              background: getAirQualityGradientCss(),
             }}
           />
         </Center>
