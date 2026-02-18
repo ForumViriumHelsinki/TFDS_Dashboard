@@ -144,4 +144,8 @@ vite.config.ts.timestamp-*
 # Kubernetes secrets for local development
 k8s/secret.yaml
 
+# macOS
 /.DS_Store
+
+# data directory
+public/data/
