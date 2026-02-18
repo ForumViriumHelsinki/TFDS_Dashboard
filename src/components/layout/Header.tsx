@@ -2,7 +2,7 @@ import { Checkbox, Group, Image, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { floorToFiveMinutes, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
@@ -15,10 +15,29 @@ export function Header() {
   const fallbackDateTs = floorToFiveMinutes(fallbackDateRaw).getTime();
   const displayTs = selectedDate?.getTime() ?? fallbackDateTs;
   const displayDate = new Date(displayTs);
+  const hasClearedSelectedDate = useRef(false);
   const draftDateRef = useRef<Date | null>(displayDate);
   const hasPendingUserChangeRef = useRef(false);
   const setSources = (next: string[]) =>
     navigate({ search: (prev) => ({ ...prev, sources: next }), replace: true });
+
+  // On first load, force selectedDate to be cleared even if present in URL.
+  useEffect(() => {
+    if (hasClearedSelectedDate.current) return;
+    hasClearedSelectedDate.current = true;
+    if (!selectedDate) return;
+
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedDate: undefined,
+      }),
+      replace: true,
+    });
+    void queryClient.invalidateQueries({
+      queryKey: AIR_QUALITY_NOW_QUERY_KEY,
+    });
+  }, [navigate, queryClient, selectedDate]);
 
   const commitSelectedDate = (value: Date | null) => {
     if (!hasPendingUserChangeRef.current) return;
