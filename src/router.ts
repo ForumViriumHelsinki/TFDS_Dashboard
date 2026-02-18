@@ -15,6 +15,10 @@ export const Sources = {
 // eslint-disable-next-line no-redeclare
 export type Sources = (typeof Sources)[keyof typeof Sources];
 
+/**
+ * Normalizes legacy snake_case segment measurement field values to the
+ * current camelCase equivalents used in route search state.
+ */
 function normalizeSegmentMeasurementField(value: unknown) {
   if (value === "typical_speed") return "typicalSpeed";
   if (value === "current_speed") return "currentSpeed";
