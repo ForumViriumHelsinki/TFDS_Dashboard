@@ -12,6 +12,13 @@ export function roundToFiveMinutes(date: Date): Date {
   return new Date(rounded);
 }
 
+export function toDateOrNull(value: string | Date | null): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
+}
+
 export function getDefaultDateRange(): { start: Date; end: Date } {
   const end = floorToFiveMinutes(new Date());
   const start = new Date(end.getTime() - 12 * 60 * 60 * 1000);

@@ -11,14 +11,7 @@ import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-import { floorToFiveMinutes, roundToFiveMinutes } from "../../utils/time";
-
-function toDateOrNull(value: string | Date | null): Date | null {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  const parsed = new Date(value);
-  return Number.isFinite(parsed.getTime()) ? parsed : null;
-}
+import { floorToFiveMinutes, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
 
 interface PropertyDisplayItemProps {
   label: string;

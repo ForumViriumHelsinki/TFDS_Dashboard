@@ -5,14 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
-import { floorToFiveMinutes, roundToFiveMinutes } from "../../utils/time";
-
-function toDateOrNull(value: string | Date | null): Date | null {
-  if (!value) return null;
-  if (value instanceof Date) return value;
-  const parsed = new Date(value);
-  return Number.isFinite(parsed.getTime()) ? parsed : null;
-}
+import { floorToFiveMinutes, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
 
 export function Header() {
   const navigate = useNavigate({ from: "/" });
