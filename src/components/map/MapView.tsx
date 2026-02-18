@@ -32,57 +32,16 @@ import { DisturbanceLayer } from "./DisturbanceLayer";
 import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { useQuery } from "@tanstack/react-query";
 import {
-  getFloatingCarDataFieldPointsBySegmentQueryOptions,
+  getFloatingCarDataNearestBySegmentQueryOptions,
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import type { LineString } from "geojson";
 import { getDefaultDateRange } from "../../utils/defaultDateRange";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { getSegmentColorForValue } from "../../utils/segmentColors";
+import { floorToFiveMinutes } from "../../utils/time";
 
-type SegmentPoint = {
-  timestampMs: number;
-  value: number;
-};
-
-function findNearestPointValue(points: SegmentPoint[], targetMs: number): number | undefined {
-  if (points.length === 0 || !Number.isFinite(targetMs)) {
-    return undefined;
-  }
-
-  let low = 0;
-  let high = points.length - 1;
-
-  while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
-    const midTs = points[mid].timestampMs;
-
-    if (midTs < targetMs) {
-      low = mid + 1;
-    } else if (midTs > targetMs) {
-      high = mid - 1;
-    } else {
-      return points[mid].value;
-    }
-  }
-
-  const rightIndex = Math.min(low, points.length - 1);
-  const leftIndex = Math.max(0, rightIndex - 1);
-  const rightPoint = points[rightIndex];
-  const leftPoint = points[leftIndex];
-  const leftDistance = Math.abs(leftPoint.timestampMs - targetMs);
-  const rightDistance = Math.abs(rightPoint.timestampMs - targetMs);
-
-  if (rightDistance < leftDistance) {
-    return rightPoint.value;
-  }
-  if (leftDistance < rightDistance) {
-    return leftPoint.value;
-  }
-  return rightPoint.timestampMs >= leftPoint.timestampMs
-    ? rightPoint.value
-    : leftPoint.value;
-}
+const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
 function FitMapToSelected({
   selectedSegment,
@@ -169,9 +128,14 @@ export function MapView() {
     selectedDate,
     Boolean(showAirQuality),
   );
-  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
+  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
+  const fallbackDate = floorToFiveMinutes(fallbackDateRaw);
   const displayDate = selectedDate ?? fallbackDate;
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const segmentQueryTargetDate = useMemo(
+    () => selectedDate ?? fallbackDate,
+    [selectedDate, fallbackDate],
+  );
   const { start: segmentsStart, end: segmentsEnd } = useMemo(() => {
     const effectiveEnd = selectedEndDate ?? fallbackRange.end;
     const effectiveStart = selectedStartDate ?? fallbackRange.start;
@@ -185,66 +149,33 @@ export function MapView() {
     : undefined;
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
-  const { data: segmentRows } = useQuery({
-    ...getFloatingCarDataFieldPointsBySegmentQueryOptions({
+  const { data: segmentRows, dataUpdatedAt: segmentRowsUpdatedAt } = useQuery({
+    ...getFloatingCarDataNearestBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
       field: segmentMeasurementField ?? "",
+      target: segmentQueryTargetDate,
     }),
     enabled: Boolean(showSegmentsTab && segmentMeasurementField),
+    placeholderData: (previousData) => previousData,
   });
 
-  const segmentPointsById = useMemo(() => {
-    const grouped = new Map<string, SegmentPoint[]>();
-    if (!Array.isArray(segmentRows) || !segmentMeasurementField) {
-      return grouped;
+  const targetDateMs = segmentQueryTargetDate.getTime();
+
+  const segmentFieldValueById = useMemo(() => {
+    const values = new Map<string, number>();
+    if (!segmentMeasurementField || !Array.isArray(segmentRows)) {
+      return values;
     }
 
     for (const row of segmentRows) {
       const segmentId = row.segmentId?.trim();
-      if (!segmentId) continue;
-      const timestampMs = row.timestamp.getTime();
-      if (!Number.isFinite(timestampMs) || !Number.isFinite(row.value)) continue;
-
-      const existing = grouped.get(segmentId);
-      const point = { timestampMs, value: row.value };
-      if (existing) {
-        existing.push(point);
-      } else {
-        grouped.set(segmentId, [point]);
-      }
-    }
-
-    for (const points of grouped.values()) {
-      points.sort((a, b) => a.timestampMs - b.timestampMs);
-    }
-
-    return grouped;
-  }, [segmentRows, segmentMeasurementField]);
-
-  const targetDateMs = displayDate.getTime();
-
-  const segmentFieldValueById = useMemo(() => {
-    const values = new Map<string, number>();
-    if (!segmentMeasurementField || segmentPointsById.size === 0) {
-      return values;
-    }
-
-    for (const [segmentId, points] of segmentPointsById.entries()) {
-      const value = findNearestPointValue(points, targetDateMs);
-      if (!Number.isFinite(value)) continue;
-      values.set(segmentId, value);
+      if (!segmentId || !Number.isFinite(row.value)) continue;
+      values.set(segmentId, row.value);
     }
 
     return values;
-  }, [segmentMeasurementField, segmentPointsById, targetDateMs]);
-
-  const segmentFieldIdSet = useMemo(() => {
-    if (!segmentMeasurementField) {
-      return new Set<string>();
-    }
-    return new Set(segmentFieldValueById.keys());
-  }, [segmentMeasurementField, segmentFieldValueById]);
+  }, [segmentMeasurementField, segmentRows]);
 
   const segmentFieldConfig = useMemo(
     () => getSegmentMeasurementFieldConfig(segmentMeasurementField),
@@ -274,19 +205,18 @@ export function MapView() {
         features,
       } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
     }
-    const allowed =
-      showSegmentsTab && segmentMeasurementField
-        ? segmentFieldIdSet
-        : undefined;
     for (const [segmentId, entry] of Object.entries(
       segmentsMapping.segmentId ?? {},
     )) {
       if (!entry?.geometry) continue;
-      if (allowed && !allowed.has(segmentId)) continue;
       features.push({
         type: "Feature",
         geometry: entry.geometry,
-        properties: { segmentId, segmentColor: segmentColorById.get(segmentId) },
+        properties: {
+          segmentId,
+          segmentColor:
+            segmentColorById.get(segmentId) ?? SEGMENT_NO_DATA_COLOR,
+        },
       });
     }
     return {
@@ -295,9 +225,6 @@ export function MapView() {
     } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
   }, [
     segmentsMapping,
-    showSegmentsTab,
-    segmentMeasurementField,
-    segmentFieldIdSet,
     segmentColorById,
   ]);
 
@@ -456,7 +383,7 @@ export function MapView() {
             <DisturbanceLayer
               layerKey={`segments-${
                 segmentMeasurementField ?? "all"
-              }-${segmentsEnd.toISOString()}-${targetDateMs}`}
+              }-${segmentsEnd.toISOString()}-${targetDateMs}-${segmentRowsUpdatedAt}`}
               paneName="traffic-segments-fcd"
               zIndex={652}
               featureCollection={segmentsFeatureCollection}

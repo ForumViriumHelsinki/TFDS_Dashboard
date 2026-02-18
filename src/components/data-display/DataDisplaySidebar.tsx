@@ -11,11 +11,14 @@ import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
+import { floorToFiveMinutes, roundToFiveMinutes } from "../../utils/time";
 
-const DEFAULT_END_DATE = new Date();
-const DEFAULT_START_DATE = new Date(
-  DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000,
-);
+function toDateOrNull(value: string | Date | null): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  const parsed = new Date(value);
+  return Number.isFinite(parsed.getTime()) ? parsed : null;
+}
 
 interface PropertyDisplayItemProps {
   label: string;
@@ -74,6 +77,15 @@ export function DataDisplaySidebar() {
     from: "/",
   });
   const hasClearedDateRange = useRef(false);
+  const defaultEndDate = useMemo(() => floorToFiveMinutes(new Date()), []);
+  const defaultStartDate = useMemo(
+    () => new Date(defaultEndDate.getTime() - 12 * 60 * 60 * 1000),
+    [defaultEndDate],
+  );
+  const startDisplayTs = selectedStartDate?.getTime() ?? defaultStartDate.getTime();
+  const endDisplayTs = selectedEndDate?.getTime() ?? defaultEndDate.getTime();
+  const draftStartDateRef = useRef<Date | null>(new Date(startDisplayTs));
+  const draftEndDateRef = useRef<Date | null>(new Date(endDisplayTs));
 
   const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
@@ -107,6 +119,28 @@ export function DataDisplaySidebar() {
     });
   }, [navigate, selectedEndDate, selectedStartDate]);
 
+  const commitStartDate = (value: Date | null) => {
+    const snappedValue = value ? roundToFiveMinutes(value) : undefined;
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedStartDate: snappedValue ?? defaultStartDate,
+      }),
+      replace: true,
+    });
+  };
+
+  const commitEndDate = (value: Date | null) => {
+    const snappedValue = value ? roundToFiveMinutes(value) : undefined;
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedEndDate: snappedValue ?? defaultEndDate,
+      }),
+      replace: true,
+    });
+  };
+
   return (
     <Stack
       p="md"
@@ -116,35 +150,31 @@ export function DataDisplaySidebar() {
       style={{ borderRight: `1px solid ${theme.colors.gray[3]}` }}
     >
       <DateTimePicker
+        key={`sidebar-start-${startDisplayTs}`}
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
-        value={selectedStartDate ?? DEFAULT_START_DATE}
+        defaultValue={new Date(startDisplayTs)}
+        timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          void navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedStartDate: value ?? DEFAULT_START_DATE,
-            }),
-            replace: true,
-          });
+          draftStartDateRef.current = toDateOrNull(value);
         }}
+        onBlur={() => commitStartDate(draftStartDateRef.current)}
+        onDropdownClose={() => commitStartDate(draftStartDateRef.current)}
         size="sm"
         variant="filled"
         maxDate={new Date()}
       />
       <DateTimePicker
+        key={`sidebar-end-${endDisplayTs}`}
         label="Mittausaikaväli päättyen"
         placeholder="Valitse loppuhetki"
-        value={selectedEndDate ?? DEFAULT_END_DATE}
+        defaultValue={new Date(endDisplayTs)}
+        timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          void navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedEndDate: value ?? DEFAULT_END_DATE,
-            }),
-            replace: true,
-          });
+          draftEndDateRef.current = toDateOrNull(value);
         }}
+        onBlur={() => commitEndDate(draftEndDateRef.current)}
+        onDropdownClose={() => commitEndDate(draftEndDateRef.current)}
         size="sm"
         variant="filled"
         maxDate={new Date()}

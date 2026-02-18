@@ -19,10 +19,13 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import {
+  getFloatingCarDataNearestBySegmentQueryOptions,
   getFloatingCarDataTimeSeriesQueryOptions,
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { getDefaultDateRange } from "../../utils/defaultDateRange";
+import { floorToFiveMinutes } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;
@@ -169,7 +172,8 @@ export function TrafficFlowChart() {
       }),
     });
   const isSegmentsTab = activeTab === "Segmentit";
-  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
+  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
+  const fallbackDate = floorToFiveMinutes(fallbackDateRaw);
   const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
   const displayDate = selectedDate ?? fallbackDate;
   const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
@@ -196,15 +200,46 @@ export function TrafficFlowChart() {
     }),
     enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
   });
+  const segmentTargetDate = useMemo(
+    () => selectedDate ?? fallbackDate,
+    [selectedDate, fallbackDate],
+  );
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const { start: nearestRangeStart, end: nearestRangeEnd } = useMemo(() => {
+    const effectiveEnd = selectedEndDate ?? fallbackRange.end;
+    const effectiveStart = selectedStartDate ?? fallbackRange.start;
+    return { start: effectiveStart, end: effectiveEnd };
+  }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
+  const segmentNearestQuery = useQuery({
+    ...getFloatingCarDataNearestBySegmentQueryOptions({
+      start: nearestRangeStart,
+      end: nearestRangeEnd,
+      field: segmentMeasurementField ?? "",
+      target: segmentTargetDate,
+    }),
+    enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
+  });
+
+  const hasNearValueForSelectedSegment = useMemo(() => {
+    if (!isSegmentsTab || !selectedSegment) return true;
+    if (!Array.isArray(segmentNearestQuery.data)) return false;
+    return segmentNearestQuery.data.some((row) => row.segmentId === selectedSegment);
+  }, [isSegmentsTab, selectedSegment, segmentNearestQuery.data]);
 
   const isPending = isSegmentsTab
-    ? segmentFieldQuery.isPending
+    ? segmentFieldQuery.isPending || segmentNearestQuery.isPending
     : trafficFlowQuery.isPending;
   const isError = isSegmentsTab
-    ? segmentFieldQuery.isError
+    ? segmentFieldQuery.isError || segmentNearestQuery.isError
     : trafficFlowQuery.isError;
-  const data = isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data;
-  const error = isSegmentsTab ? segmentFieldQuery.error : trafficFlowQuery.error;
+  const data = isSegmentsTab
+    ? hasNearValueForSelectedSegment
+      ? segmentFieldQuery.data
+      : []
+    : trafficFlowQuery.data;
+  const error = isSegmentsTab
+    ? segmentNearestQuery.error ?? segmentFieldQuery.error
+    : trafficFlowQuery.error;
 
   const fieldConfig = useMemo(() => {
     if (!isSegmentsTab || !segmentMeasurementField) {

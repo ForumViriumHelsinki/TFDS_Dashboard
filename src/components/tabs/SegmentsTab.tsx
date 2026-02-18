@@ -33,7 +33,6 @@ export function SegmentsTab() {
     const effectiveStart = selectedStartDate ?? fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
   }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
-
   const {
     data: segmentRows,
     isPending: isSegmentFieldPending,
