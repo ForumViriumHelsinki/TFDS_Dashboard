@@ -19,12 +19,11 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import {
-  getFloatingCarDataNearestBySegmentQueryOptions,
   getFloatingCarDataTimeSeriesQueryOptions,
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { floorToFiveMinutes, getDefaultDateRange } from "../../utils/time";
+import { FIVE_MINUTES_MS, floorToFiveMinutes } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;
@@ -199,37 +198,26 @@ export function TrafficFlowChart() {
     }),
     enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
   });
-  const segmentTargetDate = useMemo(
-    () => selectedDate ?? fallbackDate,
-    [selectedDate, fallbackDate],
-  );
-  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
-  const { start: nearestRangeStart, end: nearestRangeEnd } = useMemo(() => {
-    const effectiveEnd = selectedEndDate ?? fallbackRange.end;
-    const effectiveStart = selectedStartDate ?? fallbackRange.start;
-    return { start: effectiveStart, end: effectiveEnd };
-  }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
-  const segmentNearestQuery = useQuery({
-    ...getFloatingCarDataNearestBySegmentQueryOptions({
-      start: nearestRangeStart,
-      end: nearestRangeEnd,
-      field: segmentMeasurementField ?? "",
-      target: segmentTargetDate,
-    }),
-    enabled: Boolean(selectedSegment && isSegmentsTab && segmentMeasurementField),
-  });
-
-  const hasNearValueForSelectedSegment = useMemo(() => {
+  const selectedDateTs = displayDate.getTime();
+  const hasNearValueForSelectedSegment = (() => {
     if (!isSegmentsTab || !selectedSegment) return true;
-    if (!Array.isArray(segmentNearestQuery.data)) return false;
-    return segmentNearestQuery.data.some((row) => row.segmentId === selectedSegment);
-  }, [isSegmentsTab, selectedSegment, segmentNearestQuery.data]);
+    if (!Array.isArray(segmentFieldQuery.data)) return false;
+
+    // Match map behavior: value is considered available only within ±5 minutes.
+    return (segmentFieldQuery.data as FloatingCarDataRow[]).some((row) => {
+      const ts = new Date(
+        String((row["_time"] as string | number | boolean | null) ?? ""),
+      ).getTime();
+      if (!Number.isFinite(ts)) return false;
+      return Math.abs(ts - selectedDateTs) <= FIVE_MINUTES_MS;
+    });
+  })();
 
   const isPending = isSegmentsTab
-    ? segmentFieldQuery.isPending || segmentNearestQuery.isPending
+    ? segmentFieldQuery.isPending
     : trafficFlowQuery.isPending;
   const isError = isSegmentsTab
-    ? segmentFieldQuery.isError || segmentNearestQuery.isError
+    ? segmentFieldQuery.isError
     : trafficFlowQuery.isError;
   const data = useMemo(
     () =>
@@ -245,9 +233,7 @@ export function TrafficFlowChart() {
       trafficFlowQuery.data,
     ],
   );
-  const error = isSegmentsTab
-    ? segmentNearestQuery.error ?? segmentFieldQuery.error
-    : trafficFlowQuery.error;
+  const error = isSegmentsTab ? segmentFieldQuery.error : trafficFlowQuery.error;
 
   const fieldConfig = useMemo(() => {
     if (!isSegmentsTab || !segmentMeasurementField) {
@@ -333,7 +319,7 @@ export function TrafficFlowChart() {
   const rangeMs =
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
-  const selectedDateTs =
+  const selectedDateTsForReferenceLine =
     displayDate && axisMin !== undefined && axisMax !== undefined
       ? new Date(displayDate).getTime()
       : undefined;
@@ -458,13 +444,13 @@ export function TrafficFlowChart() {
             tickLine={false}
             tickMargin={6}
           />
-          {selectedDateTs !== undefined &&
+          {selectedDateTsForReferenceLine !== undefined &&
             axisMin !== undefined &&
             axisMax !== undefined &&
-            selectedDateTs >= axisMin &&
-            selectedDateTs <= axisMax && (
+            selectedDateTsForReferenceLine >= axisMin &&
+            selectedDateTsForReferenceLine <= axisMax && (
               <ReferenceLine
-                x={selectedDateTs}
+                x={selectedDateTsForReferenceLine}
                 stroke={theme.colors.brand[0]}
                 strokeWidth={1}
                 strokeDasharray="4 2"
