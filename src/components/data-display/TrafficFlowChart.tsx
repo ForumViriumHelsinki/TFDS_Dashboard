@@ -24,7 +24,7 @@ import {
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { FIVE_MINUTES_MS, floorToFiveMinutes } from "../../utils/time";
+import { floorToFiveMinutes } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;
@@ -194,37 +194,13 @@ export function TrafficFlowChart() {
     }),
     enabled: Boolean(selectedSegment && isSegmentsTab),
   });
-  const selectedDateTs = displayDate.getTime();
-  const hasNearValueForSelectedSegment = useMemo(() => {
-    if (!isSegmentsTab || !selectedSegment) return true;
-    if (!Array.isArray(segmentFieldQuery.data)) return false;
-
-    // Match map behavior: value is considered available only within ±5 minutes.
-    return (segmentFieldQuery.data as FloatingCarDataRow[]).some((row) => {
-      const ts = new Date(
-        String((row["_time"] as string | number | boolean | null) ?? ""),
-      ).getTime();
-      if (!Number.isFinite(ts)) return false;
-      return Math.abs(ts - selectedDateTs) <= FIVE_MINUTES_MS;
-    });
-  }, [isSegmentsTab, selectedSegment, segmentFieldQuery.data, selectedDateTs]);
 
   const activeQuery = isSegmentsTab ? segmentFieldQuery : trafficFlowQuery;
   const isPending = activeQuery.isPending;
   const isError = activeQuery.isError;
   const data = useMemo(
-    () =>
-      isSegmentsTab
-        ? hasNearValueForSelectedSegment
-          ? segmentFieldQuery.data
-          : []
-        : trafficFlowQuery.data,
-    [
-      isSegmentsTab,
-      hasNearValueForSelectedSegment,
-      segmentFieldQuery.data,
-      trafficFlowQuery.data,
-    ],
+    () => (isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data),
+    [isSegmentsTab, segmentFieldQuery.data, trafficFlowQuery.data],
   );
   const error = activeQuery.error;
 
