@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
 import { getSegmentGradientCss } from "../../utils/segmentColors";
+import { SegmentMeasurementFieldConfig, segmentMeasurementFieldConfigs } from "../../constants/segment-fields";
 
 export function SegmentIndicator() {
   const theme = useMantineTheme();
@@ -67,11 +68,12 @@ export function SegmentIndicator() {
             </Text>
             <Text size="sm">Sininen = suurempi arvo</Text>
             <Text size="sm" pb={6}>Violetti = pienempi arvo</Text>
-            <Text size="sm">Skaalat mittareittain:</Text>
-            <Text size="sm">Tyypillinen nopeus: 0-120</Text>
-            <Text size="sm">Nykyinen nopeus: 0-120</Text>
-            <Text size="sm">Luotettavuus: 0-100</Text>
-            <Text size="sm">FCD-kattavuus: 0-10</Text>
+            <Text size="sm" fw={600}>Skaalat mittareittain:</Text>
+            {segmentMeasurementFieldConfigs.map((config: SegmentMeasurementFieldConfig) => (
+              <Text size="sm" key={config.label}>
+                {config.label}: 0-{config.yMax}
+              </Text>
+            ))}
           </Popover.Dropdown>
         </Popover>
       </Stack>
