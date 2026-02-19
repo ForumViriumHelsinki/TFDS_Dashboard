@@ -8,7 +8,6 @@ import {
   XAxis,
   Line,
   Tooltip,
-  Legend,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -327,7 +326,7 @@ export function AirQualityChart() {
       <ResponsiveContainer>
         <LineChart
           data={combinedSeries}
-          margin={{ top: 12, right: 0, bottom: 0, left: 0 }}
+          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
           onClick={(state) => {
             if (
               state &&
@@ -352,6 +351,7 @@ export function AirQualityChart() {
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
             y1={yDomain[0]}
             y2={yDomain[1]}
+            yAxisId="left"
             fill={theme.colors.gray[1]}
             fillOpacity={1}
             stroke="none"
@@ -409,14 +409,6 @@ export function AirQualityChart() {
           <Tooltip
             content={<ChartTooltip renderContent={AirQualityTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
-          />
-          <Legend
-            verticalAlign="top"
-            align="right"
-            wrapperStyle={{ top: -26 }}
-            formatter={(value: string) => (
-              <span style={{ color: theme.black, fontSize: 12 }}>{value}</span>
-            )}
           />
           <Line
             type="monotone"
