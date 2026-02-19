@@ -14,6 +14,10 @@ import {
   AirQualityTypes,
   getListAirQualityQueryOptions,
 } from "../../queries/air-quality";
+import {
+  getAqiTimeSeriesByStationQueryOptions,
+  type AqiTimeSeriesRow,
+} from "../../queries/aqi";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { FeatureCollection, Geometry } from "geojson";
 import {
@@ -27,7 +31,8 @@ import { ChartTooltip } from "./ChartTooltip";
 import { LoadingState } from "../shared/LoadingState";
 import { getDefaultDateRange } from "../../utils/time";
 
-type TimePoint = { timestamp: number; index: number };
+type TimePoint = { timestamp: number; index: number; tfdsAqi?: number };
+type TfdsPoint = { timestamp: number; tfdsAqi: number };
 
 function AirQualityTooltipContent(point: TimePoint) {
   return (
@@ -124,6 +129,12 @@ export function AirQualityChart() {
     }),
     enabled: Boolean(selectedAirQualityStation),
   });
+  const { data: nowData } = useQuery({
+    ...getListAirQualityQueryOptions({
+      airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
+    }),
+    enabled: Boolean(selectedAirQualityStation),
+  });
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const effectiveEndDate = selectedEndDate ?? fallbackRange.end;
   const effectiveStartDate = useMemo(() => {
@@ -136,9 +147,45 @@ export function AirQualityChart() {
   const requestedStartTs = effectiveStartDate.getTime();
   const requestedEndTs = effectiveEndDate.getTime();
 
-  const features =
-    (data as FeatureCollection<Geometry, AirQualityProps> | undefined)
-      ?.features ?? [];
+  const features = useMemo(
+    () =>
+      (data as FeatureCollection<Geometry, AirQualityProps> | undefined)
+        ?.features ?? [],
+    [data],
+  );
+  const stationName = useMemo(() => {
+    if (!selectedAirQualityStation) return undefined;
+
+    const findNameById = (
+      sourceFeatures: Array<{ properties?: AirQualityProps }> | undefined,
+    ) => {
+      for (const feature of sourceFeatures ?? []) {
+        const properties = feature.properties ?? {};
+        const stationId = String(properties.Mittausaseman_numero ?? "");
+        if (stationId !== String(selectedAirQualityStation)) continue;
+        const name = String(properties.Mittausasema ?? "").trim();
+        if (name) return name;
+      }
+      return undefined;
+    };
+
+    // Prefer "now" dataset for station metadata reliability.
+    const fromNow = findNameById(
+      (nowData as FeatureCollection<Geometry, AirQualityProps> | undefined)
+        ?.features,
+    );
+    if (fromNow) return fromNow;
+
+    return findNameById(features);
+  }, [features, nowData, selectedAirQualityStation]);
+  const { data: tfdsAqiData } = useQuery({
+    ...getAqiTimeSeriesByStationQueryOptions({
+      start: effectiveStartDate,
+      end: effectiveEndDate,
+      stationName: stationName ?? "",
+    }),
+    enabled: Boolean(stationName),
+  });
 
   const filteredSeries: TimePoint[] = features
     .filter((feature) => {
@@ -161,6 +208,30 @@ export function AirQualityChart() {
       return { timestamp, index: Number.isFinite(indexVal) ? indexVal : 0 };
     })
     .sort((a, b) => a.timestamp - b.timestamp);
+  const tfdsSeries: TfdsPoint[] = useMemo(() => {
+    if (!Array.isArray(tfdsAqiData)) return [];
+    return (tfdsAqiData as AqiTimeSeriesRow[])
+      .map((row) => {
+        const timestamp = new Date(String(row["_time"] ?? "")).getTime();
+        const rawValue = row["_value"];
+        const numericValue =
+          typeof rawValue === "number"
+            ? rawValue
+            : Number.parseFloat(String(rawValue ?? ""));
+        return {
+          timestamp,
+          tfdsAqi: Number.isFinite(numericValue) ? numericValue : NaN,
+        };
+      })
+      .filter(
+        (point) =>
+          Number.isFinite(point.timestamp) &&
+          Number.isFinite(point.tfdsAqi) &&
+          point.timestamp >= requestedStartTs &&
+          point.timestamp <= requestedEndTs,
+      )
+      .sort((a, b) => a.timestamp - b.timestamp);
+  }, [requestedEndTs, requestedStartTs, tfdsAqiData]);
 
   const axisMin = requestedStartTs;
   const axisMax = requestedEndTs;
@@ -181,6 +252,16 @@ export function AirQualityChart() {
     yValues.length && yMin !== yMax
       ? [yMin, yMax]
       : [Math.max(0, yMin - 1), yMax + 1];
+  const tfdsValues = tfdsSeries
+    .map((point) => point.tfdsAqi)
+    .filter((value): value is number => Number.isFinite(value));
+  const hasTfdsSeries = tfdsValues.length > 0;
+  const tfdsMin = hasTfdsSeries ? Math.min(...tfdsValues) : 0;
+  const tfdsMax = hasTfdsSeries ? Math.max(...tfdsValues) : 1;
+  const tfdsDomain =
+    hasTfdsSeries && tfdsMin !== tfdsMax
+      ? [tfdsMin, tfdsMax]
+      : [Math.max(0, tfdsMin - 1), tfdsMax + 1];
 
     
   return (
@@ -218,9 +299,21 @@ export function AirQualityChart() {
             stroke="none"
           />
           <YAxis
+            yAxisId="left"
             domain={yDomain as [number, number]}
             width={40}
             tick={{ fontSize: 10, fill: theme.black }}
+            axisLine={{ stroke: theme.colors.gray[3] }}
+            tickLine={false}
+            tickMargin={6}
+          />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            hide={!hasTfdsSeries}
+            domain={tfdsDomain as [number, number]}
+            width={40}
+            tick={{ fontSize: 10, fill: theme.colors.violet[6] }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
@@ -248,6 +341,7 @@ export function AirQualityChart() {
             selectedDateTs <= axisMax && (
               <ReferenceLine
                 x={selectedDateTs}
+                yAxisId="left"
                 stroke={theme.colors.brand[0]}
                 strokeWidth={1}
                 strokeDasharray="4 2"
@@ -260,9 +354,20 @@ export function AirQualityChart() {
           <Line
             type="monotone"
             dataKey="index"
+            yAxisId="left"
             stroke={theme.colors.blue[6]}
             strokeWidth={2}
             dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="tfdsAqi"
+            data={tfdsSeries}
+            yAxisId="right"
+            stroke={theme.colors.violet[6]}
+            strokeWidth={2}
+            dot={false}
+            hide={!hasTfdsSeries}
           />
         </LineChart>
       </ResponsiveContainer>
