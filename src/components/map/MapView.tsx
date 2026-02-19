@@ -111,7 +111,7 @@ export function MapView() {
   });
   const navigate = useNavigate({ from: "/" });
   const showSegmentsTab = activeTab === "Segmentit";
-  const showAirQuality = !showSegmentsTab && sources.includes(Sources.AIR_QUALITY);
+  const showAirQuality = sources.includes(Sources.AIR_QUALITY);
   const showAreaRentals = !showSegmentsTab && sources.includes(Sources.AREA_RENTALS);
   const showExcavationNotices =
     !showSegmentsTab && sources.includes(Sources.EXCAVATION_NOTICES);
