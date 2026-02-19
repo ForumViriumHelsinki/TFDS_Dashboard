@@ -351,13 +351,15 @@ export function MapView() {
                       ).trim();
 
                       if (stationName) {
-                        void queryClient.prefetchQuery(
-                          getAqiTimeSeriesByStationQueryOptions({
-                            start: segmentsStart,
-                            end: segmentsEnd,
-                            stationName,
-                          }),
-                        );
+                        const queryOptions = getAqiTimeSeriesByStationQueryOptions({
+                          start: segmentsStart,
+                          end: segmentsEnd,
+                          stationName,
+                        });
+                        void queryClient.fetchQuery({
+                          ...queryOptions,
+                          staleTime: 0,
+                        });
                       }
 
                       if (stationId) {

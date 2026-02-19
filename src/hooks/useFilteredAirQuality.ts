@@ -49,6 +49,20 @@ export function useFilteredAirQuality(
   const filteredHistoricalData = useMemo(() => {
     if (!historicalQuery.data || !selectedDate) return undefined;
 
+    const stationMetadataById = new Map<
+      string,
+      { name?: string; address?: string }
+    >();
+    for (const feature of nowQuery.data?.features ?? []) {
+      const stationId = getAirQualityStationId(feature);
+      if (!stationId) continue;
+      const properties = feature.properties ?? {};
+      stationMetadataById.set(stationId, {
+        name: properties.Mittausasema,
+        address: properties.Mittausaseman_osoite,
+      });
+    }
+
     const targetTs = selectedDate.getTime();
     const stationMap = new Map<
       string,
@@ -67,7 +81,19 @@ export function useFilteredAirQuality(
         !stationMap.has(stationId) ||
         diff < stationMap.get(stationId)!.diff
       ) {
-        stationMap.set(stationId, { diff, feature });
+        const historicalProps = feature.properties ?? {};
+        const meta = stationMetadataById.get(stationId);
+        const mergedFeature: Feature<Geometry, AirQualityProps> = {
+          ...feature,
+          properties: {
+            ...historicalProps,
+            Mittausasema:
+              historicalProps.Mittausasema ?? meta?.name,
+            Mittausaseman_osoite:
+              historicalProps.Mittausaseman_osoite ?? meta?.address,
+          },
+        };
+        stationMap.set(stationId, { diff, feature: mergedFeature });
       }
     }
 
@@ -75,7 +101,7 @@ export function useFilteredAirQuality(
       type: "FeatureCollection",
       features: Array.from(stationMap.values()).map((value) => value.feature),
     } as FeatureCollection<Geometry, AirQualityProps>;
-  }, [historicalQuery.data, selectedDate]);
+  }, [historicalQuery.data, nowQuery.data, selectedDate]);
 
   const data = useHistorical
     ? (filteredHistoricalData ?? nowQuery.data)
