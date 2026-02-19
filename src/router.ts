@@ -45,6 +45,7 @@ const searchSchema = z.object({
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),
   selectedDate: z.coerce.date().optional(),
+  selectedDateMode: z.enum(["live", "manual"]).optional().default("live").catch("live"),
   sources: z
     .array(z.enum(Sources))
     .default(Object.values(Sources))

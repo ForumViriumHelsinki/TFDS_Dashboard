@@ -1,6 +1,5 @@
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { useMemo } from "react";
-import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 import { LoadingState } from "../shared/LoadingState";
 import {
@@ -24,7 +23,7 @@ import {
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
-import { floorToFiveMinutes } from "../../utils/time";
+import { getDefaultDateRange } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;
@@ -166,16 +165,14 @@ export function TrafficFlowChart() {
     }),
   });
   const isSegmentsTab = activeTab === "Segmentit";
-  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
-  const fallbackDate = floorToFiveMinutes(fallbackDateRaw);
-  const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
-  const displayDate = selectedDate ?? fallbackDate;
-  const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const effectiveEndDate = selectedEndDate ?? fallbackRange.end;
   const effectiveStartDate = useMemo(() => {
     if (selectedStartDate) return selectedStartDate;
     const baseEnd = effectiveEndDate;
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
+  const displayDate = selectedDate ?? effectiveEndDate;
 
   const trafficFlowQuery = useQuery({
     ...getTrafficFlowQueryOptions({
@@ -264,11 +261,8 @@ export function TrafficFlowChart() {
     ? Math.max(...trafficSeries.map((point) => point.timestamp))
     : undefined;
 
-  const requestedStartTs = selectedStartDate?.getTime();
-  const requestedEndTs = selectedEndDate?.getTime();
-  // Prefer requested range when available so charts line up on the same ticks
-  const axisMin = requestedStartTs ?? seriesMin;
-  const axisMax = requestedEndTs ?? seriesMax;
+  const axisMin = effectiveStartDate.getTime();
+  const axisMax = effectiveEndDate.getTime();
   const rangeMs =
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
@@ -339,6 +333,7 @@ export function TrafficFlowChart() {
                 search: (prev) => ({
                   ...prev,
                   selectedDate: new Date(point.timestamp),
+                  selectedDateMode: "manual",
                 }),
                 replace: true,
               });

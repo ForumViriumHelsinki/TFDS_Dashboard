@@ -4,16 +4,18 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { AIR_QUALITY_NOW_QUERY_KEY } from "../../hooks/useFilteredAirQuality";
-import { useFallbackDate } from "../../hooks/useFallbackDate";
-import { floorToFiveMinutes, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
+import {
+  getDefaultDateRange,
+  roundToFiveMinutes,
+  toDateOrNull,
+} from "../../utils/time";
 
 export function Header() {
   const navigate = useNavigate({ from: "/" });
   const queryClient = useQueryClient();
-  const { sources, selectedDate } = useSearch({ from: "/" });
-  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
-  const fallbackDateTs = floorToFiveMinutes(fallbackDateRaw).getTime();
-  const displayTs = selectedDate?.getTime() ?? fallbackDateTs;
+  const { sources, selectedDate, selectedDateMode } = useSearch({ from: "/" });
+  const defaultRange = getDefaultDateRange();
+  const displayTs = selectedDate?.getTime() ?? defaultRange.end.getTime();
   const displayDate = new Date(displayTs);
   const draftDateRef = useRef<Date | null>(displayDate);
   const hasPendingUserChangeRef = useRef(false);
@@ -25,11 +27,14 @@ export function Header() {
     hasPendingUserChangeRef.current = false;
 
     if (!value) {
+      const { start, end } = getDefaultDateRange();
       void navigate({
         search: (prev) => ({
           ...prev,
-          // Clear selectedDate in URL, but visually fall back to current time
-          selectedDate: undefined,
+          selectedDate: end,
+          selectedStartDate: start,
+          selectedEndDate: end,
+          selectedDateMode: "live",
         }),
         replace: true,
       });
@@ -44,6 +49,7 @@ export function Header() {
       search: (prev) => ({
         ...prev,
         selectedDate: snappedValue,
+        selectedDateMode: "manual",
       }),
       replace: true,
     });
@@ -70,7 +76,7 @@ export function Header() {
             Ajankohta
           </Text>
           <DateTimePicker
-            key={`header-datetime-${selectedDate ? "manual" : "auto"}-${displayTs}`}
+            key={`header-datetime-${selectedDateMode ?? "live"}-${displayTs}`}
             clearable
             defaultValue={displayDate}
             timePickerProps={{ minutesStep: 5 }}

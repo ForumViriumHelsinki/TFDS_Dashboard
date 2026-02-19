@@ -23,9 +23,9 @@ import {
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 import { Box, Text, useMantineTheme } from "@mantine/core";
 import { useMemo } from "react";
-import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
 import { LoadingState } from "../shared/LoadingState";
+import { getDefaultDateRange } from "../../utils/time";
 
 type TimePoint = { timestamp: number; index: number };
 
@@ -124,15 +124,14 @@ export function AirQualityChart() {
     }),
     enabled: Boolean(selectedAirQualityStation),
   });
-  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
-  const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
-  const displayDate = selectedDate ?? fallbackDate;
-  const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const effectiveEndDate = selectedEndDate ?? fallbackRange.end;
   const effectiveStartDate = useMemo(() => {
     if (selectedStartDate) return selectedStartDate;
     const baseEnd = effectiveEndDate;
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
+  const displayDate = selectedDate ?? effectiveEndDate;
 
   const requestedStartTs = effectiveStartDate.getTime();
   const requestedEndTs = effectiveEndDate.getTime();
@@ -150,10 +149,8 @@ export function AirQualityChart() {
       const date = parseFinnishAikaToDate(airQualityProperties.Aika);
       if (!date) return false;
       const timestamp = date.getTime();
-      if (requestedStartTs !== undefined && timestamp < requestedStartTs)
-        return false;
-      if (requestedEndTs !== undefined && timestamp > requestedEndTs)
-        return false;
+      if (requestedStartTs !== undefined && timestamp < requestedStartTs) return false;
+      if (requestedEndTs !== undefined && timestamp > requestedEndTs) return false;
       return true;
     })
     .map((feature) => {
@@ -165,15 +162,8 @@ export function AirQualityChart() {
     })
     .sort((a, b) => a.timestamp - b.timestamp);
 
-  const seriesMinTs = filteredSeries.length
-    ? filteredSeries[0].timestamp
-    : undefined;
-  const seriesMaxTs = filteredSeries.length
-    ? filteredSeries[filteredSeries.length - 1].timestamp
-    : undefined;
-  // Prefer requested range when available so charts line up on the same ticks
-  const axisMin = requestedStartTs ?? seriesMinTs;
-  const axisMax = requestedEndTs ?? seriesMaxTs;
+  const axisMin = requestedStartTs;
+  const axisMax = requestedEndTs;
   const rangeMs =
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
@@ -210,6 +200,7 @@ export function AirQualityChart() {
                 search: (prev) => ({
                   ...prev,
                   selectedDate: new Date(point.timestamp),
+                  selectedDateMode: "manual",
                 }),
                 replace: true,
               });

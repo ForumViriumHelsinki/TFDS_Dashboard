@@ -28,16 +28,16 @@ import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 import { DisturbanceLayer } from "./DisturbanceLayer";
-import { useFallbackDate } from "../../hooks/useFallbackDate";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getFloatingCarDataNearestBySegmentQueryOptions,
 } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
+import { getAqiTimeSeriesByStationQueryOptions } from "../../queries/aqi";
 import type { LineString } from "geojson";
 import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
 import { getAirQualityColor, getSegmentColorForValue } from "../../utils/colors";
-import { floorToFiveMinutes, getDefaultDateRange } from "../../utils/time";
+import { getDefaultDateRange } from "../../utils/time";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
@@ -84,6 +84,7 @@ function FitMapToSelected({
 
 export function MapView() {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
   const {
     selectedSegment,
     selectedDate,
@@ -93,6 +94,7 @@ export function MapView() {
     segmentMeasurementField,
     selectedStartDate,
     selectedEndDate,
+    selectedDateMode,
   } = useSearch({
     from: "/",
     select: (s) => ({
@@ -104,6 +106,7 @@ export function MapView() {
       segmentMeasurementField: s.segmentMeasurementField,
       selectedStartDate: s.selectedStartDate,
       selectedEndDate: s.selectedEndDate,
+      selectedDateMode: s.selectedDateMode,
     }),
   });
   const navigate = useNavigate({ from: "/" });
@@ -127,20 +130,19 @@ export function MapView() {
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
 
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const effectiveEnd = selectedEndDate ?? fallbackRange.end;
+  const effectiveStart = selectedStartDate ?? fallbackRange.start;
+  const displayDate = selectedDate ?? effectiveEnd;
   const { data: filteredAirQualityData } = useFilteredAirQuality(
-    selectedDate,
+    displayDate,
+    selectedDateMode,
     Boolean(showAirQuality),
   );
-  const fallbackDateRaw = useFallbackDate(Boolean(!selectedDate), 300_000);
-  const fallbackDate = floorToFiveMinutes(fallbackDateRaw);
-  const displayDate = selectedDate ?? fallbackDate;
-  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const segmentQueryTargetDate = displayDate;
   const { start: segmentsStart, end: segmentsEnd } = useMemo(() => {
-    const effectiveEnd = selectedEndDate ?? fallbackRange.end;
-    const effectiveStart = selectedStartDate ?? fallbackRange.start;
     return { start: effectiveStart, end: effectiveEnd };
-  }, [fallbackRange.end, fallbackRange.start, selectedEndDate, selectedStartDate]);
+  }, [effectiveEnd, effectiveStart]);
   const selectedDateOutline = {
     border: `1px dashed ${theme.colors.brand[0]}`,
     borderOffset: "-1px",
@@ -177,7 +179,7 @@ export function MapView() {
     }
 
     return values;
-  }, [segmentMeasurementField, segmentRows]);
+  }, [segmentRows]);
 
   const segmentFieldConfig = useMemo(
     () => getSegmentMeasurementFieldConfig(segmentMeasurementField),
@@ -344,6 +346,20 @@ export function MapView() {
                       `);
                     layer.on("click", () => {
                       const stationId = getAirQualityStationId(feature);
+                      const stationName = String(
+                        feature.properties?.Mittausasema ?? "",
+                      ).trim();
+
+                      if (stationName) {
+                        void queryClient.prefetchQuery(
+                          getAqiTimeSeriesByStationQueryOptions({
+                            start: segmentsStart,
+                            end: segmentsEnd,
+                            stationName,
+                          }),
+                        );
+                      }
+
                       if (stationId) {
                         navigate({
                           search: (s) => ({

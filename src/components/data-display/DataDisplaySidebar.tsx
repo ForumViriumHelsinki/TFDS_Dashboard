@@ -114,6 +114,7 @@ export function DataDisplaySidebar() {
       search: (prev) => ({
         ...prev,
         selectedStartDate: snappedValue ?? defaultStartDate,
+        selectedDateMode: "manual",
       }),
       replace: true,
     });
@@ -127,6 +128,7 @@ export function DataDisplaySidebar() {
       search: (prev) => ({
         ...prev,
         selectedEndDate: snappedValue ?? defaultEndDate,
+        selectedDateMode: "manual",
       }),
       replace: true,
     });

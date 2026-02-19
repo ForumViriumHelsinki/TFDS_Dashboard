@@ -23,8 +23,11 @@ export const AIR_QUALITY_24H_QUERY_KEY = [
 
 export function useFilteredAirQuality(
   selectedDate: Date | null | undefined,
+  selectedDateMode: "live" | "manual" | undefined,
   enabled: boolean = true,
 ) {
+  const useHistorical = selectedDateMode === "manual";
+
   const nowQuery = useQuery({
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_NOW,
@@ -33,7 +36,7 @@ export function useFilteredAirQuality(
     enabled,
   });
 
-  const shouldFetchHistorical = enabled && nowQuery.isSuccess;
+  const shouldFetchHistorical = enabled && useHistorical;
 
   const historicalQuery = useQuery({
     ...getListAirQualityQueryOptions({
@@ -74,26 +77,26 @@ export function useFilteredAirQuality(
     } as FeatureCollection<Geometry, AirQualityProps>;
   }, [historicalQuery.data, selectedDate]);
 
-  const data = selectedDate
+  const data = useHistorical
     ? (filteredHistoricalData ?? nowQuery.data)
     : nowQuery.data;
 
-  const isPending = selectedDate
+  const isPending = useHistorical
     ? historicalQuery.isPending && !filteredHistoricalData && !nowQuery.data
     : nowQuery.isPending && !nowQuery.data;
 
-  const isError = selectedDate
+  const isError = useHistorical
     ? historicalQuery.isError && !filteredHistoricalData && !nowQuery.data
     : nowQuery.isError;
 
-  const error = selectedDate ? historicalQuery.error : nowQuery.error;
+  const error = useHistorical ? historicalQuery.error : nowQuery.error;
 
   return {
     data,
     isPending,
-    isFetching: selectedDate ? historicalQuery.isFetching : nowQuery.isFetching,
+    isFetching: useHistorical ? historicalQuery.isFetching : nowQuery.isFetching,
     isError,
     error,
-    refetch: selectedDate ? historicalQuery.refetch : nowQuery.refetch,
+    refetch: useHistorical ? historicalQuery.refetch : nowQuery.refetch,
   };
 }
