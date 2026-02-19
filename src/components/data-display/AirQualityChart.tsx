@@ -8,6 +8,7 @@ import {
   XAxis,
   Line,
   Tooltip,
+  Legend,
 } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -326,7 +327,7 @@ export function AirQualityChart() {
       <ResponsiveContainer>
         <LineChart
           data={combinedSeries}
-          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          margin={{ top: 12, right: 0, bottom: 0, left: 0 }}
           onClick={(state) => {
             if (
               state &&
@@ -371,6 +372,7 @@ export function AirQualityChart() {
             domain={tfdsDomain as [number, number]}
             width={40}
             tick={{ fontSize: 10, fill: theme.colors.violet[6] }}
+            tickFormatter={(value: number) => String(Math.round(value))}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
@@ -408,10 +410,19 @@ export function AirQualityChart() {
             content={<ChartTooltip renderContent={AirQualityTooltipContent} />}
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
+          <Legend
+            verticalAlign="top"
+            align="right"
+            wrapperStyle={{ top: -26 }}
+            formatter={(value: string) => (
+              <span style={{ color: theme.black, fontSize: 12 }}>{value}</span>
+            )}
+          />
           <Line
             type="monotone"
             dataKey="index"
             yAxisId="left"
+            name="Ilmanlaatuindeksi"
             stroke={theme.colors.blue[6]}
             strokeWidth={2}
             dot={false}
@@ -421,6 +432,7 @@ export function AirQualityChart() {
             type="monotone"
             dataKey="tfdsAqi"
             yAxisId="right"
+            name="TFDS-AQI"
             stroke={theme.colors.violet[6]}
             strokeWidth={2}
             dot={false}
