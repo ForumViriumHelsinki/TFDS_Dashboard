@@ -371,7 +371,7 @@ export function AirQualityChart() {
             hide={!hasTfdsSeries}
             domain={tfdsDomain as [number, number]}
             width={40}
-            tick={{ fontSize: 10, fill: theme.colors.violet[6] }}
+            tick={{ fontSize: 10, fill: theme.black }}
             tickFormatter={(value: number) => String(Math.round(value))}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
