@@ -31,14 +31,34 @@ import { ChartTooltip } from "./ChartTooltip";
 import { LoadingState } from "../shared/LoadingState";
 import { getDefaultDateRange } from "../../utils/time";
 
-type TimePoint = { timestamp: number; index: number; tfdsAqi?: number };
+type TimePoint = {
+  timestamp: number;
+  index: number;
+  tfdsAqi?: number;
+  indexTooltip?: number;
+};
 type TfdsPoint = { timestamp: number; tfdsAqi: number };
 
 function AirQualityTooltipContent(point: TimePoint) {
   return (
-    <Text size="xs">
-      Ilmanlaatuindeksi: <strong>{point.index}</strong>
-    </Text>
+    <>
+      <Text size="xs">
+        Ilmanlaatuindeksi:{" "}
+        <strong>
+          {Number.isFinite(point.indexTooltip as number)
+            ? point.indexTooltip
+            : "-"}
+        </strong>
+      </Text>
+      <Text size="xs">
+        TFDS-AQI:{" "}
+        <strong>
+          {Number.isFinite(point.tfdsAqi as number)
+            ? (point.tfdsAqi as number).toFixed(2)
+            : "-"}
+        </strong>
+      </Text>
+    </>
   );
 }
 
@@ -232,6 +252,43 @@ export function AirQualityChart() {
       )
       .sort((a, b) => a.timestamp - b.timestamp);
   }, [requestedEndTs, requestedStartTs, tfdsAqiData]);
+  const combinedSeries: TimePoint[] = useMemo(() => {
+    const byTimestamp = new Map<number, TimePoint>();
+
+    for (const point of filteredSeries) {
+      byTimestamp.set(point.timestamp, {
+        timestamp: point.timestamp,
+        index: point.index,
+        indexTooltip: point.index,
+      });
+    }
+
+    for (const point of tfdsSeries) {
+      const existing = byTimestamp.get(point.timestamp);
+      if (existing) {
+        existing.tfdsAqi = point.tfdsAqi;
+      } else {
+        byTimestamp.set(point.timestamp, {
+          timestamp: point.timestamp,
+          index: NaN,
+          tfdsAqi: point.tfdsAqi,
+        });
+      }
+    }
+    const sorted = Array.from(byTimestamp.values()).sort(
+      (a, b) => a.timestamp - b.timestamp,
+    );
+    let previousIndex: number | undefined;
+    for (const point of sorted) {
+      if (Number.isFinite(point.index)) {
+        previousIndex = point.index;
+        point.indexTooltip = point.index;
+        continue;
+      }
+      point.indexTooltip = previousIndex;
+    }
+    return sorted;
+  }, [filteredSeries, tfdsSeries]);
 
   const axisMin = requestedStartTs;
   const axisMax = requestedEndTs;
@@ -268,7 +325,7 @@ export function AirQualityChart() {
     <Box pos="relative" h="100%" w="100%">
       <ResponsiveContainer>
         <LineChart
-          data={filteredSeries}
+          data={combinedSeries}
           margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
           onClick={(state) => {
             if (
@@ -358,16 +415,17 @@ export function AirQualityChart() {
             stroke={theme.colors.blue[6]}
             strokeWidth={2}
             dot={false}
+            connectNulls
           />
           <Line
             type="monotone"
             dataKey="tfdsAqi"
-            data={tfdsSeries}
             yAxisId="right"
             stroke={theme.colors.violet[6]}
             strokeWidth={2}
             dot={false}
             hide={!hasTfdsSeries}
+            connectNulls
           />
         </LineChart>
       </ResponsiveContainer>
