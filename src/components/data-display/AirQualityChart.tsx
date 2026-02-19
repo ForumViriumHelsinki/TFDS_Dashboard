@@ -33,7 +33,7 @@ import { getDefaultDateRange } from "../../utils/time";
 
 type TimePoint = {
   timestamp: number;
-  index: number;
+  index?: number;
   tfdsAqi?: number;
   indexTooltip?: number;
 };
@@ -256,10 +256,13 @@ export function AirQualityChart() {
     const byTimestamp = new Map<number, TimePoint>();
 
     for (const point of filteredSeries) {
+      const indexValue = Number.isFinite(point.index as number)
+        ? (point.index as number)
+        : undefined;
       byTimestamp.set(point.timestamp, {
         timestamp: point.timestamp,
-        index: point.index,
-        indexTooltip: point.index,
+        index: indexValue,
+        indexTooltip: indexValue,
       });
     }
 
@@ -270,7 +273,7 @@ export function AirQualityChart() {
       } else {
         byTimestamp.set(point.timestamp, {
           timestamp: point.timestamp,
-          index: NaN,
+          index: undefined,
           tfdsAqi: point.tfdsAqi,
         });
       }
@@ -280,7 +283,7 @@ export function AirQualityChart() {
     );
     let previousIndex: number | undefined;
     for (const point of sorted) {
-      if (Number.isFinite(point.index)) {
+      if (point.index !== undefined && Number.isFinite(point.index)) {
         previousIndex = point.index;
         point.indexTooltip = point.index;
         continue;
@@ -302,7 +305,9 @@ export function AirQualityChart() {
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
-  const yValues = filteredSeries.map((point) => point.index);
+  const yValues = filteredSeries
+    .map((point) => point.index)
+    .filter((value): value is number => Number.isFinite(value));
   const yMin = yValues.length ? Math.min(...yValues) : 0;
   const yMax = yValues.length ? Math.max(...yValues) : 1;
   const yDomain =
