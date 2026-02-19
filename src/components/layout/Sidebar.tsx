@@ -4,6 +4,7 @@ import { AirQualityTab } from "../tabs/AirQualityTab";
 import { SegmentsTab } from "../tabs/SegmentsTab";
 import { useFlag } from "@openfeature/react-sdk";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export function Sidebar() {
   const { value: showSegmentsTab } = useFlag("segments-tab", false);
@@ -16,6 +17,18 @@ export function Sidebar() {
   });
   const effectiveTab =
     activeTab === "Segmentit" && !showSegmentsTab ? "Häiriöt" : activeTab;
+
+  useEffect(() => {
+    if (showSegmentsTab) return;
+    if (activeTab !== "Segmentit") return;
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        activeTab: "Häiriöt",
+      }),
+      replace: true,
+    });
+  }, [activeTab, navigate, showSegmentsTab]);
 
   return (
     <Tabs
