@@ -145,6 +145,33 @@ export const getFloatingCarDataNearestBySegmentQueryOptions = (
         string,
         { value: number; timestampMs: number; distanceMs: number }
       >();
+      const ingestRows = (rows: FloatingCarDataRow[]) => {
+        for (const row of rows) {
+          const segmentId = String(row["segmentId"] ?? "").trim();
+          if (!segmentId) continue;
+          if (hasRequiredSegments && !requiredSegmentSet.has(segmentId)) continue;
+
+          const valueRaw = row["_value"];
+          const value =
+            typeof valueRaw === "number"
+              ? valueRaw
+              : Number.parseFloat(String(valueRaw ?? ""));
+          if (!Number.isFinite(value)) continue;
+
+          const ts = new Date(String(row["_time"] ?? "")).getTime();
+          if (!Number.isFinite(ts)) continue;
+
+          const distanceMs = Math.abs(ts - boundedTargetTs);
+          const current = closestBySegment.get(segmentId);
+          if (
+            !current ||
+            distanceMs < current.distanceMs ||
+            (distanceMs === current.distanceMs && ts > current.timestampMs)
+          ) {
+            closestBySegment.set(segmentId, { value, timestampMs: ts, distanceMs });
+          }
+        }
+      };
 
       const firstWindowMs = 5 * 60 * 1000;
       const firstWindowStartMs = Math.max(startMs, boundedTargetTs - firstWindowMs);
@@ -162,31 +189,24 @@ from(bucket: "${bucket}")
 `.trim();
 
       const rows = await queryApi.collectRows<FloatingCarDataRow>(flux);
+      ingestRows(rows);
 
-      for (const row of rows) {
-        const segmentId = String(row["segmentId"] ?? "").trim();
-        if (!segmentId) continue;
-        if (hasRequiredSegments && !requiredSegmentSet.has(segmentId)) continue;
-
-        const valueRaw = row["_value"];
-        const value =
-          typeof valueRaw === "number"
-            ? valueRaw
-            : Number.parseFloat(String(valueRaw ?? ""));
-        if (!Number.isFinite(value)) continue;
-
-        const ts = new Date(String(row["_time"] ?? "")).getTime();
-        if (!Number.isFinite(ts)) continue;
-
-        const distanceMs = Math.abs(ts - boundedTargetTs);
-        const current = closestBySegment.get(segmentId);
-        if (
-          !current ||
-          distanceMs < current.distanceMs ||
-          (distanceMs === current.distanceMs && ts > current.timestampMs)
-        ) {
-          closestBySegment.set(segmentId, { value, timestampMs: ts, distanceMs });
-        }
+      // In live mode the newest point may be older than +/- 5 minutes. Fall back to
+      // the full selected range so segment colors appear as soon as data exists.
+      const firstWindowIsNarrowerThanRange =
+        firstWindowStartMs > startMs || firstWindowEndMs < endMs;
+      if (closestBySegment.size === 0 && firstWindowIsNarrowerThanRange) {
+        const fullStart = toFluxTime(new Date(startMs));
+        const fullEnd = toFluxTime(new Date(endMs));
+        const fullRangeFlux = `
+from(bucket: "${bucket}")
+  |> range(start: ${fullStart}, stop: ${fullEnd})
+  |> filter(fn: (r) => r["_measurement"] == "segment_data")
+  |> filter(fn: (r) => r["_field"] == "${field}")
+  |> keep(columns: ["segmentId", "_time", "_value"])
+`.trim();
+        const fullRangeRows = await queryApi.collectRows<FloatingCarDataRow>(fullRangeFlux);
+        ingestRows(fullRangeRows);
       }
 
       return Array.from(closestBySegment.entries()).map(
