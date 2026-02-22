@@ -1,0 +1,14 @@
+# Gitleaks configuration for TFDS Dashboard
+# Allowlist false positives from development files and build artifacts
+
+[[allowlists]]
+description = "Development environment file (.env) - git-ignored, contains example token"
+paths = ['^\.env$']
+
+[[allowlists]]
+description = "Auto-generated Kubernetes secret from template - git-ignored"
+paths = ['^k8s/secret\.yaml$']
+
+[[allowlists]]
+description = "Build artifacts - git-ignored, minified code causes false positives"
+paths = ['^dist/']
