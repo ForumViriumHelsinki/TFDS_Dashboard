@@ -19,7 +19,6 @@ import {
   type AqiTimeSeriesRow,
 } from "../../queries/aqi";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import type { FeatureCollection, Geometry } from "geojson";
 import {
   parseFinnishAikaToDate,
   type AirQualityProps,
@@ -167,12 +166,7 @@ export function AirQualityChart() {
   const requestedStartTs = effectiveStartDate.getTime();
   const requestedEndTs = effectiveEndDate.getTime();
 
-  const features = useMemo(
-    () =>
-      (data as FeatureCollection<Geometry, AirQualityProps> | undefined)
-        ?.features ?? [],
-    [data],
-  );
+  const features = useMemo(() => data?.features ?? [], [data]);
   const stationName = useMemo(() => {
     if (!selectedAirQualityStation) return undefined;
 
@@ -190,10 +184,7 @@ export function AirQualityChart() {
     };
 
     // Prefer "now" dataset for station metadata reliability.
-    const fromNow = findNameById(
-      (nowData as FeatureCollection<Geometry, AirQualityProps> | undefined)
-        ?.features,
-    );
+    const fromNow = findNameById(nowData?.features);
     if (fromNow) return fromNow;
 
     return findNameById(features);
