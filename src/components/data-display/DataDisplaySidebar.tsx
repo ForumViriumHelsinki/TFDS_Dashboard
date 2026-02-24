@@ -120,7 +120,7 @@ export function DataDisplaySidebar() {
     });
   };
 
-  const commitEndDate = (value: Date | null, force = false) => {
+  const commitEndDate = (value: Date | null, { force = false }: { force?: boolean }) => {
     if (!force && !hasPendingEndChangeRef.current) return;
     hasPendingEndChangeRef.current = false;
     const snappedValue = value ? roundToFiveMinutes(value) : undefined;
