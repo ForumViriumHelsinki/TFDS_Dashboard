@@ -16,7 +16,6 @@ import {
 } from "../../queries/air-quality";
 import {
   getAqiTimeSeriesByStationQueryOptions,
-  type AqiTimeSeriesRow,
 } from "../../queries/aqi";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
@@ -220,8 +219,8 @@ export function AirQualityChart() {
     })
     .sort((a, b) => a.timestamp - b.timestamp);
   const tfdsSeries: TfdsPoint[] = useMemo(() => {
-    if (!Array.isArray(tfdsAqiData)) return [];
-    return (tfdsAqiData as AqiTimeSeriesRow[])
+    if (!tfdsAqiData) return [];
+    return tfdsAqiData
       .map((row) => {
         const timestamp = new Date(String(row["_time"] ?? "")).getTime();
         const rawValue = row["_value"];
