@@ -142,7 +142,7 @@ export function AirQualityChart() {
       selectedDate: s.selectedDate,
     }),
   });
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, isError, data: historicalData, error } = useQuery({
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
@@ -166,7 +166,7 @@ export function AirQualityChart() {
   const requestedStartTs = effectiveStartDate.getTime();
   const requestedEndTs = effectiveEndDate.getTime();
 
-  const features = useMemo(() => data?.features ?? [], [data]);
+  const features = useMemo(() => historicalData?.features ?? [], [historicalData]);
   const stationName = useMemo(() => {
     if (!selectedAirQualityStation) return undefined;
 
