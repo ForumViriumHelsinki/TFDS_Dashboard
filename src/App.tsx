@@ -10,7 +10,7 @@ function App() {
     <AppShell
       h="100vh"
       header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: "sm" }}
+      navbar={{ width: 360, breakpoint: "sm" }}
     >
       <AppShell.Header px="md" py="sm">
         <Header />

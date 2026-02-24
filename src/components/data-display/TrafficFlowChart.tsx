@@ -1,7 +1,7 @@
-import { Box, Loader, Text, useMantineTheme } from "@mantine/core";
+import { Box, Text, useMantineTheme } from "@mantine/core";
 import { useMemo } from "react";
-import { useFallbackDate } from "../../hooks/useFallbackDate";
 import { ChartTooltip } from "./ChartTooltip";
+import { LoadingState } from "../shared/LoadingState";
 import {
   CartesianGrid,
   LineChart,
@@ -17,30 +17,64 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
+import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
+import {
+  getFloatingCarDataTimeSeriesQueryOptions,
+  type FloatingCarDataRow,
+} from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { getDefaultDateRange } from "../../utils/time";
 
 type TrafficPoint = {
   timestamp: number;
-  floatingCarData: number;
-  status: string;
+  value: number;
+  status?: string;
 };
 
-function TrafficFlowTooltipContent(point: TrafficPoint) {
+type FieldConfig = {
+  label: string;
+  yMax: number;
+  tickFormatter?: (value: number) => string;
+  ticks: number[];
+};
+
+const DEFAULT_TRAFFIC_FIELD_CONFIG: FieldConfig = {
+  label: "FCD",
+  yMax: 10,
+  ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  tickFormatter: (value: number) => {
+    if (value === 0) return "Pieni (0)";
+    if (value === 10) return "Suuri (10)";
+    return String(value);
+  },
+};
+
+function TrafficFlowTooltipContent({
+  point,
+  label,
+  showStatus,
+}: {
+  point: TrafficPoint;
+  label: string;
+  showStatus: boolean;
+}) {
   const statusLabel =
     point.status === "closed"
-      ? "Closed"
+      ? "Suljettu"
       : point.status === "open"
-        ? "Open"
-        : point.status || "Unknown";
+        ? "Auki"
+        : point.status || "Tuntematon";
 
   return (
     <>
       <Text size="xs">
-        FCD: <strong>{point.floatingCarData}</strong>
+        {label}: <strong>{point.value}</strong>
       </Text>
-      <Text size="xs">
-        Status: <strong>{statusLabel}</strong>
-      </Text>
+      {showStatus && (
+        <Text size="xs">
+          Tila: <strong>{statusLabel}</strong>
+        </Text>
+      )}
     </>
   );
 }
@@ -60,12 +94,6 @@ function Message({
   isError,
   error,
 }: MessageProps) {
-  const message = useMemo(() => {
-    if (trafficSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
-    if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
-    return null;
-  }, [trafficSeries.length, isError, error]);
-
   if (!selectedSegment) {
     return (
       <Box
@@ -86,24 +114,14 @@ function Message({
   }
 
   if (isPending) {
-    return (
-      <Box
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          pointerEvents: "none",
-        }}
-      >
-        <Text size="sm" c={isError ? "red" : "dimmed"}>
-          Haetaan tietoja…
-        </Text>
-        <Loader size="sm" ml="md"/>
-      </Box>
-    );
+    return <LoadingState message="Haetaan liikennetietoja…" variant="overlay" />;
   }
+
+  const message = isError
+    ? `Tietojen haku epäonnistui: ${error?.message}.`
+    : trafficSeries.length === 0
+      ? "Ei näytettäviä tietoja valitulla aikavälillä."
+      : null;
 
   if (!message) return null;
 
@@ -128,58 +146,113 @@ function Message({
 export function TrafficFlowChart() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate, selectedDate } =
-    useSearch({ from: "/" });
-  const fallbackDate = useFallbackDate(Boolean(!selectedDate), 60_000);
-  const fallbackEndDate = useFallbackDate(Boolean(!selectedEndDate), 60_000);
-  const displayDate = selectedDate ?? fallbackDate;
-  const effectiveEndDate = selectedEndDate ?? fallbackEndDate;
+  const {
+    selectedSegment,
+    selectedStartDate,
+    selectedEndDate,
+    selectedDate,
+    activeTab,
+    segmentMeasurementField,
+  } = useSearch({
+    from: "/",
+    select: (s) => ({
+      selectedSegment: s.selectedSegment,
+      selectedStartDate: s.selectedStartDate,
+      selectedEndDate: s.selectedEndDate,
+      selectedDate: s.selectedDate,
+      activeTab: s.activeTab,
+      segmentMeasurementField: s.segmentMeasurementField,
+    }),
+  });
+  const isSegmentsTab = activeTab === "Segmentit";
+  const fallbackRange = useMemo(() => getDefaultDateRange(), []);
+  const effectiveEndDate = selectedEndDate ?? fallbackRange.end;
   const effectiveStartDate = useMemo(() => {
     if (selectedStartDate) return selectedStartDate;
     const baseEnd = effectiveEndDate;
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
+  const displayDate = selectedDate ?? effectiveEndDate;
 
-  const { isPending, isError, data, error } = useQuery({
+  const trafficFlowQuery = useQuery({
     ...getTrafficFlowQueryOptions({
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
     }),
-    enabled: Boolean(selectedSegment),
+    enabled: Boolean(selectedSegment && !isSegmentsTab),
+  });
+  const segmentFieldQuery = useQuery({
+    ...getFloatingCarDataTimeSeriesQueryOptions({
+      start: effectiveStartDate,
+      end: effectiveEndDate,
+      segmentId: selectedSegment ?? "",
+      field: segmentMeasurementField,
+    }),
+    enabled: Boolean(selectedSegment && isSegmentsTab),
   });
 
-  const trafficSeries: TrafficPoint[] = Array.isArray(data)
-    ? (data as TrafficFlowRow[]).map((row) => {
-        const isoString = String(
-          (row["_time"] as string | number | boolean | null) ?? "",
-        );
-        const date = new Date(isoString);
-        const timestamp = date.getTime();
-        const floatingCarDataValueRaw = row["fcd"] as
-          | number
-          | string
-          | boolean
-          | null;
-        const floatingCarDataValue =
-          typeof floatingCarDataValueRaw === "number"
-            ? floatingCarDataValueRaw
-            : Number.parseFloat(String(floatingCarDataValueRaw ?? 0));
-        const statusRaw = row["segment_closure_status"] as
-          | string
-          | number
-          | boolean
-          | null;
-        const status = String(statusRaw ?? "").toLowerCase();
+  const activeQuery = isSegmentsTab ? segmentFieldQuery : trafficFlowQuery;
+  const isPending = activeQuery.isPending;
+  const isError = activeQuery.isError;
+  const data = useMemo(
+    () => (isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data),
+    [isSegmentsTab, segmentFieldQuery.data, trafficFlowQuery.data],
+  );
+  const error = activeQuery.error;
+
+  const fieldConfig = useMemo(() => {
+    if (!isSegmentsTab) return DEFAULT_TRAFFIC_FIELD_CONFIG;
+    const config = getSegmentMeasurementFieldConfig(segmentMeasurementField);
+    return (
+      (config && {
+        label: config.label,
+        yMax: config.yMax,
+        ticks: config.ticks,
+      }) ?? {
+        ...DEFAULT_TRAFFIC_FIELD_CONFIG,
+        ticks: [0, 2, 4, 6, 8, 10],
+      }
+    );
+  }, [isSegmentsTab, segmentMeasurementField]);
+
+  const trafficSeries: TrafficPoint[] = useMemo(() => {
+    if (!Array.isArray(data)) return [];
+
+    const rows = isSegmentsTab
+      ? (data as FloatingCarDataRow[])
+      : (data as TrafficFlowRow[]);
+
+    return rows.map((row) => {
+      const isoString = String(
+        (row["_time"] as string | number | boolean | null) ?? "",
+      );
+      const timestamp = new Date(isoString).getTime();
+      const valueRaw = isSegmentsTab ? row["_value"] : row["fcd"];
+      const numericValue =
+        typeof valueRaw === "number"
+          ? valueRaw
+          : Number.parseFloat(String(valueRaw ?? 0));
+
+      if (isSegmentsTab) {
         return {
           timestamp,
-          floatingCarData: Number.isFinite(floatingCarDataValue)
-            ? floatingCarDataValue
-            : 0,
-          status,
+          value: Number.isFinite(numericValue) ? numericValue : 0,
         };
-      })
-    : [];
+      }
+
+      const statusRaw = row["segment_closure_status"] as
+        | string
+        | number
+        | boolean
+        | null;
+      return {
+        timestamp,
+        value: Number.isFinite(numericValue) ? numericValue : 0,
+        status: String(statusRaw ?? "").toLowerCase(),
+      };
+    });
+  }, [data, isSegmentsTab]);
 
   const seriesMin = trafficSeries.length
     ? Math.min(...trafficSeries.map((point) => point.timestamp))
@@ -188,21 +261,14 @@ export function TrafficFlowChart() {
     ? Math.max(...trafficSeries.map((point) => point.timestamp))
     : undefined;
 
-  const requestedStartTs = selectedStartDate
-    ? new Date(selectedStartDate).getTime()
-    : undefined;
-  const requestedEndTs = selectedEndDate
-    ? new Date(selectedEndDate).getTime()
-    : undefined;
-  // Prefer requested range when available so charts line up on the same ticks
-  const axisMin = requestedStartTs ?? seriesMin;
-  const axisMax = requestedEndTs ?? seriesMax;
+  const axisMin = effectiveStartDate.getTime();
+  const axisMax = effectiveEndDate.getTime();
   const rangeMs =
     axisMin !== undefined && axisMax !== undefined ? axisMax - axisMin : 0;
 
-  const selectedDateTs =
-    displayDate && axisMin !== undefined && axisMax !== undefined
-      ? new Date(displayDate).getTime()
+  const selectedDateTsForReferenceLine =
+    axisMin !== undefined && axisMax !== undefined
+      ? displayDate.getTime()
       : undefined;
 
   const inferredStepMs =
@@ -246,7 +312,7 @@ export function TrafficFlowChart() {
     }
     return bands;
   }
-  const closedBands = buildStatusBands("closed");
+  const closedBands = isSegmentsTab ? [] : buildStatusBands("closed");
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
 
@@ -267,6 +333,7 @@ export function TrafficFlowChart() {
                 search: (prev) => ({
                   ...prev,
                   selectedDate: new Date(point.timestamp),
+                  selectedDateMode: "manual",
                 }),
                 replace: true,
               });
@@ -278,7 +345,7 @@ export function TrafficFlowChart() {
             x1={axisMin !== undefined ? (axisMin as number) : undefined}
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
             y1={0}
-            y2={10}
+            y2={fieldConfig.yMax}
             fill={theme.colors.gray[1]}
             fillOpacity={1}
             stroke="none"
@@ -289,25 +356,25 @@ export function TrafficFlowChart() {
               x1={b.x1}
               x2={b.x2}
               y1={0}
-              y2={10}
+              y2={fieldConfig.yMax}
               fill={theme.colors.red[0]}
               fillOpacity={1}
               stroke="none"
             />
           ))}
           <YAxis
-            ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-            domain={[0, 10]}
+            ticks={fieldConfig.ticks}
+            domain={[0, fieldConfig.yMax]}
             width={40}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
             tickLine={false}
             tickMargin={6}
-            tickFormatter={(value: number) => {
-              if (value === 0) return "Pieni (0)";
-              if (value === 10) return "Suuri (10)";
-              return String(value);
-            }}
+            tickFormatter={(value: number) =>
+              fieldConfig.tickFormatter
+                ? fieldConfig.tickFormatter(value)
+                : String(value)
+            }
           />
           <XAxis
             dataKey="timestamp"
@@ -325,25 +392,35 @@ export function TrafficFlowChart() {
             tickLine={false}
             tickMargin={6}
           />
-          {selectedDateTs !== undefined &&
+          {selectedDateTsForReferenceLine !== undefined &&
             axisMin !== undefined &&
             axisMax !== undefined &&
-            selectedDateTs >= axisMin &&
-            selectedDateTs <= axisMax && (
+            selectedDateTsForReferenceLine >= axisMin &&
+            selectedDateTsForReferenceLine <= axisMax && (
               <ReferenceLine
-                x={selectedDateTs}
+                x={selectedDateTsForReferenceLine}
                 stroke={theme.colors.brand[0]}
                 strokeWidth={1}
                 strokeDasharray="4 2"
               />
             )}
           <Tooltip
-            content={<ChartTooltip renderContent={TrafficFlowTooltipContent} />}
+            content={
+              <ChartTooltip<TrafficPoint>
+                renderContent={(point) =>
+                  TrafficFlowTooltipContent({
+                    point,
+                    label: fieldConfig.label,
+                    showStatus: !isSegmentsTab,
+                  })
+                }
+              />
+            }
             cursor={{ stroke: theme.colors.gray[5], strokeDasharray: "3 3" }}
           />
           <Line
             type="monotone"
-            dataKey="floatingCarData"
+            dataKey="value"
             stroke={theme.colors.blue[6]}
             strokeWidth={2}
             dot={false}

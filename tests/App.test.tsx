@@ -1,8 +1,10 @@
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { OpenFeatureProvider } from "@openfeature/react-sdk";
 import {
   RouterProvider,
   createMemoryHistory,
@@ -100,7 +102,9 @@ function renderApp() {
     <MantineProvider>
       <DatesProvider settings={{ locale: "fi" }}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={testRouter} />
+          <OpenFeatureProvider>
+            <RouterProvider router={testRouter} />
+          </OpenFeatureProvider>
         </QueryClientProvider>
       </DatesProvider>
     </MantineProvider>,

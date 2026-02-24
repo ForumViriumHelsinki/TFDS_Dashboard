@@ -11,11 +11,7 @@ import { ExternalLink } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
-
-const DEFAULT_END_DATE = new Date();
-const DEFAULT_START_DATE = new Date(
-  DEFAULT_END_DATE.getTime() - 12 * 60 * 60 * 1000,
-);
+import { getDefaultDateRange, roundToFiveMinutes, toDateOrNull } from "../../utils/time";
 
 interface PropertyDisplayItemProps {
   label: string;
@@ -65,10 +61,24 @@ function DataSourceButton({ label, url }: DataSourceButtonProps) {
 export function DataDisplaySidebar() {
   const theme = useMantineTheme();
   const navigate = useNavigate({ from: "/" });
-  const { selectedSegment, selectedStartDate, selectedEndDate } = useSearch({
+  const {
+    selectedSegment,
+    selectedStartDate,
+    selectedEndDate,
+    activeTab,
+  } = useSearch({
     from: "/",
   });
-  const hasClearedDateRange = useRef(false);
+  const { start: defaultStartDate, end: defaultEndDate } = useMemo(
+    () => getDefaultDateRange(),
+    [],
+  );
+  const startDisplayTs = selectedStartDate?.getTime() ?? defaultStartDate.getTime();
+  const endDisplayTs = selectedEndDate?.getTime() ?? defaultEndDate.getTime();
+  const draftStartDateRef = useRef<Date | null>(new Date(startDisplayTs));
+  const draftEndDateRef = useRef<Date | null>(new Date(endDisplayTs));
+  const hasPendingStartChangeRef = useRef(false);
+  const hasPendingEndChangeRef = useRef(false);
 
   const { getSelectedGroupBySegment, isLoading } = useMergedDisturbances();
 
@@ -79,28 +89,56 @@ export function DataDisplaySidebar() {
 
   // If selected segment is not found (e.g. filtered out), clear it
   useEffect(() => {
-    if (!isLoading && selectedSegment && !selectedGroup) {
+    if (!isLoading && selectedSegment && !selectedGroup && activeTab !== "Segmentit") {
       navigate({
         search: (prev) => ({ ...prev, selectedSegment: undefined }),
         replace: true,
       });
     }
-  }, [isLoading, selectedSegment, selectedGroup, navigate]);
+  }, [isLoading, selectedSegment, selectedGroup, activeTab, navigate]);
 
-  // Clear date range on first load to force defaults
+  // Keep draft refs in sync with displayed values when URL/search changes externally.
   useEffect(() => {
-    if (hasClearedDateRange.current) return;
-    hasClearedDateRange.current = true;
-    if (!selectedStartDate && !selectedEndDate) return;
-    navigate({
+    draftStartDateRef.current = new Date(startDisplayTs);
+  }, [startDisplayTs]);
+
+  useEffect(() => {
+    draftEndDateRef.current = new Date(endDisplayTs);
+  }, [endDisplayTs]);
+
+  const commitStartDate = (
+    value: Date | null,
+    { force = false }: { force?: boolean } = {},
+  ) => {
+    if (!force && !hasPendingStartChangeRef.current) return;
+    hasPendingStartChangeRef.current = false;
+    const snappedValue = value ? roundToFiveMinutes(value) : undefined;
+    void navigate({
       search: (prev) => ({
         ...prev,
-        selectedStartDate: undefined,
-        selectedEndDate: undefined,
+        selectedStartDate: snappedValue ?? defaultStartDate,
+        selectedDateMode: "manual",
       }),
       replace: true,
     });
-  }, [navigate, selectedEndDate, selectedStartDate]);
+  };
+
+  const commitEndDate = (
+    value: Date | null,
+    { force = false }: { force?: boolean } = {},
+  ) => {
+    if (!force && !hasPendingEndChangeRef.current) return;
+    hasPendingEndChangeRef.current = false;
+    const snappedValue = value ? roundToFiveMinutes(value) : undefined;
+    void navigate({
+      search: (prev) => ({
+        ...prev,
+        selectedEndDate: snappedValue ?? defaultEndDate,
+        selectedDateMode: "manual",
+      }),
+      replace: true,
+    });
+  };
 
   return (
     <Stack
@@ -111,35 +149,41 @@ export function DataDisplaySidebar() {
       style={{ borderRight: `1px solid ${theme.colors.gray[3]}` }}
     >
       <DateTimePicker
+        key={`sidebar-start-${startDisplayTs}`}
         label="Mittausaikaväli alkaen"
         placeholder="Valitse alkuhetki"
-        value={selectedStartDate ?? DEFAULT_START_DATE}
+        defaultValue={new Date(startDisplayTs)}
+        timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          void navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedStartDate: value ?? DEFAULT_START_DATE,
-            }),
-            replace: true,
-          });
+          hasPendingStartChangeRef.current = true;
+          const next = toDateOrNull(value);
+          draftStartDateRef.current = next;
+          if (!next) {
+            commitStartDate(null, { force: true });
+          }
         }}
+        onBlur={() => commitStartDate(draftStartDateRef.current)}
+        onDropdownClose={() => commitStartDate(draftStartDateRef.current)}
         size="sm"
         variant="filled"
         maxDate={new Date()}
       />
       <DateTimePicker
+        key={`sidebar-end-${endDisplayTs}`}
         label="Mittausaikaväli päättyen"
         placeholder="Valitse loppuhetki"
-        value={selectedEndDate ?? DEFAULT_END_DATE}
+        defaultValue={new Date(endDisplayTs)}
+        timePickerProps={{ minutesStep: 5 }}
         onChange={(value) => {
-          void navigate({
-            search: (prev) => ({
-              ...prev,
-              selectedEndDate: value ?? DEFAULT_END_DATE,
-            }),
-            replace: true,
-          });
+          hasPendingEndChangeRef.current = true;
+          const next = toDateOrNull(value);
+          draftEndDateRef.current = next;
+          if (!next) {
+            commitEndDate(null, { force: true });
+          }
         }}
+        onBlur={() => commitEndDate(draftEndDateRef.current)}
+        onDropdownClose={() => commitEndDate(draftEndDateRef.current)}
         size="sm"
         variant="filled"
         maxDate={new Date()}

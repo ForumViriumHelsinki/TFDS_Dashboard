@@ -10,10 +10,12 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { CircleHelp } from "lucide-react";
-import { getAirQualityGradientCss } from "../../utils/colors";
+import { getSegmentGradientCss } from "../../utils/colors";
+import { SegmentMeasurementFieldConfig, segmentMeasurementFieldConfigs } from "../../constants/segment-fields";
 
-export function AirQualityIndicator() {
+export function SegmentIndicator() {
   const theme = useMantineTheme();
+
   return (
     <Paper
       w={40}
@@ -30,7 +32,7 @@ export function AirQualityIndicator() {
     >
       <Stack h="100%" gap={0} align="center">
         <Text size="xs" c={theme.colors.gray[7]}>
-          AQI
+          FCD
         </Text>
         <Center flex={1} w="100%" h={180} p="xs">
           <Box
@@ -38,12 +40,12 @@ export function AirQualityIndicator() {
             w="100%"
             style={{
               borderRadius: 25,
-              background: getAirQualityGradientCss(),
+              background: getSegmentGradientCss(),
             }}
           />
         </Center>
         <Popover
-          width={400}
+          width={360}
           position="left"
           withArrow
           shadow="md"
@@ -51,28 +53,23 @@ export function AirQualityIndicator() {
           zIndex={2000}
         >
           <Popover.Target>
-            <ActionIcon variant="white" radius="xl" aria-label="AQI info">
+            <ActionIcon variant="subtle" radius="xl" aria-label="Segment info">
               <CircleHelp size={18} color={theme.colors.gray[7]} />
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown>
-            <Title order={5}>Ilmanlaadun värikoodit</Title>
-            <Text size="sm" pb="xs">
-              HSY käyttää seuraavia värejä ilmanlaadun indikaattorina:
+            <Title order={5}>Segmentit (FCD)</Title>
+            <Text size="sm" pb={6}>
+              Väri määräytyy valitun mittarin arvon mukaan.
             </Text>
-            <Text size="sm">Vihreä - Hyvä (Ilmanlaatuindeksi 0 - 50)</Text>
-            <Text size="sm">
-              Keltainen - Tyydyttävä (Ilmanlaatuindeksi 51 - 75)
-            </Text>
-            <Text size="sm">
-              Oranssi - Välttävä (Ilmanlaatuindeksi 76 - 100)
-            </Text>
-            <Text size="sm">
-              Punainen - Huono (Ilmanlaatuindeksi 101 - 150)
-            </Text>
-            <Text size="sm">
-              Violetti - Erittäin huono (Ilmanlaatuindeksi 151 - )
-            </Text>
+            <Text size="sm">Sininen = suurempi arvo</Text>
+            <Text size="sm" pb={6}>Violetti = pienempi arvo</Text>
+            <Text size="sm" fw={600}>Skaalat mittareittain:</Text>
+            {segmentMeasurementFieldConfigs.map((config: SegmentMeasurementFieldConfig) => (
+              <Text size="sm" key={config.label}>
+                {config.label}: 0-{config.yMax}
+              </Text>
+            ))}
           </Popover.Dropdown>
         </Popover>
       </Stack>
