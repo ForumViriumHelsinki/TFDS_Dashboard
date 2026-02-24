@@ -153,7 +153,7 @@ export function DataDisplaySidebar() {
           const next = toDateOrNull(value);
           draftStartDateRef.current = next;
           if (!next) {
-            commitStartDate(null, true);
+            commitStartDate(null, { force: true });
           }
         }}
         onBlur={() => commitStartDate(draftStartDateRef.current)}
