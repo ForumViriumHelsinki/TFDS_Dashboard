@@ -13,6 +13,9 @@ podAnnotations:
   gke-gcsfuse/cpu-limit: "250m"
   gke-gcsfuse/memory-limit: "256Mi"
   gke-gcsfuse/ephemeral-storage-limit: "1Gi"
+# Envoy Gateway configuration (Gateway API)
+gateway:
+  enabled: true
 ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
