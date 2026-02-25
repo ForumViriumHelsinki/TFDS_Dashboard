@@ -22,7 +22,9 @@ The dashboard requires several environment variables, which are injected at buil
 | VITE_INFLUXDB_URL    | InfluxDB server URL                           | https://idea-helsinki-influxdb-helm-webapp.dataportal.fi/ |
 | VITE_INFLUXDB_ORG    | InfluxDB organization                         | idea-helsinki                                             |
 | VITE_INFLUXDB_BUCKET | InfluxDB bucket name                          | idea-validation-bucket                                    |
+| VITE_INFLUXDB_AQI_BUCKET | AQI InfluxDB bucket name (optional)      | idea-tfds-aqi                                             |
 | VITE_INFLUXDB_TOKEN  | InfluxDB access token (read-only)             | **\*\*\*\***                                              |
+| VITE_AUTHENTICATED   | Enable authenticated mode (optional)          | true                                                      |
 | VITE_APP_VERSION     | App version (optional)                        | 1.2.3                                                     |
 | VITE_SENTRY_DSN      | Sentry DSN (optional)                         | https://...@sentry.io/...                                 |
 | SENTRY_AUTH_TOKEN    | Sentry auth token (optional, build-time only) | (secret, for source maps)                                 |
@@ -43,7 +45,9 @@ docker build \
   --build-arg VITE_INFLUXDB_URL=<influxdb-url> \
   --build-arg VITE_INFLUXDB_ORG=<influxdb-org> \
   --build-arg VITE_INFLUXDB_BUCKET=<influxdb-bucket> \
+  --build-arg VITE_INFLUXDB_AQI_BUCKET=<influxdb-aqi-bucket> \
   --build-arg VITE_INFLUXDB_TOKEN=<influxdb-token> \
+  --build-arg VITE_AUTHENTICATED=<true-or-false> \
   --build-arg VITE_APP_VERSION=<app-version> \
   --build-arg VITE_SENTRY_DSN=<sentry-dsn> \
   --build-arg SENTRY_AUTH_TOKEN=<sentry-auth-token> \
