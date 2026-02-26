@@ -16,6 +16,11 @@ podAnnotations:
 # Envoy Gateway configuration (Gateway API)
 gateway:
   enabled: true
+  hosts:
+  - host: dashboard.helsinki.trafficflowdataspace.eu
+    paths:
+    - path: /
+      pathType: PathPrefix
 ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
