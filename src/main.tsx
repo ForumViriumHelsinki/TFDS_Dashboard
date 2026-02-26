@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DatesProvider } from "@mantine/dates";
 import "dayjs/locale/fi";
 import { OpenFeatureProvider } from "@openfeature/react-sdk";
-import "./openfeature";
+import { initializeFeatureFlags } from "./openfeature";
 
 const queryClient = new QueryClient();
 
@@ -83,29 +83,32 @@ const theme = createTheme({
 });
 
 const rootEl = document.getElementById("root")!;
-createRoot(rootEl).render(
-  <StrictMode>
-    <MantineProvider defaultColorScheme="light" theme={theme}>
-      <DatesProvider settings={{ locale: "fi" }}>
-        <Sentry.ErrorBoundary
-          fallback={({ error }) => (
-            <Box p="2xl" style={{ textAlign: "center" }}>
-              <Title order={1}>Virhe</Title>
-              <Text>Pahoittelut, jotain meni pieleen.</Text>
-              <details style={{ marginTop: "1rem" }}>
-                <summary>Virheen yksityiskohdat</summary>
-                <Text>{String(error)}</Text>
-              </details>
-            </Box>
-          )}
-        >
-          <QueryClientProvider client={queryClient}>
-            <OpenFeatureProvider>
-              <RouterProvider router={router} />
-            </OpenFeatureProvider>
-          </QueryClientProvider>
-        </Sentry.ErrorBoundary>
-      </DatesProvider>
-    </MantineProvider>
-  </StrictMode>,
-);
+
+initializeFeatureFlags().then(() => {
+  createRoot(rootEl).render(
+    <StrictMode>
+      <MantineProvider defaultColorScheme="light" theme={theme}>
+        <DatesProvider settings={{ locale: "fi" }}>
+          <Sentry.ErrorBoundary
+            fallback={({ error }) => (
+              <Box p="2xl" style={{ textAlign: "center" }}>
+                <Title order={1}>Virhe</Title>
+                <Text>Pahoittelut, jotain meni pieleen.</Text>
+                <details style={{ marginTop: "1rem" }}>
+                  <summary>Virheen yksityiskohdat</summary>
+                  <Text>{String(error)}</Text>
+                </details>
+              </Box>
+            )}
+          >
+            <QueryClientProvider client={queryClient}>
+              <OpenFeatureProvider>
+                <RouterProvider router={router} />
+              </OpenFeatureProvider>
+            </QueryClientProvider>
+          </Sentry.ErrorBoundary>
+        </DatesProvider>
+      </MantineProvider>
+    </StrictMode>,
+  );
+});

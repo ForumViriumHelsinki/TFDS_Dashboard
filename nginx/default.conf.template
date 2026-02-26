@@ -66,6 +66,16 @@ server {
         proxy_no_cache 1;
     }
 
+    # GO Feature Flag relay proxy
+    location /feature-flags/ {
+        proxy_pass http://gofeatureflag.feature-flags.svc.cluster.local:1031/;
+        proxy_set_header Host gofeatureflag.feature-flags.svc.cluster.local;
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 5s;
+        proxy_cache off;
+        add_header Cache-Control "no-cache, no-store" always;
+    }
+
     # Cache static assets
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
