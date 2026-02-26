@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.5...tfds-dashboard-v0.6.0) (2026-02-26)
+
+
+### Features
+
+* enable Envoy Gateway for ingress routing ([#77](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/77)) ([ed08c67](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/ed08c67ebd70f3edaf25591bedd9d67eac90d4dd)), closes [#75](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/75)
+
+
+### Bug Fixes
+
+* specify correct hostname for Envoy Gateway HTTPRoute ([#80](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/80)) ([5d68514](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/5d68514aa47e8066d12c34ebe6cf9777699cabf2))
+
 ## [0.5.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.4...tfds-dashboard-v0.5.5) (2025-12-18)
 
 
