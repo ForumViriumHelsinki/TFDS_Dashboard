@@ -50,7 +50,7 @@ server {
         rewrite ^/influxdb-api/(.*)$ /$1 break;
 
         # Proxy to InfluxDB with authentication
-        # Use http:// for internal K8s services (HTTPS terminated at ingress)
+        # Use http:// for internal K8s services (HTTPS terminated at the gateway)
         proxy_pass ${INFLUXDB_URL};
         proxy_set_header Host ${INFLUXDB_HOST};
         proxy_set_header Authorization "Token ${INFLUXDB_TOKEN}";

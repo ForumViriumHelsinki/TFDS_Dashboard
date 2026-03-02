@@ -29,7 +29,7 @@ env:
         key: SENTRY_DSN
   # NGINX proxy configuration for InfluxDB
   # These are substituted by envsubst at container startup, creating static proxy config
-  # Use http:// for internal K8s services (HTTPS is terminated at ingress)
+  # Use http:// for internal K8s services (HTTPS is terminated at the gateway)
   INFLUXDB_URL:
     value: "http://idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086"
   INFLUXDB_HOST:

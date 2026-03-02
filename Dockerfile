@@ -38,7 +38,7 @@ FROM nginx:1.27-alpine
 
 # Set default environment variables for NGINX template substitution
 # These can be overridden at runtime via Kubernetes ConfigMap/Secrets
-# Use http:// for internal K8s services (HTTPS is terminated at ingress)
+# Use http:// for internal K8s services (HTTPS is terminated at the gateway)
 ENV INFLUXDB_URL=http://idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086 \
     INFLUXDB_HOST=idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086 \
     INFLUXDB_TOKEN=""
