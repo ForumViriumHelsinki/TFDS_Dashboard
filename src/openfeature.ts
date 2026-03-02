@@ -84,11 +84,12 @@ export async function initializeFeatureFlags(): Promise<void> {
  * Called after successful authentication to enable domain-based targeting.
  */
 export async function setUserContext(email: string): Promise<void> {
-  const domain = email.split("@")[1];
+  const parts = email.split("@");
+  const domain = parts.length === 2 ? parts[1] : undefined;
   await OpenFeature.setContext({
     targetingKey: email,
     email,
-    domain,
+    ...(domain && { domain }),
     app: "tfds-dashboard",
   });
 }

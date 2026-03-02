@@ -88,41 +88,46 @@ const theme = createTheme({
 
 const rootEl = document.getElementById("root")!;
 
-initializeFeatureFlags().then(() => {
-  const appContent = (
-    <MantineProvider defaultColorScheme="light" theme={theme}>
-      <DatesProvider settings={{ locale: "fi" }}>
-        <Sentry.ErrorBoundary
-          fallback={({ error }) => (
-            <Box p="2xl" style={{ textAlign: "center" }}>
-              <Title order={1}>Virhe</Title>
-              <Text>Pahoittelut, jotain meni pieleen.</Text>
-              <details style={{ marginTop: "1rem" }}>
-                <summary>Virheen yksityiskohdat</summary>
-                <Text>{String(error)}</Text>
-              </details>
-            </Box>
-          )}
-        >
-          <QueryClientProvider client={queryClient}>
-            <OpenFeatureProvider>
-              <RouterProvider router={router} />
-            </OpenFeatureProvider>
-          </QueryClientProvider>
-        </Sentry.ErrorBoundary>
-      </DatesProvider>
-    </MantineProvider>
-  );
+const appContent = (
+  <MantineProvider defaultColorScheme="light" theme={theme}>
+    <DatesProvider settings={{ locale: "fi" }}>
+      <Sentry.ErrorBoundary
+        fallback={({ error }) => (
+          <Box p="2xl" style={{ textAlign: "center" }}>
+            <Title order={1}>Virhe</Title>
+            <Text>Pahoittelut, jotain meni pieleen.</Text>
+            <details style={{ marginTop: "1rem" }}>
+              <summary>Virheen yksityiskohdat</summary>
+              <Text>{String(error)}</Text>
+            </details>
+          </Box>
+        )}
+      >
+        <QueryClientProvider client={queryClient}>
+          <OpenFeatureProvider>
+            <RouterProvider router={router} />
+          </OpenFeatureProvider>
+        </QueryClientProvider>
+      </Sentry.ErrorBoundary>
+    </DatesProvider>
+  </MantineProvider>
+);
 
-  createRoot(rootEl).render(
-    <StrictMode>
-      {GOOGLE_CLIENT_ID ? (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          {appContent}
-        </GoogleOAuthProvider>
-      ) : (
-        appContent
-      )}
-    </StrictMode>,
-  );
-});
+// Initialize feature flags before rendering — falls back to defaults on error
+initializeFeatureFlags()
+  .catch((error) => {
+    console.error("Feature flag initialization failed:", error);
+  })
+  .then(() => {
+    createRoot(rootEl).render(
+      <StrictMode>
+        {GOOGLE_CLIENT_ID ? (
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            {appContent}
+          </GoogleOAuthProvider>
+        ) : (
+          appContent
+        )}
+      </StrictMode>,
+    );
+  });

@@ -63,7 +63,15 @@ function UserMenuInner() {
         if (!response.ok) {
           throw new Error(`Failed to fetch user info: ${response.statusText}`);
         }
-        const userInfo = (await response.json()) as GoogleUser;
+        const data = await response.json();
+        const userInfo: GoogleUser = {
+          email: data.email ?? "",
+          name: data.name ?? "",
+          picture: data.picture ?? "",
+        };
+        if (!userInfo.email) {
+          throw new Error("Google userinfo response missing email");
+        }
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(userInfo));
         setUser(userInfo);
       } catch (error) {
