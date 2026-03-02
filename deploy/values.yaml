@@ -21,43 +21,6 @@ gateway:
     paths:
     - path: /
       pathType: PathPrefix
-ingress:
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    # Basic authentication for main paths
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: tfds-dashboard-basic-auth # pragma: allowlist secret
-    nginx.ingress.kubernetes.io/auth-realm: "TFDS Dashboard - Authentication Required"
-  enabled: true
-  className: nginx
-  hosts:
-  - host: dashboard.helsinki.trafficflowdataspace.eu
-    paths:
-    - path: /
-      pathType: ImplementationSpecific
-  tls:
-  - hosts:
-    - dashboard.helsinki.trafficflowdataspace.eu
-    secretName: tfds-dashboard-tls # pragma: allowlist secret
-# Separate ingress for InfluxDB API without basic auth
-# The @influxdata/influxdb-client-browser uses fetch() with credentials:"omit",
-# which prevents the browser from sending basic auth credentials with API requests.
-# Since the NGINX proxy already authenticates to InfluxDB using a server-side token,
-# we don't need basic auth for this path - the data is protected by the InfluxDB token.
-extraIngress:
-- name: influxdb-api
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  className: nginx
-  hosts:
-  - host: dashboard.helsinki.trafficflowdataspace.eu
-    paths:
-    - path: /influxdb-api
-      pathType: Prefix
-  tls:
-  - hosts:
-    - dashboard.helsinki.trafficflowdataspace.eu
-    secretName: tfds-dashboard-tls # pragma: allowlist secret
 env:
   SENTRY_DSN:
     valueFrom:

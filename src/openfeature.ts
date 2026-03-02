@@ -4,7 +4,7 @@
  */
 
 import { GoFeatureFlagWebProvider } from "@openfeature/go-feature-flag-web-provider";
-import { OpenFeature, InMemoryProvider } from "@openfeature/react-sdk";
+import { OpenFeature, InMemoryProvider, EvaluationContext } from "@openfeature/react-sdk";
 
 const GOFF_ENDPOINT = "/feature-flags";
 const GOFF_HEALTH_TIMEOUT_MS = 3000;
@@ -15,6 +15,8 @@ const FALLBACK_FLAGS = {
     disabled: false,
     variants: { enabled: true, disabled: false },
     defaultVariant: "disabled",
+    contextEvaluator: (context?: EvaluationContext) =>
+      context?.domain === "forumvirium.fi" ? "enabled" : "disabled",
   },
 };
 
@@ -87,6 +89,16 @@ export async function setUserContext(email: string): Promise<void> {
     targetingKey: email,
     email,
     domain,
+    app: "tfds-dashboard",
+  });
+}
+
+/**
+ * Clear evaluation context (e.g., on logout).
+ */
+export async function clearUserContext(): Promise<void> {
+  await OpenFeature.setContext({
+    targetingKey: "anonymous",
     app: "tfds-dashboard",
   });
 }
