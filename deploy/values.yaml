@@ -39,6 +39,11 @@ env:
       secretKeyRef:
         name: tfds-dashboard-secrets
         key: INFLUX_DB_TFDS_TOKEN
+  # GO Feature Flag relay proxy configuration
+  GOFF_URL:
+    value: "http://gofeatureflag.feature-flags.svc.cluster.local:1031"
+  GOFF_HOST:
+    value: "gofeatureflag.feature-flags.svc.cluster.local"
   # Legacy variables - keeping for backwards compatibility during transition
   # These can be removed once we verify the proxy approach works
   INFLUX_DB_URL:
