@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.2...tfds-dashboard-v0.7.3) (2026-03-03)
+
+
+### Bug Fixes
+
+* defer GoFeatureFlag DNS resolution to prevent NGINX crash ([#92](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/92)) ([399303a](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/399303a082a9382e6dba854cb052ce239af50061))
+
 ## [0.7.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.1...tfds-dashboard-v0.7.2) (2026-03-03)
 
 
