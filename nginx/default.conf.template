@@ -68,8 +68,8 @@ server {
 
     # GO Feature Flag relay proxy
     location /feature-flags/ {
-        proxy_pass http://gofeatureflag.feature-flags.svc.cluster.local:1031/;
-        proxy_set_header Host gofeatureflag.feature-flags.svc.cluster.local;
+        proxy_pass ${GOFF_URL}/;
+        proxy_set_header Host ${GOFF_HOST};
         proxy_connect_timeout 3s;
         proxy_read_timeout 5s;
         proxy_cache off;

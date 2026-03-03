@@ -43,7 +43,9 @@ FROM nginx:1.27-alpine
 # Use http:// for internal K8s services (HTTPS is terminated at the gateway)
 ENV INFLUXDB_URL=http://idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086 \
     INFLUXDB_HOST=idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.cluster.local:8086 \
-    INFLUXDB_TOKEN=""
+    INFLUXDB_TOKEN="" \
+    GOFF_URL=http://localhost:1031 \
+    GOFF_HOST=localhost
 
 # Copy built application
 COPY --from=build /app/dist /usr/share/nginx/html
