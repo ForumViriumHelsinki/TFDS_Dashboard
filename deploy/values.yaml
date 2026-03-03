@@ -82,35 +82,6 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-externalSecret:
-  enabled: true
-  name: tfds-dashboard-secrets
-  refreshInterval: 1h
-  secretStoreRef:
-    kind: ClusterSecretStore
-    name: gcp-store
-  target:
-    name: tfds-dashboard-secrets
-    creationPolicy: Owner
-  data:
-  - secretKey: SENTRY_DSN # pragma: allowlist secret
-    remoteRef:
-      key: sentry_dsn_tfds_dashboard
-  - secretKey: INFLUX_DB_URL # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influxdb-url
-  - secretKey: INFLUX_DB_ORG # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influxdb-org
-  - secretKey: INFLUX_DB_FCD_BUCKET # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-fcd-bucket
-  - secretKey: INFLUX_DB_VALIDATION_BUCKET # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-validation-bucket
-  - secretKey: INFLUX_DB_TFDS_TOKEN # pragma: allowlist secret
-    remoteRef:
-      key: idea-helsinki-influx-tfds-token
 # Volumes for writable directories (required with readOnlyRootFilesystem)
 volumes:
 - name: nginx-cache
