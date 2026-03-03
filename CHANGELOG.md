@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.6.0...tfds-dashboard-v0.7.0) (2026-03-03)
+
+
+### Features
+
+* connect to GoFeatureFlag relay proxy ([#81](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/81)) ([a01c087](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/a01c0872bb7d00a7ab79f5b40f700e7eec9ea5a8))
+
+
+### Bug Fixes
+
+* trigger auto-merge workflow on image-updater branch push ([#83](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/83)) ([1ca0335](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/1ca033516cb9abce755abad21fe6978c5f8316e7))
+
 ## [0.6.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.5.5...tfds-dashboard-v0.6.0) (2026-02-26)
 
 
