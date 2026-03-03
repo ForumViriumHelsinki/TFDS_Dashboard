@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.0...tfds-dashboard-v0.7.1) (2026-03-03)
+
+
+### Bug Fixes
+
+* wire VITE_GOOGLE_CLIENT_ID build arg and remove stale ExternalSecret ([#86](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/86)) ([d21bcf0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/d21bcf09cc426187730f119b2519638204e28af6))
+
 ## [0.7.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.6.0...tfds-dashboard-v0.7.0) (2026-03-03)
 
 
