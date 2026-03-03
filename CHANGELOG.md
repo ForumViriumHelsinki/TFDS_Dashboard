@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.1...tfds-dashboard-v0.7.2) (2026-03-03)
+
+
+### Bug Fixes
+
+* parameterize GoFeatureFlag upstream in NGINX config ([#89](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/89)) ([89dbc29](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/89dbc292e809d9431f3c3593cd03da0c83d6bda1))
+
 ## [0.7.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.0...tfds-dashboard-v0.7.1) (2026-03-03)
 
 
