@@ -64,6 +64,7 @@ jobs:
             VITE_INFLUXDB_BUCKET=${{ secrets.VITE_INFLUXDB_BUCKET }}
             VITE_APP_VERSION=${{ steps.meta.outputs.version }}
             VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
 
       - name: Create Sentry release
