@@ -478,13 +478,13 @@ source:
       image:
         repository: ghcr.io/forumviriumhelsinki/tfds-dashboard
         tag: latest
-      ingress:
+      gateway:
         enabled: true
         hosts:
           - host: dashboard.helsinki.trafficflowdataspace.eu
             paths:
               - path: /
-                pathType: Prefix
+                pathType: PathPrefix
       resources:
         requests:
           cpu: 100m

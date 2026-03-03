@@ -1,4 +1,5 @@
 import { Checkbox, Group, Image, Text } from "@mantine/core";
+import { UserMenu } from "../auth/UserMenu";
 import { DateTimePicker } from "@mantine/dates";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -108,6 +109,7 @@ export function Header() {
           alt="Co-funded by the EU"
           w={144}
         />
+        <UserMenu />
       </Group>
     </Group>
   );

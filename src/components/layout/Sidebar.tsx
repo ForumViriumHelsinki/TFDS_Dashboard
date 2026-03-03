@@ -7,7 +7,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export function Sidebar() {
-  const { value: showSegmentsTab } = useFlag("segments-tab", false);
+  const { value: showSegmentsTab } = useFlag("tfds-segments-tab", false);
   const navigate = useNavigate({ from: "/" });
   const { activeTab } = useSearch({
     from: "/",
