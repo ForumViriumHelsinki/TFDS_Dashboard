@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { Avatar, Button, Group, Menu, Text } from "@mantine/core";
+import { Avatar, ActionIcon, Button, Menu } from "@mantine/core";
 import { LogIn, LogOut } from "lucide-react";
 import { setUserContext, clearUserContext } from "../../openfeature";
 
@@ -98,19 +98,16 @@ function UserMenuInner() {
   }
 
   return (
-    <Menu shadow="md" width={220}>
+    <Menu shadow="md" width={220} position="bottom-end" zIndex={1000}>
       <Menu.Target>
-        <Button variant="subtle" size="sm" px="xs">
-          <Group gap="xs">
-            <Avatar src={user.picture} size="sm" radius="xl" />
-            <Text size="sm" maw={160} truncate="end">
-              {user.email}
-            </Text>
-          </Group>
-        </Button>
+        <ActionIcon variant="subtle" size="lg" radius="xl">
+          <Avatar src={user.picture} size="sm" radius="xl" />
+        </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>{user.name}</Menu.Label>
+        <Menu.Label c="dimmed">{user.email}</Menu.Label>
+        <Menu.Divider />
         <Menu.Item leftSection={<LogOut size={16} />} onClick={logout}>
           Kirjaudu ulos
         </Menu.Item>
