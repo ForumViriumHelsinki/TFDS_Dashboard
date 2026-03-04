@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.3...tfds-dashboard-v0.7.4) (2026-03-04)
+
+
+### Bug Fixes
+
+* correct GoFeatureFlag service name in NGINX proxy config ([#96](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/96)) ([d2a1f20](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/d2a1f2045e58ed778b51d6b7d75546de66edcdba))
+
 ## [0.7.3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.2...tfds-dashboard-v0.7.3) (2026-03-03)
 
 
