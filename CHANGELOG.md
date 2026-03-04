@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.7](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.6...tfds-dashboard-v0.7.7) (2026-03-04)
+
+
+### Bug Fixes
+
+* compact header layout to prevent sign-in button overflow ([#112](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/112)) ([c9a5831](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/c9a5831857e623ee3884c499e66d36d2eb4713b4))
+* **deps:** update dependency @react-oauth/google to ^0.13.0 ([#110](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/110)) ([69019c5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/69019c59b14f894a80fa3c24bf8a475320d9b2bb))
+* **deps:** update dependency lucide-react to ^0.577.0 ([#111](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/111)) ([ab311a7](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/ab311a724684a0e6f9e591d4ac6cc136a86fc938))
+
 ## [0.7.6](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.5...tfds-dashboard-v0.7.6) (2026-03-04)
 
 
