@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.4...tfds-dashboard-v0.7.5) (2026-03-04)
+
+
+### Bug Fixes
+
+* use absolute URL for GOFF web provider endpoint ([#99](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/99)) ([129f4a2](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/129f4a2af2b29366ee82f3fc5e01d08a6ef6f03e))
+
 ## [0.7.4](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.3...tfds-dashboard-v0.7.4) (2026-03-04)
 
 
