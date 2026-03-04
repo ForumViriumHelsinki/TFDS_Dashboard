@@ -57,22 +57,22 @@ export function Header() {
   };
 
   return (
-    <Group justify="space-between">
-      <Group gap="lg">
+    <Group justify="space-between" wrap="nowrap" gap="sm">
+      <Group gap="sm" wrap="nowrap">
         <Image
           src="/images/logos/forumvirium-orange.svg"
           alt="Forum Virium Helsinki"
-          w={74}
+          w={56}
         />
-        <Image src="/images/logos/helsinki-black.svg" alt="Helsinki" w={66} />
+        <Image src="/images/logos/helsinki-black.svg" alt="Helsinki" w={50} />
         <Image
           src="/images/logos/TFDS.svg"
           alt="Traffic and Floating Data Space"
-          w={128}
+          w={100}
         />
       </Group>
       <Checkbox.Group value={sources} onChange={setSources}>
-        <Group>
+        <Group gap="xs" wrap="nowrap">
           <Text size="sm" fw={600}>
             Ajankohta
           </Text>
@@ -98,16 +98,16 @@ export function Header() {
           <Checkbox value="air-quality" label="Ilmanlaatu" />
         </Group>
       </Checkbox.Group>
-      <Group gap="lg">
+      <Group gap="sm" wrap="nowrap">
         <Image
           src="/images/logos/edpsm.webp"
           alt="European data space for smart communities"
-          w={128}
+          w={80}
         />
         <Image
           src="/images/logos/co-fundedbytheEU.png"
           alt="Co-funded by the EU"
-          w={144}
+          w={96}
         />
         <UserMenu />
       </Group>
