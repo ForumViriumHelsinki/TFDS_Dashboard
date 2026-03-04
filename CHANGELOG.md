@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.6](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.5...tfds-dashboard-v0.7.6) (2026-03-04)
+
+
+### Bug Fixes
+
+* add WebSocket support to GOFF feature flag proxy ([#102](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/102)) ([df1a0e3](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/df1a0e34dc5859db9b4af4fc6a32a92c58c38001))
+
 ## [0.7.5](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.4...tfds-dashboard-v0.7.5) (2026-03-04)
 
 
