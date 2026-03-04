@@ -53,7 +53,7 @@ export async function initializeFeatureFlags(): Promise<void> {
   if (goffAvailable) {
     console.info("Feature flags: connecting to GOFF relay");
     const provider = new GoFeatureFlagWebProvider({
-      endpoint: GOFF_ENDPOINT,
+      endpoint: `${window.location.origin}${GOFF_ENDPOINT}`,
     });
 
     await OpenFeature.setContext(context);
