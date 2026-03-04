@@ -33,6 +33,7 @@ export default defineConfig({
       "/feature-flags": {
         target: "http://localhost:1031",
         changeOrigin: true,
+        ws: true,
         rewrite: (path) => path.replace(/^\/feature-flags/, ""),
       },
       "/influxdb-api": {
