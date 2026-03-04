@@ -2,70 +2,252 @@ name: Build and push container image
 
 on:
   push:
-    branches:
-      - "main"
     tags:
-      - "tfds-dashboard-v*.*.*"
+      - 'tfds-dashboard-v*.*.*'
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: container-build-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: forumviriumhelsinki/tfds-dashboard
 
 jobs:
-  build-and-push:
+  # ============================================================================
+  # BUILD JOB: runs on release-please PRs only
+  # Builds + pushes a version-tagged image to GHCR so the release job can
+  # promote it (retag) instead of rebuilding. This is the "build once" half of
+  # build-once / promote.
+  #
+  # The lookup key is the version from package.json (e.g. "next-1.2.3").
+  # Release-please always bumps the version in the PR, so:
+  #   PR build  → ghcr.io/.../tfds-dashboard:next-1.2.3
+  #   Tag push  → promote next-1.2.3 to 1.2.3, 1.2, 1
+  # This works regardless of merge strategy (squash or regular merge).
+  # ============================================================================
+  build:
+    name: Build image (PR validation + pre-release)
+    if: startsWith(github.head_ref, 'release-please--branches--main')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+      id-token: write
     env:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        id: buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Log into registry
-        uses: docker/login-action@v3
+      # Persist BuildKit cache mounts (npm) across CI runs
+      - name: Cache BuildKit mounts
+        id: cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: buildkit-cache
+          key: ${{ runner.os }}-buildkit-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-buildkit-
+
+      - name: Inject BuildKit cache mounts
+        uses: reproducible-containers/buildkit-cache-dance@6f699a72a59e4252f05a7435430009b77e25fe06 # v3.3.1
+        with:
+          cache-map: |
+            {
+              "npm-cache": {
+                "target": "/root/.npm",
+                "id": "npm-cache"
+              }
+            }
+          skip-extraction: ${{ steps.cache.outputs.cache-hit }}
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-            type=match,pattern=.*-v(\d+.\d+.\d+),group=1
-            type=match,pattern=.*-v(\d+.\d+),group=1
-            type=match,pattern=.*-v(\d+),group=1
+      # Read the version that release-please bumped in this PR.
+      # The release job will look for :next-{version} to find this image.
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Pre-release image tag: next-${VERSION}"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+      - name: Build and push (pre-release image for later promotion)
+        id: build-push
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
+          platforms: linux/amd64
           push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:next-${{ steps.version.outputs.version }}
           build-args: |
             VITE_INFLUXDB_ORG=${{ secrets.VITE_INFLUXDB_ORG }}
             VITE_INFLUXDB_BUCKET=${{ secrets.VITE_INFLUXDB_BUCKET }}
-            VITE_APP_VERSION=${{ steps.meta.outputs.version }}
+            VITE_APP_VERSION=${{ steps.version.outputs.version }}
             VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
+          provenance: false
+          sbom: false
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Container Build (PR pre-release)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:next-${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Digest**: \`${{ steps.build-push.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Purpose**: Pre-built for promotion on merge — no rebuild needed after merge" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # RELEASE JOB: runs on tag pushes only
+  # Attempts to PROMOTE (retag) the image that was built during the
+  # release-please PR instead of rebuilding. Promotion is a manifest-only
+  # operation and takes seconds vs. minutes for a full rebuild.
+  #
+  # The lookup uses the version number, not git parent SHA, so it works with
+  # any merge strategy (squash or regular merge).
+  #   Tag:       tfds-dashboard-v1.2.3
+  #   PR image:  ghcr.io/.../tfds-dashboard:next-1.2.3
+  #
+  # Fallback: if the pre-built PR image is not found (e.g. the PR build was
+  # skipped, or the version was re-bumped after the image was built), falls
+  # back to a full rebuild using the GHA layer cache.
+  # ============================================================================
+  release:
+    name: Release image
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
+      actions: read
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Strip the component prefix from the release-please tag to get the
+      # semver version, then look for the :next-{version} image that the
+      # build job pushed during the release-please PR.
+      # e.g. tfds-dashboard-v1.2.3 → next-1.2.3
+      - name: Extract release version from tag
+        id: version
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#tfds-dashboard-v}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "next_image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:next-${VERSION}" >> $GITHUB_OUTPUT
+          echo "Looking for pre-built PR image: next-${VERSION}"
+
+      - name: Check whether pre-built PR image exists in GHCR
+        id: pr-image
+        env:
+          PR_IMAGE: ${{ steps.version.outputs.next_image }}
+        run: |
+          if docker manifest inspect "${PR_IMAGE}" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "image=${PR_IMAGE}" >> $GITHUB_OUTPUT
+            echo "PR image found — will promote instead of rebuilding"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "PR image not in GHCR — will fall back to full rebuild"
+          fi
+
+      - name: Extract Docker metadata (release version tags)
+        id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # Match release-please manifest tag format: {component}-v{version}
+            type=match,pattern=.*-v(\d+\.\d+\.\d+),group=1
+            type=match,pattern=.*-v(\d+\.\d+),group=1
+            type=match,pattern=.*-v(\d+),group=1
+
+      # ---- Fast path: promote the pre-built PR image -------------------------
+      # Manifest-only retag: no layer re-upload, completes in seconds.
+      - name: Promote PR image to release tags
+        if: steps.pr-image.outputs.exists == 'true'
+        run: |
+          SOURCE="${{ steps.pr-image.outputs.image }}"
+          TAG_ARGS=()
+          while IFS= read -r tag; do
+            [[ -n "$tag" ]] && TAG_ARGS+=(--tag "$tag")
+          done <<< "${{ steps.meta.outputs.tags }}"
+          echo "Promoting ${SOURCE} to ${#TAG_ARGS[@]} tags..."
+          docker buildx imagetools create "${TAG_ARGS[@]}" "$SOURCE"
+
+      # ---- Slow path: full rebuild (fallback) --------------------------------
+      # Reached when the pre-built :next-{version} image is not in GHCR
+      # (e.g. the PR build was skipped, or the PR was re-opened with a
+      # different version after the image was built). Uses GHA layer cache.
+      - name: Build and push (fallback — no pre-built PR image found)
+        id: build-push
+        if: steps.pr-image.outputs.exists != 'true'
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_INFLUXDB_ORG=${{ secrets.VITE_INFLUXDB_ORG }}
+            VITE_INFLUXDB_BUCKET=${{ secrets.VITE_INFLUXDB_BUCKET }}
+            VITE_APP_VERSION=${{ steps.version.outputs.version }}
+            VITE_SENTRY_DSN=${{ secrets.SENTRY_DSN }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+            SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
+          provenance: mode=max
+          sbom: true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@c1824fd6edce30d7ab345a9989de00bbd46ef284 # 0.34.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@9e907b5e64f6b83e7804b09294d44122997950d6 # v4.32.3
+        if: always()
+        continue-on-error: true
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Create Sentry release
         if: success() && env.SENTRY_AUTH_TOKEN != ''
@@ -76,4 +258,46 @@ jobs:
           SENTRY_PROJECT: tfds_dashboard
         with:
           environment: production
-          version: ${{ steps.meta.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+
+      - name: Job summary
+        if: always()
+        run: |
+          PROMOTED="${{ steps.pr-image.outputs.exists }}"
+          echo "## Container Release" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: \`${{ steps.meta.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          if [ "$PROMOTED" = "true" ]; then
+            echo "- **Method**: Promoted from pre-built PR image (fast path — no rebuild)" >> $GITHUB_STEP_SUMMARY
+            echo "- **Source**: \`${{ steps.version.outputs.next_image }}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Method**: Full rebuild (fallback — pre-built image not found)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "- **Tags**:" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.meta.outputs.tags }}' | while read -r tag; do
+            echo "  - \`$tag\`" >> $GITHUB_STEP_SUMMARY
+          done
+
+  # ============================================================================
+  # STATUS GATE: always reports a result for PR required status checks.
+  # The build job only runs on release-please PRs, so it is "skipped" on
+  # image-updater (and other) PRs. GitHub branch protection does not treat
+  # "skipped" as "success", which would block auto-merge forever.
+  # This gate job runs on every PR and translates skipped → success so that
+  # a single stable check name can be used in branch protection rules.
+  # ============================================================================
+  build-status:
+    name: Build and push status
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Check build results
+        run: |
+          build="${{ needs.build.result }}"
+          echo "build result: $build"
+          if [[ "$build" == "failure" || "$build" == "cancelled" ]]; then
+            echo "Image build failed or was cancelled"
+            exit 1
+          fi
+          echo "Build succeeded or was intentionally skipped (non-release-please PR)"
