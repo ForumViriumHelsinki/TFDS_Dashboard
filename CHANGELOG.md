@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.10](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.9...tfds-dashboard-v0.7.10) (2026-03-09)
+
+
+### Bug Fixes
+
+* update trivy-action to 0.35.0 (Trivy v0.69.3) ([#130](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/130)) ([f910c39](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/f910c39fab35b007ce30557f856fe0d0d3510f38))
+
 ## [0.7.9](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.8...tfds-dashboard-v0.7.9) (2026-03-09)
 
 
