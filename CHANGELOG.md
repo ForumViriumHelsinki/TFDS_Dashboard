@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.8](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.7...tfds-dashboard-v0.7.8) (2026-03-09)
+
+
+### Bug Fixes
+
+* Added the public/data/ contents to gitignore and removed the current contents ([#124](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/124)) ([53d6ba0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/53d6ba09939b3caee37c2e31ce6646b726a1e77e))
+
 ## [0.7.7](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.6...tfds-dashboard-v0.7.7) (2026-03-04)
 
 
