@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.9](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.8...tfds-dashboard-v0.7.9) (2026-03-09)
+
+
+### Bug Fixes
+
+* Remove Trivy scan results upload step ([#127](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/127)) ([f7545cd](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/f7545cd74fb1db05108ba6ef8a6dc06ba7380e1e))
+
 ## [0.7.8](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.7...tfds-dashboard-v0.7.8) (2026-03-09)
 
 
