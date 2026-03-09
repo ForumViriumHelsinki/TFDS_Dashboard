@@ -146,3 +146,5 @@ k8s/secret.yaml
 
 # macOS
 /.DS_Store
+
+/public/data/
