@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.11](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.10...tfds-dashboard-v0.7.11) (2026-03-09)
+
+
+### Bug Fixes
+
+* **deploy:** correct GCS FUSE mount path for JSON data files ([#133](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/133)) ([9e874ec](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/9e874ec8a5bf2b88d537f5ccf514a068e10ee9f4))
+
 ## [0.7.10](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.9...tfds-dashboard-v0.7.10) (2026-03-09)
 
 
