@@ -110,9 +110,9 @@ volumeMounts:
   mountPath: /tmp
 - name: nginx-conf
   mountPath: /etc/nginx/conf.d
-# Mount GCS bucket path idea-helsinki/data to public/data
+# Mount GCS bucket path idea-helsinki/data to /data (served at /data/ by nginx)
 - name: shared-data
-  mountPath: /usr/share/nginx/html/public/data
+  mountPath: /usr/share/nginx/html/data
   subPath: data
   readOnly: true
 keda:
