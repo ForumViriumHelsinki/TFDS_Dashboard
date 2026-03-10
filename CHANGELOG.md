@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.13](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.12...tfds-dashboard-v0.7.13) (2026-03-10)
+
+
+### Bug Fixes
+
+* fcd attribute naming update 1 ([#139](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/139)) ([a21ba83](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/a21ba836f2b789534941e799aa9f7a4fff63d1e2))
+
 ## [0.7.12](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.11...tfds-dashboard-v0.7.12) (2026-03-10)
 
 
