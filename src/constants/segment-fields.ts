@@ -16,22 +16,16 @@ export interface SegmentMeasurementFieldConfig {
 
 export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
   {
+    value: "currentSpeed",
+    label: "Hetkellinen nopeus",
+    yMax: 120,
+    ticks: [0, 20, 40, 60, 80, 100, 120],
+  },
+  {
     value: "typicalSpeed",
     label: "Tyypillinen nopeus",
     yMax: 120,
     ticks: [0, 20, 40, 60, 80, 100, 120],
-  },
-  {
-    value: "currentSpeed",
-    label: "Nykyinen nopeus",
-    yMax: 120,
-    ticks: [0, 20, 40, 60, 80, 100, 120],
-  },
-  {
-    value: "confidence_level",
-    label: "Luotettavuus",
-    yMax: 100,
-    ticks: [0, 20, 40, 60, 80, 100],
   },
   {
     value: "fcd_coverage",
@@ -39,6 +33,12 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     yMax: 10,
     ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   },
+  {
+    value: "confidence_level",
+    label: "Luotettavuus",
+    yMax: 100,
+    ticks: [0, 20, 40, 60, 80, 100],
+  }
 ];
 
 export const segmentMeasurementFieldOptions = segmentMeasurementFieldConfigs.map(

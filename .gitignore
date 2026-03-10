@@ -147,4 +147,8 @@ k8s/secret.yaml
 # macOS
 /.DS_Store
 
+# local data for services
 /public/data/
+
+# IDEA specifics
+.idea/
