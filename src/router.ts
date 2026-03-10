@@ -39,8 +39,8 @@ const searchSchema = z.object({
     normalizeSegmentMeasurementField,
     z
       .enum(segmentMeasurementFieldValues)
-      .default("typicalSpeed")
-      .catch("typicalSpeed"),
+      .default("currentSpeed")
+      .catch("currentSpeed"),
   ),
   selectedStartDate: z.coerce.date().optional(),
   selectedEndDate: z.coerce.date().optional(),

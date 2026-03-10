@@ -1,8 +1,8 @@
 export const segmentMeasurementFieldValues = [
-  "typicalSpeed",
   "currentSpeed",
-  "confidence_level",
+  "typicalSpeed",
   "fcd_coverage",
+  "confidence_level",
 ] as const;
 
 export type SegmentMeasurementField = (typeof segmentMeasurementFieldValues)[number];
