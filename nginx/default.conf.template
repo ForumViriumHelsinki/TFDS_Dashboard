@@ -16,6 +16,11 @@ server {
         add_header Content-Type text/plain;
     }
 
+    # GCS-FUSE data files — revalidate on every request to avoid stale cache
+    location /data/ {
+        add_header Cache-Control "no-cache" always;
+    }
+
     # SPA routing
     location / {
         try_files $uri $uri/ /index.html;
