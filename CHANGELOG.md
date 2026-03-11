@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.14](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.13...tfds-dashboard-v0.7.14) (2026-03-11)
+
+
+### Bug Fixes
+
+* **nginx:** add Cache-Control header for GCS data files ([#142](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/142)) ([487d531](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/487d531fa2bbdeefd2bcf1f0fcb4be77466a7d0e))
+
 ## [0.7.13](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.12...tfds-dashboard-v0.7.13) (2026-03-10)
 
 
