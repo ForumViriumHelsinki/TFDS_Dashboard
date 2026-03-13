@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.15](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.14...tfds-dashboard-v0.7.15) (2026-03-13)
+
+
+### Bug Fixes
+
+* only send Authorization header when GOFF_API_KEY is set ([#147](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/147)) ([8522e46](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/8522e461aa662f6fa72adf169c57f2dc3fffce47))
+
 ## [0.7.14](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.13...tfds-dashboard-v0.7.14) (2026-03-11)
 
 
