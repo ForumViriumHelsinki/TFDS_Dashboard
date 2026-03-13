@@ -55,6 +55,10 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy NGINX configuration
 COPY nginx/default.conf.template /etc/nginx/templates/
 
+# Copy custom entrypoint scripts
+COPY nginx/docker-entrypoint.d/ /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/40-goff-auth.sh
+
 # Expose port
 EXPOSE 80
 
