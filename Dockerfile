@@ -46,6 +46,7 @@ ENV INFLUXDB_URL=http://idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.clu
     INFLUXDB_TOKEN="" \
     GOFF_URL=http://localhost:1031 \
     GOFF_HOST=localhost \
+    GOFF_API_KEY="" \
     NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
 
 # Copy built application

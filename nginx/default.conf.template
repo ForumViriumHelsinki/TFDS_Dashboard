@@ -81,6 +81,7 @@ server {
         rewrite ^/feature-flags/(.*)$ /$1 break;
         proxy_pass $goff_upstream;
         proxy_set_header Host ${GOFF_HOST};
+        proxy_set_header Authorization "Bearer ${GOFF_API_KEY}";
         proxy_connect_timeout 3s;
         proxy_read_timeout 60s;
         proxy_cache off;
