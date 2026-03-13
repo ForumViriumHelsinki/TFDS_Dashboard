@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/forumviriumhelsinki/tfds-dashboard
-  tag: "0.7.15"
+  tag: "0.7.16"
 imagePullSecrets:
 - name: ghcr-login-secret
 # Use shared service account with Workload Identity for GCS access
