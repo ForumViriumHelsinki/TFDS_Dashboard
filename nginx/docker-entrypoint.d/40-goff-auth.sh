@@ -4,7 +4,7 @@
 # avoiding an empty "Bearer " header in local development.
 set -e
 
-GOFF_AUTH_CONF="/etc/nginx/goff-auth-header.conf"
+GOFF_AUTH_CONF="/etc/nginx/conf.d/goff-auth-header.inc"
 
 if [ -n "${GOFF_API_KEY:-}" ]; then
     printf 'proxy_set_header Authorization "Bearer %s";\n' "$GOFF_API_KEY" > "$GOFF_AUTH_CONF"
