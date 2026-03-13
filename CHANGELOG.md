@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.16](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.15...tfds-dashboard-v0.7.16) (2026-03-13)
+
+
+### Bug Fixes
+
+* **nginx:** write goff auth config to writable conf.d path ([#150](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/150)) ([397cf42](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/397cf42a4a5f4f2afd4051afd04e9d0eccfaf1ac))
+
 ## [0.7.15](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.14...tfds-dashboard-v0.7.15) (2026-03-13)
 
 
