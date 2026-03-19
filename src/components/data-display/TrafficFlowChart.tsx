@@ -17,18 +17,25 @@ import { useQuery } from "@tanstack/react-query";
 import { getTrafficFlowQueryOptions } from "../../queries/traffic-flow";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type { TrafficFlowRow } from "../../queries/traffic-flow";
-import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
+import {
+  getSegmentMeasurementFieldConfig,
+  getSegmentMeasurementFieldQueryField,
+  usesSpeedLimitBaseline,
+} from "../../constants/segment-fields";
 import {
   getFloatingCarDataTimeSeriesQueryOptions,
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
 import { getDefaultDateRange } from "../../utils/time";
+import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 
 type TrafficPoint = {
   timestamp: number;
   value: number;
   status?: string;
+  actualValue?: number;
+  speedLimit?: number;
 };
 
 type FieldConfig = {
@@ -53,10 +60,12 @@ function TrafficFlowTooltipContent({
   point,
   label,
   showStatus,
+  valueFormatter,
 }: {
   point: TrafficPoint;
   label: string;
   showStatus: boolean;
+  valueFormatter?: (value: number) => string;
 }) {
   const statusLabel =
     point.status === "closed"
@@ -68,8 +77,22 @@ function TrafficFlowTooltipContent({
   return (
     <>
       <Text size="xs">
-        {label}: <strong>{point.value}</strong>
+        {label}:{" "}
+        <strong>
+          {valueFormatter?.(point.value) ?? point.value}
+        </strong>
       </Text>
+      {Number.isFinite(point.actualValue) &&
+        Math.abs((point.actualValue ?? 0) - point.value) > 0.05 && (
+          <Text size="xs">
+            Nopeus: <strong>{Math.round(point.actualValue ?? 0)} km/h</strong>
+          </Text>
+        )}
+      {Number.isFinite(point.speedLimit) && (
+        <Text size="xs">
+          Rajoitus: <strong>{Math.round(point.speedLimit ?? 0)} km/h</strong>
+        </Text>
+      )}
       {showStatus && (
         <Text size="xs">
           Tila: <strong>{statusLabel}</strong>
@@ -114,7 +137,9 @@ function Message({
   }
 
   if (isPending) {
-    return <LoadingState message="Haetaan liikennetietoja…" variant="overlay" />;
+    return (
+      <LoadingState message="Haetaan liikennetietoja…" variant="overlay" />
+    );
   }
 
   const message = isError
@@ -173,6 +198,24 @@ export function TrafficFlowChart() {
     return new Date(baseEnd.getTime() - 12 * 60 * 60 * 1000);
   }, [effectiveEndDate, selectedStartDate]);
   const displayDate = selectedDate ?? effectiveEndDate;
+  const selectedQueryField = getSegmentMeasurementFieldQueryField(
+    segmentMeasurementField,
+  );
+  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
+    segmentMeasurementField,
+  );
+  const {
+    data: speedLimits,
+    isPending: isSpeedLimitsPending,
+    isError: isSpeedLimitsError,
+    error: speedLimitsError,
+  } = useQuery({
+    ...getSegmentSpeedLimitsQueryOptions(),
+    enabled: Boolean(isSegmentsTab && selectedFieldUsesSpeedLimit),
+  });
+  const selectedSegmentSpeedLimit = selectedSegment
+    ? speedLimits?.segmentId?.[selectedSegment]?.speedLimit
+    : undefined;
 
   const trafficFlowQuery = useQuery({
     ...getTrafficFlowQueryOptions({
@@ -187,19 +230,23 @@ export function TrafficFlowChart() {
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
-      field: segmentMeasurementField,
+      field: selectedQueryField,
     }),
     enabled: Boolean(selectedSegment && isSegmentsTab),
   });
 
   const activeQuery = isSegmentsTab ? segmentFieldQuery : trafficFlowQuery;
-  const isPending = activeQuery.isPending;
-  const isError = activeQuery.isError;
+  const isPending =
+    activeQuery.isPending ||
+    (isSegmentsTab && selectedFieldUsesSpeedLimit && isSpeedLimitsPending);
+  const isError =
+    activeQuery.isError ||
+    (isSegmentsTab && selectedFieldUsesSpeedLimit && isSpeedLimitsError);
   const data = useMemo(
     () => (isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data),
     [isSegmentsTab, segmentFieldQuery.data, trafficFlowQuery.data],
   );
-  const error = activeQuery.error;
+  const error = activeQuery.error ?? speedLimitsError;
 
   const fieldConfig = useMemo(() => {
     if (!isSegmentsTab) return DEFAULT_TRAFFIC_FIELD_CONFIG;
@@ -209,6 +256,7 @@ export function TrafficFlowChart() {
         label: config.label,
         yMax: config.yMax,
         ticks: config.ticks,
+        tickFormatter: config.tickFormatter,
       }) ?? {
         ...DEFAULT_TRAFFIC_FIELD_CONFIG,
         ticks: [0, 2, 4, 6, 8, 10],
@@ -235,6 +283,18 @@ export function TrafficFlowChart() {
           : Number.parseFloat(String(valueRaw ?? 0));
 
       if (isSegmentsTab) {
+        if (selectedFieldUsesSpeedLimit) {
+          const actualValue = Number.isFinite(numericValue) ? numericValue : 0;
+          return {
+            timestamp,
+            value: actualValue,
+            actualValue,
+            speedLimit: Number.isFinite(selectedSegmentSpeedLimit)
+              ? selectedSegmentSpeedLimit
+              : undefined,
+          };
+        }
+
         return {
           timestamp,
           value: Number.isFinite(numericValue) ? numericValue : 0,
@@ -252,7 +312,12 @@ export function TrafficFlowChart() {
         status: String(statusRaw ?? "").toLowerCase(),
       };
     });
-  }, [data, isSegmentsTab]);
+  }, [
+    data,
+    isSegmentsTab,
+    selectedFieldUsesSpeedLimit,
+    selectedSegmentSpeedLimit,
+  ]);
 
   const seriesMin = trafficSeries.length
     ? Math.min(...trafficSeries.map((point) => point.timestamp))
@@ -315,6 +380,15 @@ export function TrafficFlowChart() {
   const closedBands = isSegmentsTab ? [] : buildStatusBands("closed");
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
+  const speedLimitReferenceLine =
+    isSegmentsTab &&
+    selectedFieldUsesSpeedLimit &&
+    Number.isFinite(selectedSegmentSpeedLimit) &&
+    selectedSegmentSpeedLimit !== undefined &&
+    selectedSegmentSpeedLimit >= 0 &&
+    selectedSegmentSpeedLimit <= fieldConfig.yMax
+      ? selectedSegmentSpeedLimit
+      : undefined;
 
   return (
     <Box pos="relative" h="100%" w="100%">
@@ -404,6 +478,14 @@ export function TrafficFlowChart() {
                 strokeDasharray="4 2"
               />
             )}
+          {speedLimitReferenceLine !== undefined && (
+            <ReferenceLine
+              y={speedLimitReferenceLine}
+              stroke={theme.colors.orange[6]}
+              strokeWidth={1}
+              strokeDasharray="6 3"
+            />
+          )}
           <Tooltip
             content={
               <ChartTooltip<TrafficPoint>
@@ -412,6 +494,7 @@ export function TrafficFlowChart() {
                     point,
                     label: fieldConfig.label,
                     showStatus: !isSegmentsTab,
+                    valueFormatter: fieldConfig.tickFormatter,
                   })
                 }
               />
@@ -427,7 +510,13 @@ export function TrafficFlowChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <Message selectedSegment={selectedSegment} trafficSeries={trafficSeries} isPending={isPending} isError={isError} error={error ?? undefined} />
+      <Message
+        selectedSegment={selectedSegment}
+        trafficSeries={trafficSeries}
+        isPending={isPending}
+        isError={isError}
+        error={error ?? undefined}
+      />
     </Box>
   );
 }

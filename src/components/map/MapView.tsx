@@ -32,15 +32,21 @@ import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 import { SegmentLayer } from "./SegmentLayer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  getFloatingCarDataNearestBySegmentQueryOptions,
-} from "../../queries/floating-car-data";
+import { getFloatingCarDataNearestBySegmentQueryOptions } from "../../queries/floating-car-data";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { getAqiTimeSeriesByStationQueryOptions } from "../../queries/aqi";
 import type { LineString } from "geojson";
-import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
-import { getAirQualityColor, getSegmentColorForValue } from "../../utils/colors";
+import {
+  getSegmentMeasurementFieldConfig,
+  getSegmentMeasurementFieldQueryField,
+  usesSpeedLimitBaseline,
+} from "../../constants/segment-fields";
+import {
+  getAirQualityColor,
+  getSegmentColorForValue,
+} from "../../utils/colors";
 import { getDefaultDateRange } from "../../utils/time";
+import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
@@ -116,7 +122,8 @@ export function MapView() {
   const showSegmentsTab = activeTab === "Segmentit";
   const enabledSources = sources ?? [];
   const showAirQuality = enabledSources.includes(Sources.AIR_QUALITY);
-  const showAreaRentals = !showSegmentsTab && enabledSources.includes(Sources.AREA_RENTALS);
+  const showAreaRentals =
+    !showSegmentsTab && enabledSources.includes(Sources.AREA_RENTALS);
   const showExcavationNotices =
     !showSegmentsTab && enabledSources.includes(Sources.EXCAVATION_NOTICES);
   const showDisturbanceLayers = showAreaRentals || showExcavationNotices;
@@ -154,6 +161,15 @@ export function MapView() {
   };
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
+  const { data: speedLimits, isPending: isSpeedLimitsPending } = useQuery(
+    getSegmentSpeedLimitsQueryOptions(),
+  );
+  const selectedQueryField = getSegmentMeasurementFieldQueryField(
+    segmentMeasurementField,
+  );
+  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
+    segmentMeasurementField,
+  );
   const {
     data: segmentRows,
     dataUpdatedAt: segmentRowsUpdatedAt,
@@ -162,7 +178,7 @@ export function MapView() {
     ...getFloatingCarDataNearestBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
-      field: segmentMeasurementField,
+      field: selectedQueryField,
       target: segmentQueryTargetDate,
     }),
     enabled: Boolean(showSegmentsTab),
@@ -170,6 +186,17 @@ export function MapView() {
   });
 
   const targetDateMs = segmentQueryTargetDate.getTime();
+
+  const speedLimitBySegmentId = useMemo(() => {
+    const values = new Map<string, number>();
+    for (const [segmentId, entry] of Object.entries(
+      speedLimits?.segmentId ?? {},
+    )) {
+      if (!Number.isFinite(entry.speedLimit) || entry.speedLimit <= 0) continue;
+      values.set(segmentId, entry.speedLimit);
+    }
+    return values;
+  }, [speedLimits]);
 
   const segmentFieldValueById = useMemo(() => {
     const values = new Map<string, number>();
@@ -180,11 +207,20 @@ export function MapView() {
     for (const row of segmentRows) {
       const segmentId = row.segmentId?.trim();
       if (!segmentId || !Number.isFinite(row.value)) continue;
+      if (selectedFieldUsesSpeedLimit) {
+        const speedLimit = speedLimitBySegmentId.get(segmentId);
+        if (!Number.isFinite(speedLimit) || !speedLimit || speedLimit <= 0) {
+          continue;
+        }
+        values.set(segmentId, Math.min(row.value / speedLimit, 1));
+        continue;
+      }
+
       values.set(segmentId, row.value);
     }
 
     return values;
-  }, [segmentRows]);
+  }, [segmentRows, selectedFieldUsesSpeedLimit, speedLimitBySegmentId]);
 
   const segmentFieldConfig = useMemo(
     () => getSegmentMeasurementFieldConfig(segmentMeasurementField),
@@ -193,19 +229,36 @@ export function MapView() {
 
   const segmentColorById = useMemo(() => {
     const colors = new Map<string, string>();
-    if (showSegmentsTab && isSegmentRowsFetching) {
+    if (
+      showSegmentsTab &&
+      (isSegmentRowsFetching ||
+        (selectedFieldUsesSpeedLimit && isSpeedLimitsPending))
+    ) {
       return colors;
     }
-    if (!showSegmentsTab || !segmentFieldConfig || segmentFieldValueById.size === 0) {
+    if (
+      !showSegmentsTab ||
+      !segmentFieldConfig ||
+      segmentFieldValueById.size === 0
+    ) {
       return colors;
     }
 
+    const colorMaxValue =
+      segmentFieldConfig.colorMaxValue ?? segmentFieldConfig.yMax;
     for (const [segmentId, value] of segmentFieldValueById.entries()) {
-      colors.set(segmentId, getSegmentColorForValue(value, segmentFieldConfig.yMax));
+      colors.set(segmentId, getSegmentColorForValue(value, colorMaxValue));
     }
 
     return colors;
-  }, [showSegmentsTab, isSegmentRowsFetching, segmentFieldConfig, segmentFieldValueById]);
+  }, [
+    showSegmentsTab,
+    isSegmentRowsFetching,
+    isSpeedLimitsPending,
+    segmentFieldConfig,
+    segmentFieldValueById,
+    selectedFieldUsesSpeedLimit,
+  ]);
 
   const segmentsFeatureCollection = useMemo(() => {
     const featureCollection = buildSegmentsMappingFeatureCollection(
@@ -223,7 +276,10 @@ export function MapView() {
             feature.properties.segmentColor ?? SEGMENT_NO_DATA_COLOR,
         },
       })),
-    } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
+    } as FeatureCollection<
+      LineString,
+      { segmentId: string; segmentColor?: string }
+    >;
   }, [segmentsMapping, segmentColorById]);
 
   const allMappedSegmentsFeatureCollection = useMemo(
@@ -347,11 +403,12 @@ export function MapView() {
                       ).trim();
 
                       if (stationName) {
-                        const queryOptions = getAqiTimeSeriesByStationQueryOptions({
-                          start: segmentsStart,
-                          end: segmentsEnd,
-                          stationName,
-                        });
+                        const queryOptions =
+                          getAqiTimeSeriesByStationQueryOptions({
+                            start: segmentsStart,
+                            end: segmentsEnd,
+                            stationName,
+                          });
                         void queryClient.fetchQuery({
                           ...queryOptions,
                           staleTime: 0,

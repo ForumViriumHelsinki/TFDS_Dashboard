@@ -30,7 +30,8 @@ export function DataDisplayCharts() {
   );
   const selectedAirQualityStationName =
     airQualityData?.features.find(
-      (feature) => getAirQualityStationId(feature) === selectedAirQualityStation,
+      (feature) =>
+        getAirQualityStationId(feature) === selectedAirQualityStation,
     )?.properties?.Mittausasema ?? selectedAirQualityStation;
   const isSegmentsTab = activeTab === "Segmentit";
   const selectedFieldConfig = getSegmentMeasurementFieldConfig(
@@ -38,7 +39,9 @@ export function DataDisplayCharts() {
   );
   const trafficTitle = isSegmentsTab
     ? selectedFieldConfig
-      ? ` ${selectedFieldConfig.label} (0-${selectedFieldConfig.yMax})`
+      ? selectedFieldConfig.rangeLabel
+        ? `${selectedFieldConfig.label} (${selectedFieldConfig.rangeLabel})`
+        : selectedFieldConfig.label
       : "Valitse muuttuja"
     : "Liikennetiedon kattavuus (1-10)";
 
@@ -53,7 +56,8 @@ export function DataDisplayCharts() {
       <Stack gap="xs" flex={1}>
         <Group justify="space-between" align="center">
           <Text size="xs" c="dimmed">
-            Ilmanlaatuindeksi - {selectedAirQualityStationName ?? "Valitse mittausasema"}
+            Ilmanlaatuindeksi -{" "}
+            {selectedAirQualityStationName ?? "Valitse mittausasema"}
           </Text>
           <Group gap="md">
             <Group gap={6}>

@@ -8,8 +8,13 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields";
+import {
+  getSegmentMeasurementFieldConfig,
+  getSegmentMeasurementFieldQueryField,
+  usesSpeedLimitBaseline,
+} from "../../constants/segment-fields";
 import { getFcdBySegmentQueryOptions } from "../../queries/floating-car-data";
+import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { getDefaultDateRange } from "../../utils/time";
 import { SegmentItem } from "../segments/SegmentItem";
@@ -36,6 +41,12 @@ export function SegmentsTab() {
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
   const start = selectedStartDate ?? fallbackRange.start;
   const end = selectedEndDate ?? fallbackRange.end;
+  const selectedQueryField = getSegmentMeasurementFieldQueryField(
+    segmentMeasurementField,
+  );
+  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
+    segmentMeasurementField,
+  );
   const {
     data: segmentRows,
     isPending: isSegmentFieldPending,
@@ -47,6 +58,16 @@ export function SegmentsTab() {
       end,
     }),
   );
+  const {
+    data: speedLimits,
+    isLoading: isSpeedLimitsLoading,
+    isError: isSpeedLimitsError,
+  } = useQuery(getSegmentSpeedLimitsQueryOptions());
+
+  const speedLimitBySegmentId = useMemo(
+    () => new Map(Object.entries(speedLimits?.segmentId ?? {})),
+    [speedLimits],
+  );
 
   const segmentIdsWithSelectedField = useMemo(() => {
     if (!Array.isArray(segmentRows)) {
@@ -56,12 +77,23 @@ export function SegmentsTab() {
     for (const row of segmentRows) {
       const segmentId = String(row["segmentId"] ?? "").trim();
       if (!segmentId) continue;
-      const rawValue = row[segmentMeasurementField];
+      const rawValue = row[selectedQueryField];
       if (rawValue === null || rawValue === undefined) continue;
+      if (
+        selectedFieldUsesSpeedLimit &&
+        !speedLimitBySegmentId.has(segmentId)
+      ) {
+        continue;
+      }
       ids.add(segmentId);
     }
     return ids;
-  }, [segmentRows, segmentMeasurementField]);
+  }, [
+    segmentRows,
+    selectedFieldUsesSpeedLimit,
+    selectedQueryField,
+    speedLimitBySegmentId,
+  ]);
 
   const {
     data: segmentsMapping,
@@ -78,7 +110,10 @@ export function SegmentsTab() {
   }, [segmentsMapping]);
 
   const filteredSegmentIds = useMemo(
-    () => segmentIds.filter((segmentId) => segmentIdsWithSelectedField.has(segmentId)),
+    () =>
+      segmentIds.filter((segmentId) =>
+        segmentIdsWithSelectedField.has(segmentId),
+      ),
     [segmentIds, segmentIdsWithSelectedField],
   );
   const selectedFieldConfig = getSegmentMeasurementFieldConfig(
@@ -87,7 +122,8 @@ export function SegmentsTab() {
   const isSegmentsDataLoading =
     isSegmentsMappingLoading ||
     isSegmentFieldPending ||
-    isSegmentFieldFetching;
+    isSegmentFieldFetching ||
+    (selectedFieldUsesSpeedLimit && isSpeedLimitsLoading);
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({
@@ -120,7 +156,18 @@ export function SegmentsTab() {
         </Text>
       );
     }
-    if (!Array.isArray(segmentRows) || isSegmentFieldPending || isSegmentFieldFetching) {
+    if (selectedFieldUsesSpeedLimit && isSpeedLimitsError) {
+      return (
+        <Text size="sm" c="red" p="md">
+          Nopeusrajoitusten lataus epäonnistui.
+        </Text>
+      );
+    }
+    if (
+      !Array.isArray(segmentRows) ||
+      isSegmentFieldPending ||
+      isSegmentFieldFetching
+    ) {
       return <LoadingState message="Haetaan FCD-arvoja segmenteille…" />;
     }
     if (filteredSegmentIds.length === 0) {
@@ -156,7 +203,13 @@ export function SegmentsTab() {
         <SegmentMeasurementFieldSelect disabled={isSegmentsDataLoading} />
       </AppShell.Section>
 
-      <AppShell.Section grow component={ScrollArea} mx="-md" px="md" type="never">
+      <AppShell.Section
+        grow
+        component={ScrollArea}
+        mx="-md"
+        px="md"
+        type="never"
+      >
         {renderContent()}
       </AppShell.Section>
     </>

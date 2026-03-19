@@ -18,7 +18,7 @@ export function SegmentMeasurementFieldSelect({
       variant="filled"
       label="Kartalla esitettävä muuttuja"
       placeholder="Valitse muuttuja"
-      description="Valitse kartalla esitettävä muuttuja Influxista"
+      description="Nopeusmuuttujien värit suhteutetaan segmentin nopeusrajoitukseen."
       data={segmentMeasurementFieldOptions}
       value={segmentMeasurementField ?? null}
       disabled={disabled}
