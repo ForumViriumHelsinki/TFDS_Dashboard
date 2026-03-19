@@ -23,11 +23,14 @@ import { AirQualityIndicator } from "./AirQualityIndicator";
 import { SegmentIndicator } from "./SegmentIndicator";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
-import { buildSegmentsFeatureCollection } from "../../utils/invertTrafficDisturbances";
+import {
+  buildSegmentsFeatureCollection,
+  buildSegmentsMappingFeatureCollection,
+} from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { Sources } from "../../router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
-import { DisturbanceLayer } from "./DisturbanceLayer";
+import { SegmentLayer } from "./SegmentLayer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getFloatingCarDataNearestBySegmentQueryOptions,
@@ -111,10 +114,12 @@ export function MapView() {
   });
   const navigate = useNavigate({ from: "/" });
   const showSegmentsTab = activeTab === "Segmentit";
-  const showAirQuality = sources.includes(Sources.AIR_QUALITY);
-  const showAreaRentals = !showSegmentsTab && sources.includes(Sources.AREA_RENTALS);
+  const enabledSources = sources ?? [];
+  const showAirQuality = enabledSources.includes(Sources.AIR_QUALITY);
+  const showAreaRentals = !showSegmentsTab && enabledSources.includes(Sources.AREA_RENTALS);
   const showExcavationNotices =
-    !showSegmentsTab && sources.includes(Sources.EXCAVATION_NOTICES);
+    !showSegmentsTab && enabledSources.includes(Sources.EXCAVATION_NOTICES);
+  const showDisturbanceLayers = showAreaRentals || showExcavationNotices;
   const { map: disturbanceMap } = useMergedDisturbances();
 
   const areaRentalSegmentsFeatureCollection = useMemo(() => {
@@ -203,37 +208,28 @@ export function MapView() {
   }, [showSegmentsTab, isSegmentRowsFetching, segmentFieldConfig, segmentFieldValueById]);
 
   const segmentsFeatureCollection = useMemo(() => {
-    const features: Array<
-      Feature<LineString, { segmentId: string; segmentColor?: string }>
-    > = [];
-    if (!segmentsMapping?.segmentId) {
-      return {
-        type: "FeatureCollection",
-        features,
-      } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
-    }
-    for (const [segmentId, entry] of Object.entries(
-      segmentsMapping.segmentId ?? {},
-    )) {
-      if (!entry?.geometry) continue;
-      features.push({
-        type: "Feature",
-        geometry: entry.geometry,
-        properties: {
-          segmentId,
-          segmentColor:
-            segmentColorById.get(segmentId) ?? SEGMENT_NO_DATA_COLOR,
-        },
-      });
-    }
+    const featureCollection = buildSegmentsMappingFeatureCollection(
+      segmentsMapping,
+      segmentColorById,
+    );
+
     return {
-      type: "FeatureCollection",
-      features,
+      ...featureCollection,
+      features: featureCollection.features.map((feature) => ({
+        ...feature,
+        properties: {
+          ...feature.properties,
+          segmentColor:
+            feature.properties.segmentColor ?? SEGMENT_NO_DATA_COLOR,
+        },
+      })),
     } as FeatureCollection<LineString, { segmentId: string; segmentColor?: string }>;
-  }, [
-    segmentsMapping,
-    segmentColorById,
-  ]);
+  }, [segmentsMapping, segmentColorById]);
+
+  const allMappedSegmentsFeatureCollection = useMemo(
+    () => buildSegmentsMappingFeatureCollection(segmentsMapping),
+    [segmentsMapping],
+  );
 
   const handleSegmentSelect = (segmentId: string) => {
     navigate({
@@ -378,9 +374,26 @@ export function MapView() {
             </FeatureGroup>
           )}
 
+          {showDisturbanceLayers &&
+            allMappedSegmentsFeatureCollection.features.length > 0 && (
+              <SegmentLayer
+                layerKey="all-mapped-segments-background"
+                paneName="traffic-segments-background"
+                zIndex={649}
+                featureCollection={allMappedSegmentsFeatureCollection}
+                onSegmentSelect={handleSegmentSelect}
+                interactive={false}
+                defaultColor="#94A3B8"
+                weight={4}
+                selectedWeight={4}
+                opacity={0.75}
+                shadow={false}
+              />
+            )}
+
           {showAreaRentals &&
             areaRentalSegmentsFeatureCollection.features.length > 0 && (
-              <DisturbanceLayer
+              <SegmentLayer
                 layerKey={`area-rentals-${selectedDate?.toISOString() ?? "all"}`}
                 paneName="traffic-segments-area"
                 zIndex={650}
@@ -392,7 +405,7 @@ export function MapView() {
 
           {showExcavationNotices &&
             excavationSegmentsFeatureCollection.features.length > 0 && (
-              <DisturbanceLayer
+              <SegmentLayer
                 layerKey={`excavation-${selectedDate?.toISOString() ?? "all"}`}
                 paneName="traffic-segments-exc"
                 zIndex={651}
@@ -403,7 +416,7 @@ export function MapView() {
             )}
 
           {showSegmentsTab && segmentsFeatureCollection.features.length > 0 && (
-            <DisturbanceLayer
+            <SegmentLayer
               layerKey={`segments-${
                 segmentMeasurementField
               }-${segmentsEnd.toISOString()}-${targetDateMs}-${segmentRowsUpdatedAt}`}

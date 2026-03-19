@@ -119,6 +119,36 @@ export function buildSegmentsFeatureCollection(
   >;
 }
 
+export function buildSegmentsMappingFeatureCollection(
+  mapping?: SegmentsMappingJson,
+  segmentColorById?: Map<string, string>,
+): FeatureCollection<LineString, { segmentId: string; segmentColor?: string }> {
+  const features: Array<
+    Feature<LineString, { segmentId: string; segmentColor?: string }>
+  > = [];
+
+  for (const [segmentId, entry] of Object.entries(mapping?.segmentId ?? {})) {
+    if (!entry?.geometry) continue;
+
+    features.push({
+      type: "Feature",
+      geometry: entry.geometry,
+      properties: {
+        segmentId,
+        segmentColor: segmentColorById?.get(segmentId),
+      },
+    });
+  }
+
+  return {
+    type: "FeatureCollection",
+    features,
+  } as FeatureCollection<
+    LineString,
+    { segmentId: string; segmentColor?: string }
+  >;
+}
+
 export const getTrafficSegmentsFC = (
   mapping: SegmentsMappingJson,
   disturbance: { segmentId: Record<string, unknown> },
