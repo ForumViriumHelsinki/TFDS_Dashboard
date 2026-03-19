@@ -69,7 +69,7 @@ export function DataDisplayCharts() {
               <Box
                 w={14}
                 style={{
-                  borderTop: `2px solid ${theme.colors.violet[6]}`,
+                  borderTop: `2px solid ${theme.colors.green[6]}`,
                 }}
               />
               <Text size="xs">TFDS-AQI</Text>
