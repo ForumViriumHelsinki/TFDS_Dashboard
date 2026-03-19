@@ -420,7 +420,7 @@ export function AirQualityChart() {
             dataKey="tfdsAqi"
             yAxisId="right"
             name="TFDS-AQI"
-            stroke={theme.colors.violet[6]}
+            stroke={theme.colors.green[6]}
             strokeWidth={2}
             dot={false}
             hide={!hasTfdsSeries}
