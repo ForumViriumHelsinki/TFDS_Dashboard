@@ -357,7 +357,7 @@ export function TrafficFlowChart() {
               x2={b.x2}
               y1={0}
               y2={fieldConfig.yMax}
-              fill={theme.colors.red[0]}
+              fill={`${theme.colors.red[6]}77`}
               fillOpacity={1}
               stroke="none"
             />
