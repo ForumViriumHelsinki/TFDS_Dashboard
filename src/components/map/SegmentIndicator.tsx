@@ -9,12 +9,36 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
+import { useSearch } from "@tanstack/react-router";
 import { CircleHelp } from "lucide-react";
 import { getSegmentGradientCss } from "../../utils/colors";
-import { SegmentMeasurementFieldConfig, segmentMeasurementFieldConfigs } from "../../constants/segment-fields";
+import {
+  SegmentMeasurementFieldConfig,
+  getSegmentMeasurementFieldConfig,
+  segmentMeasurementFieldConfigs,
+} from "../../constants/segment-fields";
 
 export function SegmentIndicator() {
   const theme = useMantineTheme();
+  const { segmentMeasurementField } = useSearch({
+    from: "/",
+    select: (s) => ({
+      segmentMeasurementField: s.segmentMeasurementField,
+    }),
+  });
+  const selectedFieldConfig = getSegmentMeasurementFieldConfig(
+    segmentMeasurementField,
+  );
+  const title = selectedFieldConfig?.label ?? "Segmentit (FCD)";
+  const introText = selectedFieldConfig?.usesSpeedLimit
+    ? "Väri määräytyy valitun nopeusmittarin ja segmentin nopeusrajoituksen suhteesta."
+    : "Väri määräytyy valitun mittarin arvon mukaan.";
+  const highValueText = selectedFieldConfig?.usesSpeedLimit
+    ? "Sininen = nopeusrajoituksen tasolla"
+    : "Sininen = suurempi arvo";
+  const lowValueText = selectedFieldConfig?.usesSpeedLimit
+    ? "Violetti = selvästi nopeusrajoituksen alapuolella"
+    : "Violetti = pienempi arvo";
 
   return (
     <Paper
@@ -32,7 +56,7 @@ export function SegmentIndicator() {
     >
       <Stack h="100%" gap={0} align="center">
         <Text size="xs" c={theme.colors.gray[7]}>
-          FCD
+          {selectedFieldConfig?.usesSpeedLimit ? "%" : "FCD"}
         </Text>
         <Center flex={1} w="100%" h={180} p="xs">
           <Box
@@ -45,7 +69,7 @@ export function SegmentIndicator() {
           />
         </Center>
         <Popover
-          width={360}
+          width={400}
           position="left"
           withArrow
           shadow="md"
@@ -58,18 +82,30 @@ export function SegmentIndicator() {
             </ActionIcon>
           </Popover.Target>
           <Popover.Dropdown>
-            <Title order={5}>Segmentit (FCD)</Title>
+            <Title order={5}>{title}</Title>
             <Text size="sm" pb={6}>
-              Väri määräytyy valitun mittarin arvon mukaan.
+              {introText}
             </Text>
-            <Text size="sm">Sininen = suurempi arvo</Text>
-            <Text size="sm" pb={6}>Violetti = pienempi arvo</Text>
-            <Text size="sm" fw={600}>Skaalat mittareittain:</Text>
-            {segmentMeasurementFieldConfigs.map((config: SegmentMeasurementFieldConfig) => (
-              <Text size="sm" key={config.label}>
-                {config.label}: 0-{config.yMax}
+            <Text size="sm">{highValueText}</Text>
+            <Text size="sm">{lowValueText}</Text>
+            {selectedFieldConfig?.usesSpeedLimit && (
+              <Text size="sm">
+                100 % = segmentin nopeusrajoitus.
               </Text>
-            ))}
+            )}
+            <Text size="sm" fw={600} pt={6}>
+              Skaalat mittareittain:
+            </Text>
+            {segmentMeasurementFieldConfigs.map(
+              (config: SegmentMeasurementFieldConfig) => (
+                <Text size="sm" key={config.label}>
+                  {config.label}:{" "}
+                  {config.legendRangeLabel ??
+                    config.rangeLabel ??
+                    `0-${config.yMax}`}
+                </Text>
+              ),
+            )}
           </Popover.Dropdown>
         </Popover>
       </Stack>
