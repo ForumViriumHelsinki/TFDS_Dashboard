@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.8.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.16...tfds-dashboard-v0.8.0) (2026-03-20)
+
+
+### Features
+
+* added all of the available segments under the segments with disturbances ([5094202](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/509420233c2748d0045bdeaa1a1d035940bac262))
+* **ci:** adopt reusable auto-fix, review, and conventional commits workflows ([#154](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/154)) ([a5b426e](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/a5b426ebe83afb6530e6b2d8a0044361d78485de))
+* Enhance segment measurement fields and speed limit integration ([3612663](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/36126633dd46c8b8e31de2ec361482b73b744e40))
+
 ## [0.7.16](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.15...tfds-dashboard-v0.7.16) (2026-03-13)
 
 
