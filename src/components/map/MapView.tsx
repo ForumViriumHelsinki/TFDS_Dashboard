@@ -6,6 +6,7 @@ import {
   WMSTileLayer,
   FeatureGroup,
   GeoJSON,
+  Pane,
   useMap,
 } from "react-leaflet";
 import {
@@ -26,6 +27,7 @@ import { useEffect, useMemo, useRef } from "react";
 import {
   buildSegmentsFeatureCollection,
   buildSegmentsMappingFeatureCollection,
+  buildPolygonFeatureCollection,
 } from "../../utils/invertTrafficDisturbances";
 import { useMergedDisturbances } from "../../hooks/useMergedDisturbances";
 import { Sources } from "../../router";
@@ -39,14 +41,13 @@ import type { LineString } from "geojson";
 import {
   getSegmentMeasurementFieldConfig,
   getSegmentMeasurementFieldQueryField,
-  usesSpeedLimitBaseline,
+  isRelativeSpeedField,
 } from "../../constants/segment-fields";
 import {
   getAirQualityColor,
   getSegmentColorForValue,
 } from "../../utils/colors";
 import { getDefaultDateRange } from "../../utils/time";
-import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
@@ -122,11 +123,9 @@ export function MapView() {
   const showSegmentsTab = activeTab === "Segmentit";
   const enabledSources = sources ?? [];
   const showAirQuality = enabledSources.includes(Sources.AIR_QUALITY);
-  const showAreaRentals =
-    !showSegmentsTab && enabledSources.includes(Sources.AREA_RENTALS);
+  const showAreaRentals = enabledSources.includes(Sources.AREA_RENTALS);
   const showExcavationNotices =
     !showSegmentsTab && enabledSources.includes(Sources.EXCAVATION_NOTICES);
-  const showDisturbanceLayers = showAreaRentals || showExcavationNotices;
   const { map: disturbanceMap } = useMergedDisturbances();
 
   const areaRentalSegmentsFeatureCollection = useMemo(() => {
@@ -140,6 +139,19 @@ export function MapView() {
       ([, group]) => group.type === "Kaivuilmoitus",
     );
     return buildSegmentsFeatureCollection(Object.fromEntries(entries));
+  }, [disturbanceMap]);
+
+  const areaRentalPolygons = useMemo(() => {
+    const entries = Object.entries(disturbanceMap).filter(
+      ([, group]) => group.type === "Aluevuokraus",
+    );
+    return buildPolygonFeatureCollection(Object.fromEntries(entries));
+  }, [disturbanceMap]);
+  const excavationPolygons = useMemo(() => {
+    const entries = Object.entries(disturbanceMap).filter(
+      ([, group]) => group.type === "Kaivuilmoitus",
+    );
+    return buildPolygonFeatureCollection(Object.fromEntries(entries));
   }, [disturbanceMap]);
 
   const fallbackRange = useMemo(() => getDefaultDateRange(), []);
@@ -161,13 +173,8 @@ export function MapView() {
   };
 
   const { data: segmentsMapping } = useQuery(getSegmentsMappingQueryOptions());
-  const { data: speedLimits, isPending: isSpeedLimitsPending } = useQuery(
-    getSegmentSpeedLimitsQueryOptions(),
-  );
+  const isRelativeSpeed = isRelativeSpeedField(segmentMeasurementField);
   const selectedQueryField = getSegmentMeasurementFieldQueryField(
-    segmentMeasurementField,
-  );
-  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
     segmentMeasurementField,
   );
   const {
@@ -178,25 +185,27 @@ export function MapView() {
     ...getFloatingCarDataNearestBySegmentQueryOptions({
       start: segmentsStart,
       end: segmentsEnd,
-      field: selectedQueryField,
+      field: isRelativeSpeed ? "currentSpeed" : selectedQueryField,
       target: segmentQueryTargetDate,
     }),
     enabled: Boolean(showSegmentsTab),
     placeholderData: (previousData) => previousData,
   });
+  const {
+    data: typicalSpeedRows,
+    isFetching: isTypicalSpeedFetching,
+  } = useQuery({
+    ...getFloatingCarDataNearestBySegmentQueryOptions({
+      start: segmentsStart,
+      end: segmentsEnd,
+      field: "typicalSpeed",
+      target: segmentQueryTargetDate,
+    }),
+    enabled: Boolean(showSegmentsTab && isRelativeSpeed),
+    placeholderData: (previousData) => previousData,
+  });
 
   const targetDateMs = segmentQueryTargetDate.getTime();
-
-  const speedLimitBySegmentId = useMemo(() => {
-    const values = new Map<string, number>();
-    for (const [segmentId, entry] of Object.entries(
-      speedLimits?.segmentId ?? {},
-    )) {
-      if (!Number.isFinite(entry.speedLimit) || entry.speedLimit <= 0) continue;
-      values.set(segmentId, entry.speedLimit);
-    }
-    return values;
-  }, [speedLimits]);
 
   const segmentFieldValueById = useMemo(() => {
     const values = new Map<string, number>();
@@ -204,23 +213,31 @@ export function MapView() {
       return values;
     }
 
+    if (isRelativeSpeed) {
+      const typicalBySegment = new Map<string, number>();
+      for (const row of typicalSpeedRows ?? []) {
+        if (row.segmentId && Number.isFinite(row.value)) {
+          typicalBySegment.set(row.segmentId.trim(), row.value);
+        }
+      }
+      for (const row of segmentRows) {
+        const segmentId = row.segmentId?.trim();
+        if (!segmentId || !Number.isFinite(row.value)) continue;
+        const typical = typicalBySegment.get(segmentId);
+        if (!typical || typical <= 0) continue;
+        values.set(segmentId, (row.value / typical) * 100);
+      }
+      return values;
+    }
+
     for (const row of segmentRows) {
       const segmentId = row.segmentId?.trim();
       if (!segmentId || !Number.isFinite(row.value)) continue;
-      if (selectedFieldUsesSpeedLimit) {
-        const speedLimit = speedLimitBySegmentId.get(segmentId);
-        if (!Number.isFinite(speedLimit) || !speedLimit || speedLimit <= 0) {
-          continue;
-        }
-        values.set(segmentId, Math.min(row.value / speedLimit, 1));
-        continue;
-      }
-
       values.set(segmentId, row.value);
     }
 
     return values;
-  }, [segmentRows, selectedFieldUsesSpeedLimit, speedLimitBySegmentId]);
+  }, [segmentRows, typicalSpeedRows, isRelativeSpeed]);
 
   const segmentFieldConfig = useMemo(
     () => getSegmentMeasurementFieldConfig(segmentMeasurementField),
@@ -231,8 +248,7 @@ export function MapView() {
     const colors = new Map<string, string>();
     if (
       showSegmentsTab &&
-      (isSegmentRowsFetching ||
-        (selectedFieldUsesSpeedLimit && isSpeedLimitsPending))
+      (isSegmentRowsFetching || (isRelativeSpeed && isTypicalSpeedFetching))
     ) {
       return colors;
     }
@@ -244,8 +260,7 @@ export function MapView() {
       return colors;
     }
 
-    const colorMaxValue =
-      segmentFieldConfig.colorMaxValue ?? segmentFieldConfig.yMax;
+    const colorMaxValue = segmentFieldConfig.yMax;
     for (const [segmentId, value] of segmentFieldValueById.entries()) {
       colors.set(segmentId, getSegmentColorForValue(value, colorMaxValue));
     }
@@ -254,10 +269,10 @@ export function MapView() {
   }, [
     showSegmentsTab,
     isSegmentRowsFetching,
-    isSpeedLimitsPending,
+    isRelativeSpeed,
+    isTypicalSpeedFetching,
     segmentFieldConfig,
     segmentFieldValueById,
-    selectedFieldUsesSpeedLimit,
   ]);
 
   const segmentsFeatureCollection = useMemo(() => {
@@ -281,11 +296,6 @@ export function MapView() {
       { segmentId: string; segmentColor?: string }
     >;
   }, [segmentsMapping, segmentColorById]);
-
-  const allMappedSegmentsFeatureCollection = useMemo(
-    () => buildSegmentsMappingFeatureCollection(segmentsMapping),
-    [segmentsMapping],
-  );
 
   const handleSegmentSelect = (segmentId: string) => {
     navigate({
@@ -359,11 +369,13 @@ export function MapView() {
           </LayersControl.BaseLayer>
 
           {showAirQuality && (
-            <FeatureGroup>
-              {filteredAirQualityData && (
-                <GeoJSON
+            <Pane name="air-quality-markers" style={{ zIndex: 660 }}>
+              <FeatureGroup>
+                {filteredAirQualityData && (
+                  <GeoJSON
                   key={`air-quality-${selectedDate?.toISOString() ?? "now"}`}
                   data={filteredAirQualityData}
+                  pane="air-quality-markers"
                   pointToLayer={(
                     feature: Feature<Geometry, AirQualityProps>,
                     latlng,
@@ -380,6 +392,7 @@ export function MapView() {
                       fillOpacity: 1,
                       stroke: true,
                       className: "aq-marker",
+                      pane: "air-quality-markers",
                     });
                   }}
                   onEachFeature={(
@@ -428,25 +441,41 @@ export function MapView() {
                   }}
                 />
               )}
-            </FeatureGroup>
+              </FeatureGroup>
+            </Pane>
           )}
 
-          {showDisturbanceLayers &&
-            allMappedSegmentsFeatureCollection.features.length > 0 && (
-              <SegmentLayer
-                layerKey="all-mapped-segments-background"
-                paneName="traffic-segments-background"
-                zIndex={649}
-                featureCollection={allMappedSegmentsFeatureCollection}
-                onSegmentSelect={handleSegmentSelect}
-                interactive={false}
-                defaultColor="#94A3B8"
-                weight={4}
-                selectedWeight={4}
-                opacity={0.75}
-                shadow={false}
+          {showAreaRentals && areaRentalPolygons.features.length > 0 && (
+            <Pane name="area-rental-polygons" style={{ zIndex: 648 }}>
+              <GeoJSON
+                key={`area-rental-polygons-${selectedDate?.toISOString() ?? "all"}`}
+                data={areaRentalPolygons}
+                style={{
+                  fillColor: "#FCA5A5",
+                  fillOpacity: 0.2,
+                  color: "#EF4444",
+                  weight: 2,
+                  opacity: 0.5,
+                }}
               />
-            )}
+            </Pane>
+          )}
+
+          {showExcavationNotices && excavationPolygons.features.length > 0 && (
+            <Pane name="excavation-polygons" style={{ zIndex: 648 }}>
+              <GeoJSON
+                key={`excavation-polygons-${selectedDate?.toISOString() ?? "all"}`}
+                data={excavationPolygons}
+                style={{
+                  fillColor: "#FCA5A5",
+                  fillOpacity: 0.2,
+                  color: "#EF4444",
+                  weight: 2,
+                  opacity: 0.5,
+                }}
+              />
+            </Pane>
+          )}
 
           {showAreaRentals &&
             areaRentalSegmentsFeatureCollection.features.length > 0 && (

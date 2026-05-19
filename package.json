@@ -12,8 +12,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "typecheck": "tsc --noEmit",
-    "generate:segment-speed-limits": "node scripts/generate-segment-speed-limits.mjs"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@influxdata/influxdb-client-browser": "^1.35.0",
