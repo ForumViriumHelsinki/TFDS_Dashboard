@@ -30,15 +30,9 @@ export function SegmentIndicator() {
     segmentMeasurementField,
   );
   const title = selectedFieldConfig?.label ?? "Segmentit (FCD)";
-  const introText = selectedFieldConfig?.usesSpeedLimit
-    ? "Väri määräytyy valitun nopeusmittarin ja segmentin nopeusrajoituksen suhteesta."
-    : "Väri määräytyy valitun mittarin arvon mukaan.";
-  const highValueText = selectedFieldConfig?.usesSpeedLimit
-    ? "Sininen = nopeusrajoituksen tasolla"
-    : "Sininen = suurempi arvo";
-  const lowValueText = selectedFieldConfig?.usesSpeedLimit
-    ? "Violetti = selvästi nopeusrajoituksen alapuolella"
-    : "Violetti = pienempi arvo";
+  const introText = "Väri määräytyy valitun mittarin arvon mukaan.";
+  const highValueText = "Sininen = suurempi arvo";
+  const lowValueText = "Violetti = pienempi arvo";
 
   return (
     <Paper
@@ -56,7 +50,7 @@ export function SegmentIndicator() {
     >
       <Stack h="100%" gap={0} align="center">
         <Text size="xs" c={theme.colors.gray[7]}>
-          {selectedFieldConfig?.usesSpeedLimit ? "%" : "FCD"}
+          {"FCD"}
         </Text>
         <Center flex={1} w="100%" h={180} p="xs">
           <Box
@@ -88,11 +82,6 @@ export function SegmentIndicator() {
             </Text>
             <Text size="sm">{highValueText}</Text>
             <Text size="sm">{lowValueText}</Text>
-            {selectedFieldConfig?.usesSpeedLimit && (
-              <Text size="sm">
-                100 % = segmentin nopeusrajoitus.
-              </Text>
-            )}
             <Text size="sm" fw={600} pt={6}>
               Skaalat mittareittain:
             </Text>
