@@ -39,11 +39,9 @@ export function DataDisplayCharts() {
   );
   const trafficTitle = isSegmentsTab
     ? selectedFieldConfig
-      ? selectedFieldConfig.rangeLabel
-        ? `${selectedFieldConfig.label} (${selectedFieldConfig.rangeLabel})`
-        : selectedFieldConfig.label
+      ? selectedFieldConfig.label
       : "Valitse muuttuja"
-    : "Liikennetiedon kattavuus (1-10)";
+    : "Liikennetiedon kattavuus";
 
   return (
     <Stack flex={1} p="md" h="100%" gap="xs">
