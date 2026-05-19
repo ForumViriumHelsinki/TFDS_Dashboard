@@ -68,7 +68,8 @@ export function buildDisturbanceMapFromJson(
 }
 
 /**
- * Merge land-lease WFS features into an existing disturbance map by matching ids.
+ * Merge land-lease WFS features into an existing disturbance map by matching
+ * application_id (from static data) to hakemustunnus (from WFS).
  * If disturbanceType is provided, only entries of that type are considered for merging.
  */
 export function mergeLandLeaseFeaturesIntoMap(
@@ -81,12 +82,23 @@ export function mergeLandLeaseFeaturesIntoMap(
     ? [disturbanceType]
     : ["Kaivuilmoitus", "Aluevuokraus"];
 
+  // Build lookup from application_id to disturbance group keys
+  const appIdToKeys = new Map<string, string[]>();
+  for (const [key, group] of Object.entries(map)) {
+    if (!typesToCheck.includes(group.type)) continue;
+    if (!group.application_id) continue;
+    const existing = appIdToKeys.get(group.application_id) ?? [];
+    existing.push(key);
+    appIdToKeys.set(group.application_id, existing);
+  }
+
   for (const feature of landLeaseFC.features) {
     const props = (feature.properties ?? {}) as LandLeaseProps;
-    const id = props.id;
-    if (id == null) continue;
-    for (const t of typesToCheck) {
-      const key = `${t}:${id}`;
+    const hakemustunnus = props.hakemustunnus;
+    if (!hakemustunnus) continue;
+    const keys = appIdToKeys.get(hakemustunnus);
+    if (!keys) continue;
+    for (const key of keys) {
       const group = map[key];
       if (group) {
         group.landLeaseGeometry = feature.geometry ?? undefined;
@@ -95,6 +107,21 @@ export function mergeLandLeaseFeaturesIntoMap(
     }
   }
   return map;
+}
+
+export function buildPolygonFeatureCollection(
+  map: DisturbanceMap,
+): FeatureCollection<MultiPolygon, { groupKey: string }> {
+  const features: Array<Feature<MultiPolygon, { groupKey: string }>> = [];
+  for (const [key, group] of Object.entries(map)) {
+    if (!group.landLeaseGeometry) continue;
+    features.push({
+      type: "Feature",
+      geometry: group.landLeaseGeometry,
+      properties: { groupKey: key },
+    });
+  }
+  return { type: "FeatureCollection", features };
 }
 
 export function buildSegmentsFeatureCollection(
