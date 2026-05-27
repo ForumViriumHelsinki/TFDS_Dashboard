@@ -2,9 +2,10 @@ import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { OpenFeatureProvider } from "@openfeature/react-sdk";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import {
   RouterProvider,
   createMemoryHistory,
@@ -14,6 +15,18 @@ import {
 } from "@tanstack/react-router";
 import { DatesProvider } from "@mantine/dates";
 import App from "../src/App";
+
+// Minimal theme mirroring the production theme's brand palette so components
+// reading `theme.colors.brand[n]` do not crash. Keep in sync with src/main.tsx.
+const testTheme = createTheme({
+  primaryColor: "brand",
+  colors: {
+    brand: Array(10).fill("#FF5000") as unknown as [
+      string, string, string, string, string,
+      string, string, string, string, string,
+    ],
+  },
+});
 
 // Mock react-leaflet to avoid map initialization issues in tests
 vi.mock("react-leaflet", () => {
@@ -99,15 +112,17 @@ function renderApp() {
 
   // RouterProvider already renders App via the route definition
   return render(
-    <MantineProvider>
-      <DatesProvider settings={{ locale: "fi" }}>
-        <QueryClientProvider client={queryClient}>
-          <OpenFeatureProvider>
-            <RouterProvider router={testRouter} />
-          </OpenFeatureProvider>
-        </QueryClientProvider>
-      </DatesProvider>
-    </MantineProvider>,
+    <GoogleOAuthProvider clientId="test-client-id">
+      <MantineProvider theme={testTheme}>
+        <DatesProvider settings={{ locale: "fi" }}>
+          <QueryClientProvider client={queryClient}>
+            <OpenFeatureProvider>
+              <RouterProvider router={testRouter} />
+            </OpenFeatureProvider>
+          </QueryClientProvider>
+        </DatesProvider>
+      </MantineProvider>
+    </GoogleOAuthProvider>,
   );
 }
 
