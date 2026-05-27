@@ -33,4 +33,11 @@ describe("computeDynamicAxis", () => {
     const result = computeDynamicAxis(-5, -5);
     expect(result.yMax).toBeGreaterThan(result.yMin);
   });
+
+  it("handles very small values with appropriate precision and no duplicate ticks", () => {
+    const result = computeDynamicAxis(0.01, 0.02);
+    expect(result.ticks.length).toBeGreaterThan(1);
+    const uniqueTicks = new Set(result.ticks);
+    expect(uniqueTicks.size).toBe(result.ticks.length);
+  });
 });

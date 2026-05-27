@@ -36,8 +36,12 @@ export function computeDynamicAxis(
 
   const ticks: number[] = [];
   const tickStart = Math.ceil(yMin / niceStep) * niceStep;
+  // Round to the precision implied by niceStep so sub-0.01 steps don't
+  // collapse into duplicate ticks.
+  const precision = Math.max(0, -Math.floor(Math.log10(niceStep)));
+  const factor = Math.pow(10, precision);
   for (let v = tickStart; v <= yMax + niceStep * 0.01; v += niceStep) {
-    ticks.push(Math.round(v * 100) / 100);
+    ticks.push(Math.round(v * factor) / factor);
   }
 
   return { yMin, yMax, ticks };
