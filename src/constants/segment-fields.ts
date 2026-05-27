@@ -25,6 +25,7 @@ export interface SegmentMeasurementFieldConfig {
   rangeLabel?: string;
   legendRangeLabel?: string;
   tickFormatter?: (value: number) => string;
+  unit?: string;
 }
 
 export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
@@ -35,6 +36,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     ticks: [0, 20, 40, 60, 80, 100, 120],
     queryField: "currentSpeed",
     rangeLabel: "0-120 km/h",
+    unit: "km/h",
   },
   {
     value: "typicalSpeed",
@@ -43,6 +45,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     ticks: [0, 20, 40, 60, 80, 100, 120],
     queryField: "typicalSpeed",
     rangeLabel: "0-120 km/h",
+    unit: "km/h",
   },
   {
     value: "fcd_coverage",
@@ -60,6 +63,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     queryField: "confidence_level",
     rangeLabel: "0-100 %",
     tickFormatter: (value: number) => `${Math.round(value)} %`,
+    unit: "%",
   },
   {
     value: "relativeSpeed",
@@ -70,6 +74,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     rangeLabel: "0-100 %",
     legendRangeLabel: "0-100 % (kartalla)",
     tickFormatter: (value: number) => `${Math.round(value)} %`,
+    unit: "%",
   },
 ];
 

@@ -50,7 +50,7 @@ export function SegmentIndicator() {
     >
       <Stack h="100%" gap={0} align="center">
         <Text size="xs" c={theme.colors.gray[7]}>
-          {"FCD"}
+          {selectedFieldConfig?.unit ?? "FCD"}
         </Text>
         <Center flex={1} w="100%" h={180} p="xs">
           <Box
