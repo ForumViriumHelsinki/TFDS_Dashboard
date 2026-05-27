@@ -21,9 +21,9 @@ import App from "../src/App";
 const testTheme = createTheme({
   primaryColor: "brand",
   colors: {
-    brand: Array(10).fill("#FF5000") as unknown as [
-      string, string, string, string, string,
-      string, string, string, string, string,
+    brand: [
+      "#FF5000", "#FF5000", "#FF5000", "#FF5000", "#FF5000",
+      "#FF5000", "#FF5000", "#FF5000", "#FF5000", "#FF5000",
     ],
   },
 });
