@@ -145,7 +145,7 @@ vite.config.ts.timestamp-*
 k8s/secret.yaml
 
 # macOS
-/.DS_Store
+.DS_Store
 
 # local data for services
 /public/data/

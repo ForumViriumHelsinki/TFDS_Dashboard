@@ -11,10 +11,9 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
   getSegmentMeasurementFieldConfig,
   getSegmentMeasurementFieldQueryField,
-  usesSpeedLimitBaseline,
+  isRelativeSpeedField,
 } from "../../constants/segment-fields";
 import { getFcdBySegmentQueryOptions } from "../../queries/floating-car-data";
-import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 import { getSegmentsMappingQueryOptions } from "../../queries/traffic-disturbances";
 import { getDefaultDateRange } from "../../utils/time";
 import { SegmentItem } from "../segments/SegmentItem";
@@ -44,9 +43,7 @@ export function SegmentsTab() {
   const selectedQueryField = getSegmentMeasurementFieldQueryField(
     segmentMeasurementField,
   );
-  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
-    segmentMeasurementField,
-  );
+  const isRelativeSpeed = isRelativeSpeedField(segmentMeasurementField);
   const {
     data: segmentRows,
     isPending: isSegmentFieldPending,
@@ -58,16 +55,6 @@ export function SegmentsTab() {
       end,
     }),
   );
-  const {
-    data: speedLimits,
-    isLoading: isSpeedLimitsLoading,
-    isError: isSpeedLimitsError,
-  } = useQuery(getSegmentSpeedLimitsQueryOptions());
-
-  const speedLimitBySegmentId = useMemo(
-    () => new Map(Object.entries(speedLimits?.segmentId ?? {})),
-    [speedLimits],
-  );
 
   const segmentIdsWithSelectedField = useMemo(() => {
     if (!Array.isArray(segmentRows)) {
@@ -77,22 +64,24 @@ export function SegmentsTab() {
     for (const row of segmentRows) {
       const segmentId = String(row["segmentId"] ?? "").trim();
       if (!segmentId) continue;
-      const rawValue = row[selectedQueryField];
-      if (rawValue === null || rawValue === undefined) continue;
-      if (
-        selectedFieldUsesSpeedLimit &&
-        !speedLimitBySegmentId.has(segmentId)
-      ) {
-        continue;
+      if (isRelativeSpeed) {
+        const current = row["currentSpeed"];
+        const typical = row["typicalSpeed"];
+        if (
+          current === null || current === undefined ||
+          typical === null || typical === undefined
+        ) continue;
+      } else {
+        const rawValue = row[selectedQueryField];
+        if (rawValue === null || rawValue === undefined) continue;
       }
       ids.add(segmentId);
     }
     return ids;
   }, [
     segmentRows,
-    selectedFieldUsesSpeedLimit,
+    isRelativeSpeed,
     selectedQueryField,
-    speedLimitBySegmentId,
   ]);
 
   const {
@@ -122,8 +111,7 @@ export function SegmentsTab() {
   const isSegmentsDataLoading =
     isSegmentsMappingLoading ||
     isSegmentFieldPending ||
-    isSegmentFieldFetching ||
-    (selectedFieldUsesSpeedLimit && isSpeedLimitsLoading);
+    isSegmentFieldFetching;
 
   const handleSegmentClick = (segmentId: string) => {
     navigate({
@@ -153,13 +141,6 @@ export function SegmentsTab() {
           {selectedFieldConfig
             ? `${selectedFieldConfig.label}-datan lataus epäonnistui.`
             : "FCD-datan lataus epäonnistui."}
-        </Text>
-      );
-    }
-    if (selectedFieldUsesSpeedLimit && isSpeedLimitsError) {
-      return (
-        <Text size="sm" c="red" p="md">
-          Nopeusrajoitusten lataus epäonnistui.
         </Text>
       );
     }

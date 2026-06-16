@@ -10,6 +10,7 @@ export type InfluxSegmentMeasurementField =
 
 export const segmentMeasurementFieldValues = [
   ...influxSegmentMeasurementFieldValues,
+  "relativeSpeed",
 ] as const;
 
 export type SegmentMeasurementField =
@@ -24,8 +25,7 @@ export interface SegmentMeasurementFieldConfig {
   rangeLabel?: string;
   legendRangeLabel?: string;
   tickFormatter?: (value: number) => string;
-  colorMaxValue?: number;
-  usesSpeedLimit?: boolean;
+  unit?: string;
 }
 
 export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
@@ -36,9 +36,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     ticks: [0, 20, 40, 60, 80, 100, 120],
     queryField: "currentSpeed",
     rangeLabel: "0-120 km/h",
-    legendRangeLabel: "0-100 % nopeusrajoituksesta",
-    colorMaxValue: 1,
-    usesSpeedLimit: true,
+    unit: "km/h",
   },
   {
     value: "typicalSpeed",
@@ -47,9 +45,7 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     ticks: [0, 20, 40, 60, 80, 100, 120],
     queryField: "typicalSpeed",
     rangeLabel: "0-120 km/h",
-    legendRangeLabel: "0-100 % nopeusrajoituksesta",
-    colorMaxValue: 1,
-    usesSpeedLimit: true,
+    unit: "km/h",
   },
   {
     value: "fcd_coverage",
@@ -67,6 +63,18 @@ export const segmentMeasurementFieldConfigs: SegmentMeasurementFieldConfig[] = [
     queryField: "confidence_level",
     rangeLabel: "0-100 %",
     tickFormatter: (value: number) => `${Math.round(value)} %`,
+    unit: "%",
+  },
+  {
+    value: "relativeSpeed",
+    label: "Suhteellinen nopeus",
+    yMax: 100,
+    ticks: [0, 20, 40, 60, 80, 100],
+    queryField: "currentSpeed",
+    rangeLabel: "0-100 %",
+    legendRangeLabel: "0-100 % (kartalla)",
+    tickFormatter: (value: number) => `${Math.round(value)} %`,
+    unit: "%",
   },
 ];
 
@@ -90,6 +98,10 @@ export function getSegmentMeasurementFieldQueryField(
   return getSegmentMeasurementFieldConfig(value)?.queryField ?? "currentSpeed";
 }
 
-export function usesSpeedLimitBaseline(value: string | undefined): boolean {
-  return Boolean(getSegmentMeasurementFieldConfig(value)?.usesSpeedLimit);
+export function isRelativeSpeedField(
+  value: string | undefined,
+): boolean {
+  return value === "relativeSpeed";
 }
+
+

@@ -30,3 +30,15 @@ portForward:
     resourceName: tfds-dashboard
     port: 80
     localPort: 8080
+profiles:
+  # Auto-activated for kind contexts. Pushes the built image to the
+  # host-side registry (fvh-registry at localhost:5001) so kind nodes
+  # can pull it via the containerd mirror configured on the cluster.
+  # OrbStack and Docker Desktop continue to use the default push: false.
+  - name: kind
+    activation:
+      - kubeContext: kind-.*
+    patches:
+      - op: replace
+        path: /build/local/push
+        value: true
