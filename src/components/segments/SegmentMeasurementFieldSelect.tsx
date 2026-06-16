@@ -18,7 +18,7 @@ export function SegmentMeasurementFieldSelect({
       variant="filled"
       label="Kartalla esitettävä muuttuja"
       placeholder="Valitse muuttuja"
-      description="Nopeusmuuttujien värit suhteutetaan segmentin nopeusrajoitukseen."
+      description="Valitse kartalla ja kuvaajassa esitettävä muuttuja."
       data={segmentMeasurementFieldOptions}
       value={segmentMeasurementField ?? null}
       disabled={disabled}
