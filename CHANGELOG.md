@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.8.0...tfds-dashboard-v0.9.0) (2026-06-16)
+
+
+### Features
+
+* replace speed limits with relative speed and improve map layers ([#163](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/163)) ([eaa121d](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/eaa121ded891e9e09b3fd3250f38a9e29697239e))
+
 ## [0.8.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.7.16...tfds-dashboard-v0.8.0) (2026-03-20)
 
 
