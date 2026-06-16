@@ -20,22 +20,20 @@ import type { TrafficFlowRow } from "../../queries/traffic-flow";
 import {
   getSegmentMeasurementFieldConfig,
   getSegmentMeasurementFieldQueryField,
-  usesSpeedLimitBaseline,
+  isRelativeSpeedField,
 } from "../../constants/segment-fields";
 import {
   getFloatingCarDataTimeSeriesQueryOptions,
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { computeDynamicAxis } from "../../utils/computeDynamicAxis";
 import { getDefaultDateRange } from "../../utils/time";
-import { getSegmentSpeedLimitsQueryOptions } from "../../queries/segment-speed-limits";
 
 type TrafficPoint = {
   timestamp: number;
   value: number;
   status?: string;
-  actualValue?: number;
-  speedLimit?: number;
 };
 
 type FieldConfig = {
@@ -82,17 +80,6 @@ function TrafficFlowTooltipContent({
           {valueFormatter?.(point.value) ?? point.value}
         </strong>
       </Text>
-      {Number.isFinite(point.actualValue) &&
-        Math.abs((point.actualValue ?? 0) - point.value) > 0.05 && (
-          <Text size="xs">
-            Nopeus: <strong>{Math.round(point.actualValue ?? 0)} km/h</strong>
-          </Text>
-        )}
-      {Number.isFinite(point.speedLimit) && (
-        <Text size="xs">
-          Rajoitus: <strong>{Math.round(point.speedLimit ?? 0)} km/h</strong>
-        </Text>
-      )}
       {showStatus && (
         <Text size="xs">
           Tila: <strong>{statusLabel}</strong>
@@ -201,21 +188,7 @@ export function TrafficFlowChart() {
   const selectedQueryField = getSegmentMeasurementFieldQueryField(
     segmentMeasurementField,
   );
-  const selectedFieldUsesSpeedLimit = usesSpeedLimitBaseline(
-    segmentMeasurementField,
-  );
-  const {
-    data: speedLimits,
-    isPending: isSpeedLimitsPending,
-    isError: isSpeedLimitsError,
-    error: speedLimitsError,
-  } = useQuery({
-    ...getSegmentSpeedLimitsQueryOptions(),
-    enabled: Boolean(isSegmentsTab && selectedFieldUsesSpeedLimit),
-  });
-  const selectedSegmentSpeedLimit = selectedSegment
-    ? speedLimits?.segmentId?.[selectedSegment]?.speedLimit
-    : undefined;
+  const isRelativeSpeed = isRelativeSpeedField(segmentMeasurementField);
 
   const trafficFlowQuery = useQuery({
     ...getTrafficFlowQueryOptions({
@@ -230,23 +203,32 @@ export function TrafficFlowChart() {
       start: effectiveStartDate,
       end: effectiveEndDate,
       segmentId: selectedSegment ?? "",
-      field: selectedQueryField,
+      field: isRelativeSpeed ? "currentSpeed" : selectedQueryField,
     }),
     enabled: Boolean(selectedSegment && isSegmentsTab),
+  });
+  const typicalSpeedSeriesQuery = useQuery({
+    ...getFloatingCarDataTimeSeriesQueryOptions({
+      start: effectiveStartDate,
+      end: effectiveEndDate,
+      segmentId: selectedSegment ?? "",
+      field: "typicalSpeed",
+    }),
+    enabled: Boolean(selectedSegment && isSegmentsTab && isRelativeSpeed),
   });
 
   const activeQuery = isSegmentsTab ? segmentFieldQuery : trafficFlowQuery;
   const isPending =
     activeQuery.isPending ||
-    (isSegmentsTab && selectedFieldUsesSpeedLimit && isSpeedLimitsPending);
+    (isRelativeSpeed && typicalSpeedSeriesQuery.isPending);
   const isError =
     activeQuery.isError ||
-    (isSegmentsTab && selectedFieldUsesSpeedLimit && isSpeedLimitsError);
+    (isRelativeSpeed && typicalSpeedSeriesQuery.isError);
   const data = useMemo(
     () => (isSegmentsTab ? segmentFieldQuery.data : trafficFlowQuery.data),
     [isSegmentsTab, segmentFieldQuery.data, trafficFlowQuery.data],
   );
-  const error = activeQuery.error ?? speedLimitsError;
+  const error = activeQuery.error ?? typicalSpeedSeriesQuery.error;
 
   const fieldConfig = useMemo(() => {
     if (!isSegmentsTab) return DEFAULT_TRAFFIC_FIELD_CONFIG;
@@ -271,6 +253,21 @@ export function TrafficFlowChart() {
       ? (data as FloatingCarDataRow[])
       : (data as TrafficFlowRow[]);
 
+    // Build typicalSpeed lookup by timestamp for relative speed
+    const typicalByTimestamp = new Map<number, number>();
+    if (isRelativeSpeed && Array.isArray(typicalSpeedSeriesQuery.data)) {
+      for (const row of typicalSpeedSeriesQuery.data as FloatingCarDataRow[]) {
+        const ts = new Date(
+          String((row["_time"] as string | number | boolean | null) ?? ""),
+        ).getTime();
+        const val = row["_value"];
+        const num = typeof val === "number" ? val : Number.parseFloat(String(val ?? 0));
+        if (Number.isFinite(ts) && Number.isFinite(num)) {
+          typicalByTimestamp.set(ts, num);
+        }
+      }
+    }
+
     return rows.map((row) => {
       const isoString = String(
         (row["_time"] as string | number | boolean | null) ?? "",
@@ -283,18 +280,13 @@ export function TrafficFlowChart() {
           : Number.parseFloat(String(valueRaw ?? 0));
 
       if (isSegmentsTab) {
-        if (selectedFieldUsesSpeedLimit) {
-          const actualValue = Number.isFinite(numericValue) ? numericValue : 0;
-          return {
-            timestamp,
-            value: actualValue,
-            actualValue,
-            speedLimit: Number.isFinite(selectedSegmentSpeedLimit)
-              ? selectedSegmentSpeedLimit
-              : undefined,
-          };
+        if (isRelativeSpeed) {
+          const typical = typicalByTimestamp.get(timestamp);
+          const current = Number.isFinite(numericValue) ? numericValue : 0;
+          const ratio =
+            typical && typical > 0 ? (current / typical) * 100 : 0;
+          return { timestamp, value: ratio };
         }
-
         return {
           timestamp,
           value: Number.isFinite(numericValue) ? numericValue : 0,
@@ -315,9 +307,21 @@ export function TrafficFlowChart() {
   }, [
     data,
     isSegmentsTab,
-    selectedFieldUsesSpeedLimit,
-    selectedSegmentSpeedLimit,
+    isRelativeSpeed,
+    typicalSpeedSeriesQuery.data,
   ]);
+
+  const dynamicAxis = useMemo(() => {
+    if (!trafficSeries.length) {
+      return { yMin: 0, yMax: fieldConfig.yMax, ticks: fieldConfig.ticks };
+    }
+
+    const values = trafficSeries.map((p) => p.value);
+    let maxValue = Math.max(...values);
+    let minValue = Math.min(...values);
+
+    return computeDynamicAxis(minValue, maxValue);
+  }, [trafficSeries, fieldConfig]);
 
   const seriesMin = trafficSeries.length
     ? Math.min(...trafficSeries.map((point) => point.timestamp))
@@ -380,15 +384,6 @@ export function TrafficFlowChart() {
   const closedBands = isSegmentsTab ? [] : buildStatusBands("closed");
 
   const xTicks = generateTimeTicks(axisMin, axisMax);
-  const speedLimitReferenceLine =
-    isSegmentsTab &&
-    selectedFieldUsesSpeedLimit &&
-    Number.isFinite(selectedSegmentSpeedLimit) &&
-    selectedSegmentSpeedLimit !== undefined &&
-    selectedSegmentSpeedLimit >= 0 &&
-    selectedSegmentSpeedLimit <= fieldConfig.yMax
-      ? selectedSegmentSpeedLimit
-      : undefined;
 
   return (
     <Box pos="relative" h="100%" w="100%">
@@ -418,8 +413,8 @@ export function TrafficFlowChart() {
           <ReferenceArea
             x1={axisMin !== undefined ? (axisMin as number) : undefined}
             x2={axisMax !== undefined ? (axisMax as number) : undefined}
-            y1={0}
-            y2={fieldConfig.yMax}
+            y1={dynamicAxis.yMin}
+            y2={dynamicAxis.yMax}
             fill={theme.colors.gray[1]}
             fillOpacity={1}
             stroke="none"
@@ -429,16 +424,16 @@ export function TrafficFlowChart() {
               key={i}
               x1={b.x1}
               x2={b.x2}
-              y1={0}
-              y2={fieldConfig.yMax}
+              y1={dynamicAxis.yMin}
+              y2={dynamicAxis.yMax}
               fill={`${theme.colors.red[6]}77`}
               fillOpacity={1}
               stroke="none"
             />
           ))}
           <YAxis
-            ticks={fieldConfig.ticks}
-            domain={[0, fieldConfig.yMax]}
+            ticks={dynamicAxis.ticks}
+            domain={[dynamicAxis.yMin, dynamicAxis.yMax]}
             width={40}
             tick={{ fontSize: 10, fill: theme.black }}
             axisLine={{ stroke: theme.colors.gray[3] }}
@@ -478,14 +473,6 @@ export function TrafficFlowChart() {
                 strokeDasharray="4 2"
               />
             )}
-          {speedLimitReferenceLine !== undefined && (
-            <ReferenceLine
-              y={speedLimitReferenceLine}
-              stroke={theme.colors.orange[6]}
-              strokeWidth={1}
-              strokeDasharray="6 3"
-            />
-          )}
           <Tooltip
             content={
               <ChartTooltip<TrafficPoint>

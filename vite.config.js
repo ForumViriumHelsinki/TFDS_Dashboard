@@ -40,7 +40,7 @@ export default defineConfig({
         target: (() => {
           const host =
             process.env.VITE_INFLUXDB_HOST ||
-            "idea-helsinki-influxdb-helm-webapp.dataportal.fi";
+            "idea-helsinki-influxdb.dataportal.fi";
           const protocol =
             host.startsWith("localhost:") || !host.includes(".")
               ? "http"
