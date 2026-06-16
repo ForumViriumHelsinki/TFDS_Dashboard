@@ -27,6 +27,7 @@ import {
   type FloatingCarDataRow,
 } from "../../queries/floating-car-data";
 import { generateTimeTicks, formatTick } from "../../utils/chartUtils";
+import { computeDynamicAxis } from "../../utils/computeDynamicAxis";
 import { getDefaultDateRange } from "../../utils/time";
 
 type TrafficPoint = {
@@ -52,36 +53,6 @@ const DEFAULT_TRAFFIC_FIELD_CONFIG: FieldConfig = {
     return String(value);
   },
 };
-
-function computeDynamicAxis(
-  minDataValue: number,
-  maxDataValue: number,
-): { yMin: number; yMax: number; ticks: number[] } {
-  if (maxDataValue <= 0 && minDataValue >= 0)
-    return { yMin: 0, yMax: 10, ticks: [0, 2, 4, 6, 8, 10] };
-
-  const yMin = minDataValue;
-  const yMax = maxDataValue;
-
-  const range = yMax - yMin;
-  const roughStep = range / 5 || 1;
-  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
-  const normalized = roughStep / magnitude;
-
-  let niceStep: number;
-  if (normalized <= 1) niceStep = magnitude;
-  else if (normalized <= 2) niceStep = 2 * magnitude;
-  else if (normalized <= 5) niceStep = 5 * magnitude;
-  else niceStep = 10 * magnitude;
-
-  const ticks: number[] = [];
-  const tickStart = Math.ceil(yMin / niceStep) * niceStep;
-  for (let v = tickStart; v <= yMax + niceStep * 0.01; v += niceStep) {
-    ticks.push(Math.round(v * 100) / 100);
-  }
-
-  return { yMin, yMax, ticks };
-}
 
 function TrafficFlowTooltipContent({
   point,
@@ -350,7 +321,7 @@ export function TrafficFlowChart() {
     let minValue = Math.min(...values);
 
     return computeDynamicAxis(minValue, maxValue);
-  }, [trafficSeries, fieldConfig, isSegmentsTab]);
+  }, [trafficSeries, fieldConfig]);
 
   const seriesMin = trafficSeries.length
     ? Math.min(...trafficSeries.map((point) => point.timestamp))
