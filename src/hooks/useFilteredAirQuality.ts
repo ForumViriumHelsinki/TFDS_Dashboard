@@ -6,6 +6,7 @@ import {
 } from "../queries/air-quality";
 import {
   getAirQualityStationId,
+  getAirQualityStationName,
   parseFinnishAikaToDate,
   AirQualityProps,
 } from "../utils/airQuality";
@@ -58,7 +59,7 @@ export function useFilteredAirQuality(
       if (!stationId) continue;
       const properties = feature.properties ?? {};
       stationMetadataById.set(stationId, {
-        name: properties.Mittausasema,
+        name: getAirQualityStationName(feature) || undefined,
         address: properties.Mittausaseman_osoite,
       });
     }
@@ -87,8 +88,9 @@ export function useFilteredAirQuality(
           ...feature,
           properties: {
             ...historicalProps,
-            Mittausasema:
-              historicalProps.Mittausasema ?? meta?.name,
+            // The 24h layer carries the name in `Nimi`; fall back to the live
+            // layer's `Mittausasema` metadata if it is ever missing.
+            Nimi: historicalProps.Nimi ?? meta?.name,
             Mittausaseman_osoite:
               historicalProps.Mittausaseman_osoite ?? meta?.address,
           },
@@ -120,7 +122,9 @@ export function useFilteredAirQuality(
   return {
     data,
     isPending,
-    isFetching: useHistorical ? historicalQuery.isFetching : nowQuery.isFetching,
+    isFetching: useHistorical
+      ? historicalQuery.isFetching
+      : nowQuery.isFetching,
     isError,
     error,
     refetch: useHistorical ? historicalQuery.refetch : nowQuery.refetch,

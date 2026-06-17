@@ -1,6 +1,11 @@
 import type { Geometry, Feature } from "geojson";
 
 export type AirQualityProps = {
+  // The HSY WFS layers disagree on the station-name field:
+  //  - `Ilmanlaatu_nyt` (live)            → `Mittausasema`
+  //  - `Ilmanlaatu_24h_maksimiarvo` (24h) → `Nimi`
+  // Both are optional here; resolve via `getAirQualityStationName`.
+  Nimi?: string;
   Mittausasema?: string;
   Aika?: string;
   Ilmanlaatuindeksi?: number;
@@ -12,6 +17,22 @@ export function getAirQualityStationId(
   feature: Feature<Geometry, AirQualityProps>,
 ): string {
   return String(feature.properties?.Mittausaseman_numero ?? "");
+}
+
+/**
+ * Resolve a station's display name across both HSY air-quality layers.
+ *
+ * The `Ilmanlaatu_nyt` layer exposes the name as `Mittausasema` while
+ * `Ilmanlaatu_24h_maksimiarvo` exposes it as `Nimi`. Reading only one field
+ * left station names empty (and broke click-to-time-series, which keys off the
+ * name) in whichever mode used the other layer. Prefer `Nimi`, fall back to
+ * `Mittausasema`.
+ */
+export function getAirQualityStationName(
+  feature: { properties?: AirQualityProps | null } | null | undefined,
+): string {
+  const properties = feature?.properties;
+  return String(properties?.Nimi ?? properties?.Mittausasema ?? "").trim();
 }
 
 export function parseFinnishAikaToDate(aika?: string): Date | null {

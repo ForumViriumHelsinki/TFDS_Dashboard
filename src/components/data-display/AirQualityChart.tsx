@@ -14,11 +14,10 @@ import {
   AirQualityTypes,
   getListAirQualityQueryOptions,
 } from "../../queries/air-quality";
-import {
-  getAqiTimeSeriesByStationQueryOptions,
-} from "../../queries/aqi";
+import { getAqiTimeSeriesByStationQueryOptions } from "../../queries/aqi";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
+  getAirQualityStationName,
   parseFinnishAikaToDate,
   type AirQualityProps,
 } from "../../utils/airQuality";
@@ -76,7 +75,8 @@ function Message({
   error,
 }: MessageProps) {
   const message = useMemo(() => {
-    if (filteredSeries.length === 0) return "Ei näytettäviä tietoja valitulla aikavälillä.";
+    if (filteredSeries.length === 0)
+      return "Ei näytettäviä tietoja valitulla aikavälillä.";
     if (isError) return `Tietojen haku epäonnistui: ${error?.message}.`;
     return null;
   }, [filteredSeries.length, isError, error]);
@@ -101,7 +101,9 @@ function Message({
   }
 
   if (isPending) {
-    return <LoadingState message="Haetaan ilmanlaatutietoja…" variant="overlay" />;
+    return (
+      <LoadingState message="Haetaan ilmanlaatutietoja…" variant="overlay" />
+    );
   }
 
   if (!message) return null;
@@ -141,7 +143,12 @@ export function AirQualityChart() {
       selectedDate: s.selectedDate,
     }),
   });
-  const { isPending, isError, data: historicalData, error } = useQuery({
+  const {
+    isPending,
+    isError,
+    data: historicalData,
+    error,
+  } = useQuery({
     ...getListAirQualityQueryOptions({
       airQualityType: AirQualityTypes.AIR_QUALITY_24H_MAX,
     }),
@@ -165,7 +172,10 @@ export function AirQualityChart() {
   const requestedStartTs = effectiveStartDate.getTime();
   const requestedEndTs = effectiveEndDate.getTime();
 
-  const features = useMemo(() => historicalData?.features ?? [], [historicalData]);
+  const features = useMemo(
+    () => historicalData?.features ?? [],
+    [historicalData],
+  );
   const stationName = useMemo(() => {
     if (!selectedAirQualityStation) return undefined;
 
@@ -176,7 +186,7 @@ export function AirQualityChart() {
         const properties = feature.properties ?? {};
         const stationId = String(properties.Mittausaseman_numero ?? "");
         if (stationId !== String(selectedAirQualityStation)) continue;
-        const name = String(properties.Mittausasema ?? "").trim();
+        const name = getAirQualityStationName(feature);
         if (name) return name;
       }
       return undefined;
@@ -206,8 +216,10 @@ export function AirQualityChart() {
       const date = parseFinnishAikaToDate(airQualityProperties.Aika);
       if (!date) return false;
       const timestamp = date.getTime();
-      if (requestedStartTs !== undefined && timestamp < requestedStartTs) return false;
-      if (requestedEndTs !== undefined && timestamp > requestedEndTs) return false;
+      if (requestedStartTs !== undefined && timestamp < requestedStartTs)
+        return false;
+      if (requestedEndTs !== undefined && timestamp > requestedEndTs)
+        return false;
       return true;
     })
     .map((feature) => {
@@ -315,7 +327,6 @@ export function AirQualityChart() {
       ? [tfdsMin, tfdsMax]
       : [Math.max(0, tfdsMin - 1), tfdsMax + 1];
 
-    
   return (
     <Box pos="relative" h="100%" w="100%">
       <ResponsiveContainer>
@@ -428,7 +439,13 @@ export function AirQualityChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <Message selectedAirQualityStation={selectedAirQualityStation} filteredSeries={filteredSeries} isPending={isPending} isError={isError} error={error ?? undefined} />
+      <Message
+        selectedAirQualityStation={selectedAirQualityStation}
+        filteredSeries={filteredSeries}
+        isPending={isPending}
+        isError={isError}
+        error={error ?? undefined}
+      />
     </Box>
   );
 }

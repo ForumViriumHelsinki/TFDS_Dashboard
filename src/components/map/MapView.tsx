@@ -1,4 +1,4 @@
-import { Box, useMantineTheme } from "@mantine/core";
+import { Alert, Box, useMantineTheme } from "@mantine/core";
 import {
   MapContainer,
   TileLayer,
@@ -12,6 +12,7 @@ import {
 import {
   AirQualityProps,
   getAirQualityStationId,
+  getAirQualityStationName,
 } from "../../utils/airQuality";
 import L from "leaflet";
 import type {
@@ -50,6 +51,19 @@ import {
 import { getDefaultDateRange } from "../../utils/time";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
+
+// Escape values from the external HSY WFS API before interpolating them into
+// the Leaflet popup's innerHTML, to prevent XSS from unexpected/malicious
+// upstream content.
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+const escapeHtml = (value: unknown): string =>
+  String(value).replace(/[&<>"']/g, (char) => HTML_ESCAPES[char] ?? char);
 
 function FitMapToSelected({
   selectedSegment,
@@ -158,7 +172,11 @@ export function MapView() {
   const effectiveEnd = selectedEndDate ?? fallbackRange.end;
   const effectiveStart = selectedStartDate ?? fallbackRange.start;
   const displayDate = selectedDate ?? effectiveEnd;
-  const { data: filteredAirQualityData } = useFilteredAirQuality(
+  const {
+    data: filteredAirQualityData,
+    isError: airQualityIsError,
+    error: airQualityError,
+  } = useFilteredAirQuality(
     displayDate,
     selectedDateMode,
     Boolean(showAirQuality),
@@ -191,19 +209,17 @@ export function MapView() {
     enabled: Boolean(showSegmentsTab),
     placeholderData: (previousData) => previousData,
   });
-  const {
-    data: typicalSpeedRows,
-    isFetching: isTypicalSpeedFetching,
-  } = useQuery({
-    ...getFloatingCarDataNearestBySegmentQueryOptions({
-      start: segmentsStart,
-      end: segmentsEnd,
-      field: "typicalSpeed",
-      target: segmentQueryTargetDate,
-    }),
-    enabled: Boolean(showSegmentsTab && isRelativeSpeed),
-    placeholderData: (previousData) => previousData,
-  });
+  const { data: typicalSpeedRows, isFetching: isTypicalSpeedFetching } =
+    useQuery({
+      ...getFloatingCarDataNearestBySegmentQueryOptions({
+        start: segmentsStart,
+        end: segmentsEnd,
+        field: "typicalSpeed",
+        target: segmentQueryTargetDate,
+      }),
+      enabled: Boolean(showSegmentsTab && isRelativeSpeed),
+      placeholderData: (previousData) => previousData,
+    });
 
   const targetDateMs = segmentQueryTargetDate.getTime();
 
@@ -333,7 +349,33 @@ export function MapView() {
   }
 
   return (
-    <Box flex={1} h="100%" id="map" style={selectedDateOutline}>
+    <Box
+      flex={1}
+      h="100%"
+      id="map"
+      style={{ ...selectedDateOutline, position: "relative" }}
+    >
+      {showAirQuality && airQualityIsError && (
+        <Alert
+          color="yellow"
+          variant="filled"
+          title="Ilmanlaatutiedot eivät ole saatavilla"
+          radius="md"
+          withCloseButton={false}
+          style={{
+            position: "absolute",
+            top: 12,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 1000,
+            maxWidth: 420,
+            boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+          }}
+        >
+          Mittausasemia ei voitu ladata. Kartta toimii muuten normaalisti.
+          {airQualityError?.message ? ` (${airQualityError.message})` : ""}
+        </Alert>
+      )}
       <MapContainer
         center={[60.1699, 24.9384]}
         zoom={15}
@@ -373,74 +415,76 @@ export function MapView() {
               <FeatureGroup>
                 {filteredAirQualityData && (
                   <GeoJSON
-                  key={`air-quality-${selectedDate?.toISOString() ?? "now"}`}
-                  data={filteredAirQualityData}
-                  pane="air-quality-markers"
-                  pointToLayer={(
-                    feature: Feature<Geometry, AirQualityProps>,
-                    latlng,
-                  ) => {
-                    const color = getAirQualityColor(
-                      feature?.properties?.Ilmanlaatuindeksi,
-                    );
+                    key={`air-quality-${selectedDate?.toISOString() ?? "now"}`}
+                    data={filteredAirQualityData}
+                    pane="air-quality-markers"
+                    pointToLayer={(
+                      feature: Feature<Geometry, AirQualityProps>,
+                      latlng,
+                    ) => {
+                      const color = getAirQualityColor(
+                        feature?.properties?.Ilmanlaatuindeksi,
+                      );
 
-                    return L.circleMarker(latlng, {
-                      radius: 10,
-                      color: theme.black,
-                      weight: 1,
-                      fillColor: color,
-                      fillOpacity: 1,
-                      stroke: true,
-                      className: "aq-marker",
-                      pane: "air-quality-markers",
-                    });
-                  }}
-                  onEachFeature={(
-                    feature: Feature<Geometry, AirQualityProps>,
-                    layer,
-                  ) => {
-                    const properties: AirQualityProps =
-                      feature.properties ?? {};
-                    layer.bindPopup(`
+                      return L.circleMarker(latlng, {
+                        radius: 10,
+                        color: theme.black,
+                        weight: 1,
+                        fillColor: color,
+                        fillOpacity: 1,
+                        stroke: true,
+                        className: "aq-marker",
+                        pane: "air-quality-markers",
+                      });
+                    }}
+                    onEachFeature={(
+                      feature: Feature<Geometry, AirQualityProps>,
+                      layer,
+                    ) => {
+                      const properties: AirQualityProps =
+                        feature.properties ?? {};
+                      const stationName = getAirQualityStationName(feature);
+                      layer.bindPopup(`
                         <div>
-                          <strong>${properties.Mittausasema ?? "Mittausasema"}</strong><br/>
-                          ${properties.Mittausaseman_osoite ?? ""}<br/>
-                          ${properties.Aika ?? ""}<br/>
-                          Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
+                          <strong>${escapeHtml(stationName || "Mittausasema")}</strong><br/>
+                          ${escapeHtml(properties.Mittausaseman_osoite ?? "")}<br/>
+                          ${escapeHtml(properties.Aika ?? "")}<br/>
+                          Indeksi: ${escapeHtml(properties.Ilmanlaatuindeksi ?? "-")}
                         </div>
                       `);
-                    layer.on("click", () => {
-                      const stationId = getAirQualityStationId(feature);
-                      const stationName = String(
-                        feature.properties?.Mittausasema ?? "",
-                      ).trim();
+                      layer.on("click", () => {
+                        const stationId = getAirQualityStationId(feature);
 
-                      if (stationName) {
-                        const queryOptions =
-                          getAqiTimeSeriesByStationQueryOptions({
-                            start: segmentsStart,
-                            end: segmentsEnd,
-                            stationName,
+                        if (stationName) {
+                          const queryOptions =
+                            getAqiTimeSeriesByStationQueryOptions({
+                              start: segmentsStart,
+                              end: segmentsEnd,
+                              stationName,
+                            });
+                          // prefetchQuery (not fetchQuery) — we only warm the
+                          // cache here and don't use the result, and it swallows
+                          // errors internally instead of producing an unhandled
+                          // promise rejection on network failure.
+                          void queryClient.prefetchQuery({
+                            ...queryOptions,
+                            staleTime: 0,
                           });
-                        void queryClient.fetchQuery({
-                          ...queryOptions,
-                          staleTime: 0,
-                        });
-                      }
+                        }
 
-                      if (stationId) {
-                        navigate({
-                          search: (s) => ({
-                            ...s,
-                            selectedAirQualityStation: stationId,
-                          }),
-                          replace: true,
-                        });
-                      }
-                    });
-                  }}
-                />
-              )}
+                        if (stationId) {
+                          navigate({
+                            search: (s) => ({
+                              ...s,
+                              selectedAirQualityStation: stationId,
+                            }),
+                            replace: true,
+                          });
+                        }
+                      });
+                    }}
+                  />
+                )}
               </FeatureGroup>
             </Pane>
           )}
