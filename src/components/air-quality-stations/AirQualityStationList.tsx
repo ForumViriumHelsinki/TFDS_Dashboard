@@ -1,19 +1,25 @@
 import { Group, Text, Loader } from "@mantine/core";
 import { useMemo } from "react";
-import { getAirQualityStationId } from "../../utils/airQuality";
+import {
+  getAirQualityStationId,
+  getAirQualityStationName,
+} from "../../utils/airQuality";
 import { getAirQualityColor } from "../../utils/colors";
 import { AirQualityStationItem } from "./AirQualityStationItem";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
 
 export function AirQualityStationList() {
-  const { selectedAirQualityStation, selectedDate, selectedDateMode } = useSearch({
-    from: "/",
-  });
+  const { selectedAirQualityStation, selectedDate, selectedDateMode } =
+    useSearch({
+      from: "/",
+    });
   const navigate = useNavigate({ from: "/" });
 
-  const { isPending, isError, data, error } =
-    useFilteredAirQuality(selectedDate, selectedDateMode);
+  const { isPending, isError, data, error } = useFilteredAirQuality(
+    selectedDate,
+    selectedDateMode,
+  );
 
   const items = useMemo(() => data?.features ?? [], [data]);
 
@@ -43,7 +49,7 @@ export function AirQualityStationList() {
           <AirQualityStationItem
             key={id}
             id={id}
-            label={properties.Mittausasema ?? ""}
+            label={getAirQualityStationName(feature)}
             description={properties.Mittausaseman_osoite ?? ""}
             colorHex={getAirQualityColor(properties.Ilmanlaatuindeksi)}
             isSelected={selectedAirQualityStation === id}

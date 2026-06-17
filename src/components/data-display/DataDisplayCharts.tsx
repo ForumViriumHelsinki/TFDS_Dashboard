@@ -4,7 +4,10 @@ import { getSegmentMeasurementFieldConfig } from "../../constants/segment-fields
 import { TrafficFlowChart } from "./TrafficFlowChart";
 import { AirQualityChart } from "./AirQualityChart";
 import { useFilteredAirQuality } from "../../hooks/useFilteredAirQuality";
-import { getAirQualityStationId } from "../../utils/airQuality";
+import {
+  getAirQualityStationId,
+  getAirQualityStationName,
+} from "../../utils/airQuality";
 
 export function DataDisplayCharts() {
   const theme = useMantineTheme();
@@ -28,11 +31,12 @@ export function DataDisplayCharts() {
     selectedDate,
     selectedDateMode,
   );
+  const selectedAirQualityFeature = airQualityData?.features.find(
+    (feature) => getAirQualityStationId(feature) === selectedAirQualityStation,
+  );
   const selectedAirQualityStationName =
-    airQualityData?.features.find(
-      (feature) =>
-        getAirQualityStationId(feature) === selectedAirQualityStation,
-    )?.properties?.Mittausasema ?? selectedAirQualityStation;
+    getAirQualityStationName(selectedAirQualityFeature) ||
+    selectedAirQualityStation;
   const isSegmentsTab = activeTab === "Segmentit";
   const selectedFieldConfig = getSegmentMeasurementFieldConfig(
     segmentMeasurementField,
