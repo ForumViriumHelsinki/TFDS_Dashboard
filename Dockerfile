@@ -53,7 +53,10 @@ ENV INFLUXDB_URL=http://idea-helsinki-influxdb-helm-webapp.idea-helsinki.svc.clu
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy NGINX configuration
+# default.conf.template renders to a server { } block; 00-wfs-cache.conf.template
+# renders the http-level proxy_cache_path zone (both land in /etc/nginx/conf.d/).
 COPY nginx/default.conf.template /etc/nginx/templates/
+COPY nginx/00-wfs-cache.conf.template /etc/nginx/templates/
 
 # Copy custom entrypoint scripts
 COPY nginx/docker-entrypoint.d/ /docker-entrypoint.d/

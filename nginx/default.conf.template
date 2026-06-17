@@ -34,6 +34,31 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-For $remote_addr;
+
+        # Cache slow WFS responses (upstream takes ~20-25s to build the grid;
+        # air-quality data only updates ~hourly, so a short TTL is safe).
+        # Cache zone defined at http level in 00-wfs-cache.conf.template.
+        proxy_cache wfs_cache;
+        proxy_cache_key $scheme$proxy_host$request_uri;  # includes query string
+        proxy_cache_valid 200 10m;
+        # Serve last-good data while a slow refresh runs in the background
+        # instead of blocking the client on the upstream.
+        proxy_cache_use_stale updating error timeout;
+        proxy_cache_background_update on;
+        # Finish the upstream fetch and fill the cache even if the gateway cuts
+        # the client connection at 15s — the next request is then a warm HIT.
+        proxy_ignore_client_abort on;
+
+        # Strip the upstream geoserver's duplicate security headers; the
+        # server-block copies are re-added below. (add_header in this location
+        # suppresses inheritance of the server-block add_headers, so they must
+        # be repeated here alongside the X-Cache-Status debug header.)
+        proxy_hide_header X-Frame-Options;
+        proxy_hide_header X-Content-Type-Options;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Cache-Status $upstream_cache_status always;
     }
 
     # Reverse proxy for Helsinki WFS (avoids CORS in production)
@@ -44,6 +69,24 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-For $remote_addr;
+
+        # Cache slow WFS responses (see /hsy-wfs/ above for rationale).
+        # Cache zone defined at http level in 00-wfs-cache.conf.template.
+        proxy_cache wfs_cache;
+        proxy_cache_key $scheme$proxy_host$request_uri;  # includes query string
+        proxy_cache_valid 200 10m;
+        proxy_cache_use_stale updating error timeout;
+        proxy_cache_background_update on;
+        proxy_ignore_client_abort on;
+
+        # Strip the upstream's duplicate security headers; re-add the
+        # server-block copies (see /hsy-wfs/ above for why they are repeated).
+        proxy_hide_header X-Frame-Options;
+        proxy_hide_header X-Content-Type-Options;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Cache-Status $upstream_cache_status always;
     }
 
     # Reverse proxy for InfluxDB (hides token server-side)

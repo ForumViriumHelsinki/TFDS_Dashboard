@@ -1,0 +1,19 @@
+# HTTP-level proxy cache zone for the WFS reverse proxies (HSY + Helsinki).
+#
+# This file is rendered by the stock nginx entrypoint (20-envsubst-on-templates.sh)
+# into /etc/nginx/conf.d/, which the base image includes at *http* level via
+# `include /etc/nginx/conf.d/*.conf;`. proxy_cache_path is an http-context
+# directive and cannot live inside the server { } block in default.conf.template,
+# so it is defined here. The `00-` prefix sorts this before default.conf so the
+# keys_zone is defined before the server block references it.
+#
+# The cache lives under /var/cache/nginx, which is a writable emptyDir mount
+# (the pod runs readOnlyRootFilesystem: true — see deploy/values.yaml). nginx
+# creates the wfs_cache subdirectory on startup. use_temp_path=off keeps the
+# temp files inside the cache dir so writes never touch the read-only root FS.
+proxy_cache_path /var/cache/nginx/wfs_cache
+    levels=1:2
+    keys_zone=wfs_cache:10m
+    max_size=256m
+    inactive=60m
+    use_temp_path=off;
