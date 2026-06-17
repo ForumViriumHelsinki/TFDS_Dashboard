@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.9.0...tfds-dashboard-v0.9.1) (2026-06-17)
+
+
+### Bug Fixes
+
+* **air-quality:** resolve station name across HSY layers and harden WFS fetch ([#199](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/199)) ([2ba624d](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/2ba624d874e1393d2ad03e420414d77fc574c053))
+
+
+### Performance Improvements
+
+* **nginx:** cache WFS proxy responses and drop duplicate security headers ([#197](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/197)) ([337ca37](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/337ca37548341f571ad2fa2fec3d6fa3288b7f06))
+
 ## [0.9.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.8.0...tfds-dashboard-v0.9.0) (2026-06-16)
 
 
