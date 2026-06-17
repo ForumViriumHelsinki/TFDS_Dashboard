@@ -52,6 +52,19 @@ import { getDefaultDateRange } from "../../utils/time";
 
 const SEGMENT_NO_DATA_COLOR = "#9CA3AF";
 
+// Escape values from the external HSY WFS API before interpolating them into
+// the Leaflet popup's innerHTML, to prevent XSS from unexpected/malicious
+// upstream content.
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+const escapeHtml = (value: unknown): string =>
+  String(value).replace(/[&<>"']/g, (char) => HTML_ESCAPES[char] ?? char);
+
 function FitMapToSelected({
   selectedSegment,
   featureCollections,
@@ -433,10 +446,10 @@ export function MapView() {
                       const stationName = getAirQualityStationName(feature);
                       layer.bindPopup(`
                         <div>
-                          <strong>${stationName || "Mittausasema"}</strong><br/>
-                          ${properties.Mittausaseman_osoite ?? ""}<br/>
-                          ${properties.Aika ?? ""}<br/>
-                          Indeksi: ${properties.Ilmanlaatuindeksi ?? "-"}
+                          <strong>${escapeHtml(stationName || "Mittausasema")}</strong><br/>
+                          ${escapeHtml(properties.Mittausaseman_osoite ?? "")}<br/>
+                          ${escapeHtml(properties.Aika ?? "")}<br/>
+                          Indeksi: ${escapeHtml(properties.Ilmanlaatuindeksi ?? "-")}
                         </div>
                       `);
                       layer.on("click", () => {
@@ -449,7 +462,11 @@ export function MapView() {
                               end: segmentsEnd,
                               stationName,
                             });
-                          void queryClient.fetchQuery({
+                          // prefetchQuery (not fetchQuery) — we only warm the
+                          // cache here and don't use the result, and it swallows
+                          // errors internally instead of producing an unhandled
+                          // promise rejection on network failure.
+                          void queryClient.prefetchQuery({
                             ...queryOptions,
                             staleTime: 0,
                           });
