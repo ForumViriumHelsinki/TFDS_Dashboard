@@ -41,9 +41,15 @@ server {
         proxy_cache wfs_cache;
         proxy_cache_key $scheme$proxy_host$request_uri;  # includes query string
         proxy_cache_valid 200 10m;
-        # Serve last-good data while a slow refresh runs in the background
-        # instead of blocking the client on the upstream.
-        proxy_cache_use_stale updating error timeout;
+        # Cache regardless of upstream cache hints. GeoServer currently sends
+        # none of these, but ignoring them future-proofs the cache against an
+        # upstream change. Set-Cookie is paired with proxy_hide_header below so
+        # a session cookie is never stored or served to another client.
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
+        # Serve last-good data while a slow refresh runs in the background, and
+        # if the upstream geoserver errors out (5xx/timeout) rather than
+        # blocking or failing the client.
+        proxy_cache_use_stale error timeout invalid_header http_500 http_502 http_503 http_504 updating;
         proxy_cache_background_update on;
         # Finish the upstream fetch and fill the cache even if the gateway cuts
         # the client connection at 15s — the next request is then a warm HIT.
@@ -55,6 +61,9 @@ server {
         # be repeated here alongside the X-Cache-Status debug header.)
         proxy_hide_header X-Frame-Options;
         proxy_hide_header X-Content-Type-Options;
+        # Never cache/forward a GeoServer session cookie (e.g. JSESSIONID) — it
+        # would otherwise be stored once and served to all clients.
+        proxy_hide_header Set-Cookie;
         add_header X-Frame-Options "SAMEORIGIN" always;
         add_header X-Content-Type-Options "nosniff" always;
         add_header X-XSS-Protection "1; mode=block" always;
@@ -75,7 +84,8 @@ server {
         proxy_cache wfs_cache;
         proxy_cache_key $scheme$proxy_host$request_uri;  # includes query string
         proxy_cache_valid 200 10m;
-        proxy_cache_use_stale updating error timeout;
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
+        proxy_cache_use_stale error timeout invalid_header http_500 http_502 http_503 http_504 updating;
         proxy_cache_background_update on;
         proxy_ignore_client_abort on;
 
@@ -83,6 +93,8 @@ server {
         # server-block copies (see /hsy-wfs/ above for why they are repeated).
         proxy_hide_header X-Frame-Options;
         proxy_hide_header X-Content-Type-Options;
+        # Never cache/forward an upstream session cookie (see /hsy-wfs/ above).
+        proxy_hide_header Set-Cookie;
         add_header X-Frame-Options "SAMEORIGIN" always;
         add_header X-Content-Type-Options "nosniff" always;
         add_header X-XSS-Protection "1; mode=block" always;
