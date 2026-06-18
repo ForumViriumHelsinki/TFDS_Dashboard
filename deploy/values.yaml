@@ -116,9 +116,9 @@ volumes:
     readOnly: true
     volumeAttributes:
       bucketName: idea-helsinki
-      mountOptions: "implicit-dirs,uid=101,gid=101,file-mode=664,dir-mode=775"
+      mountOptions: "implicit-dirs,uid=101,gid=101,file-mode=664,dir-mode=775,only-dir=data"
       gcsfuseLoggingSeverity: warning
-      fileCacheCapacity: "1Gi"
+      fileCacheCapacity: "512Mi"
       metadataCacheTTLSeconds: "10"
 volumeMounts:
 - name: nginx-cache
@@ -131,8 +131,10 @@ volumeMounts:
   mountPath: /etc/nginx/conf.d
 # Mount GCS bucket path idea-helsinki/data to /data (served at /data/ by nginx)
 - name: shared-data
+  # only-dir=data (see volume above) roots the gcsfuse mount at the bucket's
+  # data/ prefix, so no subPath bind-mount is needed — the gcsfuse CSI driver
+  # recommends only-dir over subPath.
   mountPath: /usr/share/nginx/html/data
-  subPath: data
   readOnly: true
 keda:
   enabled: true
