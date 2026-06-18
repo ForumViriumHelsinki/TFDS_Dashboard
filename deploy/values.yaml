@@ -104,8 +104,22 @@ volumes:
   emptyDir: {}
 # GCS-FUSE volume for shared data (idea-helsinki bucket)
 - name: shared-data
-  persistentVolumeClaim:
-    claimName: idea-helsinki-shared-pvc
+  # GCS-FUSE CSI ephemeral inline volume (idea-helsinki bucket).
+  # Replaces the former cluster-scoped PVC `idea-helsinki-shared-pvc`, which was
+  # removed in infrastructure#1944 when the IDEA-Helsinki services migrated off
+  # GCS FUSE. tfds-dashboard is a static nginx server that still serves /data/
+  # from the bucket, so it mounts the bucket directly via the CSI driver instead.
+  # Auth: the `idea-helsinki-shared` ServiceAccount (Workload Identity) + the
+  # `gke-gcsfuse/volumes: "true"` pod annotation above.
+  csi:
+    driver: gcsfuse.csi.storage.gke.io
+    readOnly: true
+    volumeAttributes:
+      bucketName: idea-helsinki
+      mountOptions: "implicit-dirs,uid=101,gid=101,file-mode=664,dir-mode=775,only-dir=data"
+      gcsfuseLoggingSeverity: warning
+      fileCacheCapacity: "512Mi"
+      metadataCacheTTLSeconds: "10"
 volumeMounts:
 - name: nginx-cache
   mountPath: /var/cache/nginx
@@ -117,8 +131,10 @@ volumeMounts:
   mountPath: /etc/nginx/conf.d
 # Mount GCS bucket path idea-helsinki/data to /data (served at /data/ by nginx)
 - name: shared-data
+  # only-dir=data (see volume above) roots the gcsfuse mount at the bucket's
+  # data/ prefix, so no subPath bind-mount is needed — the gcsfuse CSI driver
+  # recommends only-dir over subPath.
   mountPath: /usr/share/nginx/html/data
-  subPath: data
   readOnly: true
 keda:
   enabled: true
