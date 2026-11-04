@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.10.0](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.9.1...tfds-dashboard-v0.10.0) (2026-11-04)
+
+
+### Features
+
+* project license. ([#206](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/206)) ([7e697de](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/7e697de9a29765a50631bd283e97f5259aced5da))
+
+
+### Bug Fixes
+
+* **deploy:** mount idea-helsinki bucket via GCS-FUSE CSI inline volume ([#203](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/203)) ([6251aa6](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/6251aa6bea3081f2b06e7167149a98f224b3d28d))
+* **docker:** pin nginx base to the build without eMudhra roots ([#226](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/issues/226)) ([ca5dd62](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/commit/ca5dd62fe7060ba44b48a567f5dc6473dcb200d6))
+
 ## [0.9.1](https://github.com/ForumViriumHelsinki/TFDS_Dashboard/compare/tfds-dashboard-v0.9.0...tfds-dashboard-v0.9.1) (2026-06-17)
 
 
